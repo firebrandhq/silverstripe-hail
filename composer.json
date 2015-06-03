@@ -1,0 +1,22 @@
+{
+    "name": "firebrandhq/silverstripe-hail",
+    "description": "Silverstripe plugin to integrate with Hail (https://get.hail.to)",
+    "type": "silverstripe-module",
+    "keywords": ["silverstripe", "News", "Hail", "Content"],
+    "license": "MIT",
+    "authors": [{
+        "name": "Firebrand Limited",
+        "email": "developers@firebrand.nz"
+    }],
+    "require": {
+        "silverstripe/framework": "3.1.*",
+        "silverstripe/cms": "3.1.*",
+        "firebrandhq/searchable-dataobjects": "dev-master",
+        "silverstripe-australia/gridfieldextensions": "dev-master",
+    	"undefinedoffset/sortablegridfield": "dev-master",
+    	"colymba/gridfield-bulk-editing-tools": "dev-master",		
+		"nategood/httpful": "dev-master",
+		"silverstripe/restfulserver": "dev-master",
+		"league/oauth2-client": "0.10.*@dev"
+    }
+}
