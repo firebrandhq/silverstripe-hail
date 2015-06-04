@@ -7,3 +7,6 @@ HailApi:
 SiteConfig:
   extensions:
     - HailLoginExtension
+HailArticle:
+  extensions:
+    - SearchableDataObject

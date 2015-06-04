@@ -23,7 +23,7 @@
  * @method ManyManyList ImageGallery() List of {@link HailImage}
  */
 
-class HailArticle extends HailApiObject {
+class HailArticle extends HailApiObject implements SearchableLinkable {
 	
 	private static $db = array(
 		'Title' => 'Text',
@@ -250,6 +250,55 @@ class HailArticle extends HailApiObject {
 		}
 	}
 	
+	public function Link() {
+		$holder = SiteConfig::current_site_config()->PrimaryHailHolder;
+		if (!$holder) {
+			$holder = HailHolder::get()->first();
+		}
+		if (!$holder) {
+			return false;
+		}
+		return $holder->Link('article/' . $this->ID);
+	}
+
+	/**
+	 * Filter array
+	 * eg. array('Disabled' => 0);
+	 * @return array
+	 */
+	public static function getSearchFilter() {
+		return array();
+	}
+
+	/**
+	 * Fields that compose the Title
+	 * eg. array('Title', 'Subtitle');
+	 * @return array
+	 */
+	public function getTitleFields() {
+		return array('Title');
+	}
+
+	/**
+	 * Fields that compose the Content
+	 * eg. array('Teaser', 'Content');
+	 * @return array
+	 */
+	public function getContentFields() {
+		return array(
+			"Title",
+			"Lead",
+			"Content",
+		);
+	}
+	
+	public function getOwner() {
+		return $this;
+	}
+	
+	public function IncludeInSearch() {
+		return true;
+	}
 
 }
 

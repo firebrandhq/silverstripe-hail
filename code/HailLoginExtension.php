@@ -18,6 +18,11 @@ class HailLoginExtension extends DataExtension {
 		'HailRedirectCode' => 'Varchar(255)',
 		'HailUserID' => 'Varchar(255)',
 		'HailOrgID' => 'Varchar(255)',
+		
+	);
+	
+	private static $has_one = array(
+		'PrimaryHailHolder' => 'HailHolder'
 	);
 	
 	public function updateCMSFields(FieldList $fields) {
@@ -28,7 +33,7 @@ class HailLoginExtension extends DataExtension {
 		
 		
 		// Twitter setup
-		$fields->addFieldsToTab('Root.HailLoginDetails', array(
+		$fields->addFieldsToTab('Root.Hail', array(
 			new TextField('HailClientID', 'Client ID', null, 255),
 			new TextField('HailClientSecret', 'Client Secret', null, 255),
 			$redirectField
@@ -39,23 +44,25 @@ class HailLoginExtension extends DataExtension {
 		if(HailProvider::isReadyToAuthorised()) {
 			$provider = new HailProvider();
 
-			$link = HailProvider::isAuthorised() ?				
+			$link = HailProvider::isAuthorised() ?
 				'Reauthorise SilverStripe to Access Hail':
 				'Authorise SilverStripe to Access Hail';
 
 			$auth = $provider->getAuthorizationUrl();
-			$fields->addFieldsToTab('Root.HailLoginDetails', new LiteralField('Go', "<a href='$auth'>$link</a>"));
+			$fields->addFieldsToTab('Root.Hail', new LiteralField('Go', "<a href='$auth'>$link</a>"));
 		}
 		try {
 		if(HailProvider::isAuthorised()) {
 			$orgs = HailApi::getOrganisationList();
 			$orgs[''] = '';
 			$orgField = DropdownField::create('HailOrgID', 'Hail Organisation', $orgs);
-			$fields->addFieldsToTab('Root.HailLoginDetails', $orgField);
+			$fields->addFieldsToTab('Root.Hail', $orgField);
 		}
 		} catch(HailApiException $ex) {
-			$fields->addFieldsToTab('Root.HailLoginDetails', new LiteralField('Retry', 'You Have to Re-Authorise SilverStripe to Access Hail'));
+			$fields->addFieldsToTab('Root.Hail', new LiteralField('Retry', 'You Have to Re-Authorise SilverStripe to Access Hail'));
 		}
 		
+		$holderField = DropdownField::create('PrimaryHailHolderID', 'Primary Hail Holder', HailHolder::get()->map('ID', 'Title'));
+		$fields->addFieldsToTab('Root.Hail', $holderField);
 	}
 }
