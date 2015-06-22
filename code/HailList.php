@@ -43,6 +43,12 @@ class HailList extends DataObject {
 		return HailArticle::get()->sort('Date', 'DESC');
 	}
 	
+	public function MyPaginatedListArticles() {
+		$plist = new PaginatedList($this->Articles(), Controller::curr()->getRequest());
+		$plist->setPageLength(20);
+		return $plist;
+	}
+	
 	protected function fetch() {
 		if (!$this->Fetched || HailApiObject::isOutdated($this->Fetched)) {
 			$this->fetchMethod();
