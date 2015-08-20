@@ -16,6 +16,8 @@ class HailTag extends HailApiObject {
 		'Name','Description'
 	);
 	
+	private static $api_access = true;
+	
 	private static $summary_fields = array(
 		'HailID',
 		'Name',
@@ -44,6 +46,10 @@ class HailTag extends HailApiObject {
 	
 	protected function refreshing() {
 		$this->fetchArticles();
+	}
+	
+	public function canView($member=null) {
+		return true;
 	}
 	
 	public function fetchArticles() {

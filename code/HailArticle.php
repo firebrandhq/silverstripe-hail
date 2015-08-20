@@ -40,6 +40,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 		'Flagged' => 'Boolean'
 	);
 	
+	private static $default_sort = "Date DESC";
+	
 	
 	
 	private static $has_one = array(
