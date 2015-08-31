@@ -4,7 +4,7 @@
  * HailHolder
  * Page type to displays lists of {@link HailArticle} via {@link HailList}.
  *
- * It provides options to display : 
+ * It provides options to display :
  * - individual {@link HailArticle},
  * - list of {@link HailArticle} via {@link HailList},
  * - and lists of {@link HailList}
@@ -12,16 +12,16 @@
  * @package hail
  * @author Maxime Rainville, Firebrand
  * @version 1.0
- * 
+ *
  * @method HasManyList List() List of {@link HailList}
  */
 
 class HailHolder extends Page {
-	
+
 	private static  $has_many = array(
 		'Lists' => 'HailList'
 	);
-	
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
@@ -39,11 +39,11 @@ class HailHolder extends Page {
 
 		return $fields;
 	}
-	
-	
+
+
 	/**
 	 * Returns the first articles with an image.
-	 * 
+	 *
 	 * @return HailArticle First Article with image
 	 */
 	public function getFirst() {
@@ -55,7 +55,7 @@ class HailHolder extends Page {
 			}
 		}
 	}
-	
+
 	private static function getHailListClasses() {
 		$basicList = array('HailList','TagHailList','PublicationHailList');
 		$configList = static::config()->HailListClasses;
@@ -81,12 +81,12 @@ class HailHolder extends Page {
  */
 
 class HailHolder_Controller extends Page_Controller {
-	
-	
+
+
 	private static $allowed_actions = array (
 		'haillist', 'hailarticle'
 	);
-	
+
 	private static $url_handlers = array(
 		'list/$ID' => 'haillist',
 		'article/$ID' => 'hailarticle'
@@ -94,77 +94,79 @@ class HailHolder_Controller extends Page_Controller {
 
 	/**
 	 * Action to list the {@link HailArticle} in a specific {@link HailList}
-	 * 
+	 *
 	 * @param SS_HTTPRequest $request
 	 * @return HTMLText First Article with image
 	 */
 	public function haillist($request) {
 		$this->myList = $this->Lists()->byID($request->param('ID'));
-		
+
 		return $this->renderWith(array('HailHolder_HailList', 'Page'));
 	}
-	
+
 	/**
 	 * Action to display a sepcific {@link HailArticle}
-	 * 
+	 *
 	 * @param SS_HTTPRequest $request
 	 * @return HTMLText First Article with image
 	 */
 	public function hailarticle($request) {
 		$this->myArticle = HailArticle::get()->byID($request->param('ID'));
-		
+
+		$this->myArticle->refresh();
+
 		if ($this->myArticle->Content) {
 			$this->myArticle->softRefresh();
 		} else {
 			$this->myArticle->refresh();
 		}
-		
+
 		return $this->renderWith(array('HailHolder_HailArticle', 'Page'));
 	}
-	
+
 	/**
 	 * Generate a URL to render a specific {@link HailList}
-	 * 
+	 *
 	 * @param int $listID
 	 * @return String url
 	 */
 	public function ListLink($listID) {
 		return Controller::join_links('list/' . $listID, 'list');
 	}
-	
-	
+
+
 
 	/**
 	 * Return the {@link HailList} to render when the {@link haillist()} action is invoke.
-	 * 
+	 *
 	 * @return {@link HailList} List to display
 	 */
 	public function MyList() {
 		return $this->myList;
 	}
 	protected $myList;
-	
+
 	public function MyPaginatedListArticles() {
 		$plist = new PaginatedList($this->myList->Articles(), $this->request);
 		$plist->setPageLength(20);
 		return $plist;
 	}
-	
-	
+
+
 	/**
 	 * Return the {@link HailArticle} to display when the {@link hailarticle()} action is invoke
-	 * 
+	 *
 	 * @return {@link HailList} List to display
 	 */
 	public function MyArticle() {
 		return $this->myArticle;
 	}
 	protected $myArticle;
-	
-	
+
+
 	/**
 	 * Returns a relevant hero {@link HailImage} for the current action.
-	 * 
+	 *
 	 * @return HailImage Hero image of a relevant article
 	 */
 	public function HeroImage() {
@@ -186,23 +188,23 @@ class HailHolder_Controller extends Page_Controller {
 				}
 				break;
 		}
-		
+
 		return $hero;
-		
+
 	}
-	
+
 	/**
 	 * Returns a sorted list of {@link HailList}.
-	 * 
+	 *
 	 * @return ArrayList {@link HailList} sorted
 	 */
 	public function Lists() {
 		return $this->dataRecord->Lists()->sort('SortOrder');
 	}
-	
+
 	/**
 	 * Returns a relevant title for the current action.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getTitle() {
@@ -218,10 +220,10 @@ class HailHolder_Controller extends Page_Controller {
 				break;
 		}
 	}
-	
+
 	/**
 	 * Returns a relevant metadata description for the current action.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getMetaDescription() {
