@@ -114,7 +114,17 @@ class HailApi extends Object {
 					self::ORGS . '/' .
 					static::getOrganisationId() . '/' .
 					self::IMAGES ;
-					//$request = array('status' => 'approved');
+					if (self::getDisplayUnpublished()) {
+						$request= array();
+					} else {
+						$request = array('status' => 'approved');
+					}
+				break;
+			case self::VIDEOS:
+				$uri =
+					self::ORGS . '/' .
+					static::getOrganisationId() . '/' .
+					self::VIDEOS ;
 					if (self::getDisplayUnpublished()) {
 						$request= array();
 					} else {
@@ -214,6 +224,18 @@ class HailApi extends Object {
 	 */
 	public static function getImagesByArticles($id, $parameter=false) {
 		$uri = self::ARTICLES . '/' . $id . '/' . self::IMAGES;
+		return self::get($uri, $parameter);
+	}
+
+	/**
+	 * Retrieve a list of videos for a given article.
+	 *
+	 * @param string $id ID of the article in Hail
+	 * @return array
+	 * @throws HailApiException
+	 */
+	public static function getVideosByArticles($id, $parameter=false) {
+		$uri = self::ARTICLES . '/' . $id . '/' . self::VIDEOS;
 		return self::get($uri, $parameter);
 	}
 

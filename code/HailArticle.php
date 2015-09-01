@@ -84,6 +84,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
 		$this->processTags($data->tags);
 		$this->processHeroImage($data->hero_image);
+		$this->processHeroVideo($data->hero_video);
 		$this->processAttachments($data->attachments);
 
 		// TODO: Generate Unique URL handler
@@ -145,6 +146,22 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 		$this->HeroImageID = $hero;
 	}
 
+	// Match the hero video if there's one
+	private function processHeroVideo($heroVidData) {
+		if ($heroVidData) {
+			$hero = HailVideo::get()->filter(array('HailID' => $heroVidData->id))->first();
+			if (!$hero) {
+				$hero = new HailVideo();
+			}
+			$hero->importHailData($heroVidData);
+			$hero = $hero->ID;
+		} else {
+			$hero = null;
+		}
+
+		$this->HeroVideoID = $hero;
+	}
+
 	// Go through the attachments and assign them to this article.
 	private function processAttachments($data) {
 		$idList = array();
@@ -195,6 +212,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
 	protected function refreshing() {
 		$this->fetchImages();
+		$this->fetchVideos();
 	}
 
 	/**
@@ -227,6 +245,38 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
 		// Remove images that are no longer assign to this article
 		$this->ImageGallery()->exclude('HailID', $hailIdList)->removeAll();
+	}
+
+	/**
+	 * Fetch the video gallery of this article from the Hail API
+	 *
+	 * @return void
+	 */
+	public function fetchVideos() {
+		try {
+			$list = HailApi::getVideosByArticles($this->HailID);
+		} catch (HailApiException $ex) {
+			Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+			return;
+		}
+
+		$hailIdList = array();
+
+		foreach($list as $hailData) {
+			// Build up Hail ID list
+			$hailIdList[] = $hailData->id;
+
+			// Check if we can find an existing item.
+			$hailObj = HailVideo::get()->filter(array('HailID' => $hailData->id))->First();
+			if (!$hailObj) {
+				$hailObj = new HailVideo();
+			}
+			$hailObj->importHailData($hailData);
+			$this->VideoGallery()->add($hailObj);
+		}
+
+		// Remove images that are no longer assign to this article
+		$this->VideoGallery()->exclude('HailID', $hailIdList)->removeAll();
 	}
 
 	public function forTemplate() {
@@ -302,6 +352,16 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
 	public function IncludeInSearch() {
 		return true;
+	}
+
+	public function getHeroImage() {
+		$img = $this->HeroImage();
+		if ($img && $img->ID > 0) { return $img; }
+
+		$img = $this->HeroVideo();
+		if ($img && $img->ID > 0) { return $img; }
+
+		return $this->HeroImage();
 	}
 
 }

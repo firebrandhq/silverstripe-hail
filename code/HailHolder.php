@@ -173,7 +173,7 @@ class HailHolder_Controller extends Page_Controller {
 		$hero = false;
 		switch($this->getAction()) {
 			case 'hailarticle':
-				$hero = $this->myArticle->HeroImage();
+				$hero = $this->myArticle->HeroImage;
 				break;
 			case 'haillist':
 				$article = $this->myList->Articles()->First();

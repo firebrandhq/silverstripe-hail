@@ -27,9 +27,10 @@ class HailColor extends DataObject {
 	 * @return [type]       [description]
 	 */
 	public function import($data) {
-		$this->Red = $data->red;
-		$this->Green = $data->green;
-		$this->Blue = $data->blue;
+
+		$this->Red = isset($data->red) ? $data->red : 0;
+		$this->Green = isset($data->green) ? $data->green : 0;
+		$this->Blue = isset($data->blue) ? $data->blue : 0;
 
 		$this->write();
 	}

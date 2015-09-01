@@ -150,7 +150,6 @@ class HailVideo extends HailApiObject {
 			$color = new HailColor();
 		}
 
-		$color->import($data);
 		$this->$SSName = $color;
 	}
 
@@ -176,7 +175,13 @@ class HailVideo extends HailApiObject {
 	 * * @return HTMLText
 	 */
 	public function getThumbnail() {
-		return $this->renderWith('HailVideoThumbnail');
+		switch ($this->Service) {
+			case 'youtube':
+				return $this->renderWith('HailVideoYouTubeThumbnail');
+				break;
+			default:
+				return $this->renderWith('HailVideoThumbnail');
+		}
 	}
 
 	public function getRelativeCenterX() {
@@ -230,6 +235,16 @@ class HailVideo extends HailApiObject {
 
 	public function getUrl() {
 		return $this->Urloriginal;
+	}
+
+	public function getLink() {
+		switch ($this->Service) {
+			case 'youtube':
+				return '//www.youtube.com/watch?v=' . $this->ServiceData;
+				break;
+			default:
+				return $this->ServiceData;
+		}
 	}
 
 }

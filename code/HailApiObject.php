@@ -183,10 +183,6 @@ class HailApiObject extends DataObject {
 				return $this;
 			}
 
-			var_dump($data->hero_video);
-			var_dump($data->hero_video->preview->colour_palette);
-			die();
-
 			$this->importHailData($data);
 			$this->refreshing();
 		}
