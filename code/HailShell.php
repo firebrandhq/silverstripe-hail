@@ -29,6 +29,7 @@ class HailShell extends Controller {
 
 		echo "Fetching Publications.\n";
 		HailPublication::fetch();
+		
 	}
 	
 }

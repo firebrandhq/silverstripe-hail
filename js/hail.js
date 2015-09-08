@@ -16,7 +16,7 @@
 		return this.each(function () {
 			var $this = $(this);
 			var listID = $this.data('list');
-			var objectType = $this.data('object-type');
+			var objectType = $this.data('object-type');			
 			if (typeof objectType == 'undefined' || objectType == '') objectType = 'HailList';
 			var listCount = parseInt($this.data('count'));
 			var pos = 0;
@@ -77,6 +77,7 @@
 									['Url150Square', 'Url500', 'Url500Square', 'Url1000', 'Url1000Square', 'Url2000', 'Urloriginal'],
 									function (i, imgClass) {
 										clone.find('img.' + imgClass).attr('src', data[imgClass]).show();
+										clone.find('.Background' + imgClass).attr('style', 'background-image: url(\'' + data[imgClass] + '\')').show();
 									}
 								);
 								func(returnObj);
@@ -90,6 +91,7 @@
 							['Url150Square', 'Url500', 'Url500Square', 'Url1000', 'Url1000Square', 'Url2000', 'Urloriginal'],
 							function (i, imgClass) {
 								clone.find('img.' + imgClass).attr('src', data[imgClass]).show();
+								clone.find('.Background' + imgClass).attr('style', 'background-image: url(\'' + data[imgClass] + '\')').show();
 							}
 						);
 						func(returnObj);
@@ -100,6 +102,7 @@
 							['Url150Square', 'Url500', 'Url500Square', 'Url1000', 'Url1000Square', 'Url2000', 'Urloriginal'],
 							function (i, imgClass) {
 								clone.find('img.' + imgClass).hide();
+								clone.find('.Background' + imgClass).hide();
 							}
 						);
 						func(returnObj);
