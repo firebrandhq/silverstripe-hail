@@ -29,9 +29,9 @@ class HailShell extends Controller {
 
 		echo "Fetching Publications.\n";
 		HailPublication::fetch();
-
-        echo "Fetching Videos.\n";
-        HailVideo::fetch();
+		
+		echo "Fetching Videos.\n";
+		HailVideo::fetch();
 	}
 
 }
