@@ -71,12 +71,14 @@
 				function updateImage(article, clone) {
 					if (article.HeroImage != null && article.HeroImage.id != 0) {
 						$.getJSON(
-							article.HeroImage.href, '',
+							article.HeroImage.href, 'add_fields=RelativeCenterX,RelativeCenterY',
 							function (data) {
 								$.each(
 									['Url150Square', 'Url500', 'Url500Square', 'Url1000', 'Url1000Square', 'Url2000', 'Urloriginal'],
-									function (i, imgClass) {
+									function (i, imgClass) {										
 										clone.find('img.' + imgClass).attr('src', data[imgClass]).show();
+										clone.find('.background' + imgClass).css('background-image', 'url(\'' + data[imgClass] + '\')')
+											.css('background-position', data.RelativeCenterX + ' ' + data.RelativeCenterY ).show();
 									}
 								);
 								func(returnObj);
@@ -90,6 +92,8 @@
 							['Url150Square', 'Url500', 'Url500Square', 'Url1000', 'Url1000Square', 'Url2000', 'Urloriginal'],
 							function (i, imgClass) {
 								clone.find('img.' + imgClass).attr('src', data[imgClass]).show();
+								clone.find('.background' + imgClass).css('background-image', 'url(\'' + data[imgClass] + '\')')
+									.css('background-position', data.RelativeCenterX + ' ' + data.RelativeCenterY ).show();
 							}
 						);
 						func(returnObj);
@@ -100,6 +104,7 @@
 							['Url150Square', 'Url500', 'Url500Square', 'Url1000', 'Url1000Square', 'Url2000', 'Urloriginal'],
 							function (i, imgClass) {
 								clone.find('img.' + imgClass).hide();
+								clone.find('.background' + imgClass).hide();
 							}
 						);
 						func(returnObj);
