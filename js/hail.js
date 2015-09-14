@@ -114,7 +114,7 @@
 				fetchNumber = fetchNumber % listCount;
 
 				$.getJSON(
-					'api/v1/HailList/' + listID + '/Articles.json',
+					'api/v1/'  + objectType + '/' + listID + '/Articles.json',
 					'limit=1&start=' + fetchNumber,
 					function (data) {
 						article = data.items[0];
