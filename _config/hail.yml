@@ -1,7 +1,7 @@
 HailApi:
   AccessKey: false
   OrganisationId: false
-  Timeout: 30
+  Timeout: 0
   Url: 'https://hail.to/api/v1/'
   RefreshRate: 86400
 SiteConfig:
