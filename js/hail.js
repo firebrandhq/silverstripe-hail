@@ -15,7 +15,7 @@
 		// Greenify the collection based on the settings variable. 
 		return this.each(function () {
 			var $this = $(this);
-			var listID = $this.data('list');
+			var listID = $this.data('list');			
 			var objectType = $this.data('object-type');
 			if (typeof objectType == 'undefined' || objectType == '') objectType = 'HailList';
 			var listCount = parseInt($this.data('count'));
@@ -112,9 +112,16 @@
 				}
 
 				fetchNumber = fetchNumber % listCount;
+				
+				var endpoint = '';
+				if (typeof listID == 'undefined' || listID == '') {
+					endpoint = 'api/v1/' + objectType + '.json' 
+				} else {
+					endpoint = 'api/v1/'  + objectType + '/' + listID + '/Articles.json';
+				}				
 
 				$.getJSON(
-					'api/v1/'  + objectType + '/' + listID + '/Articles.json',
+					endpoint,
 					'limit=1&start=' + fetchNumber,
 					function (data) {
 						article = data.items[0];
