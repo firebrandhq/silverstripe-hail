@@ -12,10 +12,10 @@
 			reponsiveDisplay: {0: 1, 768: 2, 992: 3}
 		}, options );
 
-		// Greenify the collection based on the settings variable. 
+		// Greenify the collection based on the settings variable.
 		return this.each(function () {
 			var $this = $(this);
-			var listID = $this.data('list');			
+			var listID = $this.data('list');
 			var objectType = $this.data('object-type');
 			if (typeof objectType == 'undefined' || objectType == '') objectType = 'HailList';
 			var listCount = parseInt($this.data('count'));
@@ -75,10 +75,11 @@
 							function (data) {
 								$.each(
 									['Url150Square', 'Url500', 'Url500Square', 'Url1000', 'Url1000Square', 'Url2000', 'Urloriginal'],
-									function (i, imgClass) {										
+									function (i, imgClass) {
 										clone.find('img.' + imgClass).attr('src', data[imgClass]).show();
 										clone.find('.background' + imgClass).css('background-image', 'url(\'' + data[imgClass] + '\')')
-											.css('background-position', data.RelativeCenterX + ' ' + data.RelativeCenterY ).show();
+											.css('background-position', data.RelativeCenterX + '% ' + data.RelativeCenterY + '%' ).show();
+											console.log(data.RelativeCenterX + data.RelativeCenterY);
 									}
 								);
 								func(returnObj);
@@ -112,13 +113,13 @@
 				}
 
 				fetchNumber = fetchNumber % listCount;
-				
+
 				var endpoint = '';
 				if (typeof listID == 'undefined' || listID == '') {
-					endpoint = 'api/v1/' + objectType + '.json' 
+					endpoint = 'api/v1/' + objectType + '.json'
 				} else {
 					endpoint = 'api/v1/'  + objectType + '/' + listID + '/Articles.json';
-				}				
+				}
 
 				$.getJSON(
 					endpoint,
