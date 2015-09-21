@@ -57,16 +57,7 @@ class HailHolder extends Page {
 	}
 
 	private static function getHailListClasses() {
-		$basicList = array('HailList','TagHailList','PublicationHailList');
-		$configList = static::config()->HailListClasses;
-		if ($configList) {
-			if (is_array($configList)) {
-				$basicList = array_merge($basicList, $configList);
-			} else {
-				$basicList = array_merge($basicList, explode(',', $configList));
-			}
-		}
-		return $basicList;
+		return ClassInfo::subclassesFor('HailList');
 	}
 }
 
