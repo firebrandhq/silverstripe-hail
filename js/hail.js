@@ -79,7 +79,6 @@
 										clone.find('img.' + imgClass).attr('src', data[imgClass]).show();
 										clone.find('.background' + imgClass).css('background-image', 'url(\'' + data[imgClass] + '\')')
 											.css('background-position', data.RelativeCenterX + '% ' + data.RelativeCenterY + '%' ).show();
-											console.log(data.RelativeCenterX + data.RelativeCenterY);
 									}
 								);
 								func(returnObj);
@@ -94,7 +93,7 @@
 							function (i, imgClass) {
 								clone.find('img.' + imgClass).attr('src', data[imgClass]).show();
 								clone.find('.background' + imgClass).css('background-image', 'url(\'' + data[imgClass] + '\')')
-									.css('background-position', data.RelativeCenterX + ' ' + data.RelativeCenterY ).show();
+									.css('background-position', data.RelativeCenterX + '% ' + data.RelativeCenterY + '%' ).show();
 							}
 						);
 						func(returnObj);
