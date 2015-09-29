@@ -363,5 +363,4 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
 		return $this->HeroImage();
 	}
-
 }
