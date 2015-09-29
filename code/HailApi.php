@@ -35,6 +35,7 @@ class HailApi extends Object {
 	const VIDEOS = 'videos';
 	const PUBLICATIONS = 'publications';
 	const ATTACHMENTS = 'attachments';
+	const PRIVATE_TAGS = 'private-tags';
 
 	/**
 	 * Send a GET request to the Hail API for a specific URI and returns
@@ -90,6 +91,18 @@ class HailApi extends Object {
 					self::ORGS . '/' .
 					static::getOrganisationId() . '/' .
 					self::TAGS;
+					//$request = array('status' => 'published');
+					if (self::getDisplayUnpublished()) {
+						$request= array();
+					} else {
+						$request = array('status' => 'published');
+					}
+				break;
+			case self::PRIVATE_TAGS:
+				$uri =
+					self::ORGS . '/' .
+					static::getOrganisationId() . '/' .
+					self::PRIVATE_TAGS;
 					//$request = array('status' => 'published');
 					if (self::getDisplayUnpublished()) {
 						$request= array();
@@ -292,6 +305,15 @@ class HailApi extends Object {
 		};
 
 		return $hailOrgID;
+	}
+	
+	public static function getPrivateTagList() {
+		$lists = self::getList(self::PRIVATE_TAGS);
+		$ptags = array();
+		foreach ($lists as $ptag) {
+			$ptags[$ptag->id] = $ptag->name;
+		}
+		return $ptags;
 	}
 
 }
