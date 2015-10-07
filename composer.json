@@ -14,9 +14,9 @@
         "firebrandhq/searchable-dataobjects": "dev-master",
         "silverstripe-australia/gridfieldextensions": "dev-master",
     	"undefinedoffset/sortablegridfield": "dev-master",
-    	"colymba/gridfield-bulk-editing-tools": "dev-master",		
+    	"colymba/gridfield-bulk-editing-tools": "dev-master",
 		"nategood/httpful": "dev-master",
 		"silverstripe/restfulserver": "dev-master",
-		"league/oauth2-client": "0.10.*@dev"
+		"league/oauth2-client": "0.*"
     }
 }
