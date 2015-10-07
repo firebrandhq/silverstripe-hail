@@ -33,7 +33,7 @@ class HailTag extends HailApiObject {
 	public function importHailData($data) {
 		$this->Name = $data->name;
 		$this->Description = $data->description;
-		parent::importHailData($data);
+		return parent::importHailData($data);
 	}
 
 	public function getCMSFields( ) {
