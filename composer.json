@@ -1,4 +1,4 @@
-{
+	{
     "name": "firebrandhq/silverstripe-hail",
     "description": "Silverstripe plugin to integrate with Hail (https://get.hail.to)",
     "type": "silverstripe-module",
@@ -9,8 +9,8 @@
         "email": "developers@firebrand.nz"
     }],
     "require": {
-        "silverstripe/framework": ">=3.1.*",
-        "silverstripe/cms": ">=3.1.*",
+        "silverstripe/framework": "3.*",
+        "silverstripe/cms": "3.*",
         "firebrandhq/searchable-dataobjects": "dev-master",
         "silverstripe-australia/gridfieldextensions": "dev-master",
     	"undefinedoffset/sortablegridfield": "dev-master",
