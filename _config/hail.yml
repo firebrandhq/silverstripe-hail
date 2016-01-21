@@ -13,3 +13,4 @@ HailArticle:
 Director:
   rules:
     'HailCallbackController': 'HailCallbackController'
+    'HailShell': 'HailShell'
