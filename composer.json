@@ -17,6 +17,7 @@
     	"colymba/gridfield-bulk-editing-tools": "dev-master",
 		"nategood/httpful": "dev-master",
 		"silverstripe/restfulserver": "dev-master",
-		"league/oauth2-client": "0.*"
+		"league/oauth2-client": "0.*",
+		"silverstripe/queuedjobs": "~2.8"
     }
 }
