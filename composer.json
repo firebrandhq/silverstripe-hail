@@ -9,8 +9,8 @@
         "email": "developers@firebrand.nz"
     }],
     "require": {
-        "silverstripe/framework": "3.1.*",
-        "silverstripe/cms": "3.1.*",
+        "silverstripe/framework": "^3.1",
+        "silverstripe/cms": "^3.1",
         "firebrandhq/searchable-dataobjects": "dev-master",
         "silverstripe-australia/gridfieldextensions": "dev-master",
     	"undefinedoffset/sortablegridfield": "dev-master",
@@ -18,6 +18,6 @@
 		"nategood/httpful": "dev-master",
 		"silverstripe/restfulserver": "dev-master",
 		"league/oauth2-client": "0.*",
-		"silverstripe/queuedjobs": "~2.8"
+		"silverstripe/queuedjobs": "^2.8"
     }
 }
