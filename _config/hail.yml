@@ -10,3 +10,7 @@ SiteConfig:
 HailArticle:
   extensions:
     - SearchableDataObject
+Director:
+  rules:
+    'HailCallbackController': 'HailCallbackController'
+    'HailShell': 'HailShell'

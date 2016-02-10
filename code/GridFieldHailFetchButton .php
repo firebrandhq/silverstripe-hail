@@ -1,26 +1,26 @@
 <?php
 
 class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_ActionProvider, GridField_URLHandler {
-	
+
 	/**
 	 * Fragment to write the button to
 	 */
 	protected $targetFragment;
-	
+
 	public function __construct($targetFragment = "before") {
 		$this->targetFragment = $targetFragment;
 	}
-	
+
 	/**
 	 * Place the export button in a <p> tag below the field
 	 */
 	public function getHTMLFragments($gridField) {
-	
+
 		$button = new GridField_FormAction(
-			$gridField, 
-			'fetchhail', 
+			$gridField,
+			'fetchhail',
 			_t('Hail', 'Fetch'),
-			'fetchhail', 
+			'fetchhail',
 			null
 		);
 		//$button->setAttribute('data-icon', 'download-csv');
@@ -57,11 +57,11 @@ class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_Acti
  	 */
 	public function handleFetchHail($gridField, $request = null) {
 		$hailApiObject = singleton($gridField->getModelClass());
-		
-		//var_dump($hailApiObject);die();
-		
+
+		singleton('QueuedJobService')->queueJob(new DummyQueuedJob());
+
 		$hailApiObject->fetch();
-	
+
 		return;
 	}
 }
