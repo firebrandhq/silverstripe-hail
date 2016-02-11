@@ -63,7 +63,7 @@ class HailApiObject extends DataObject {
 			if (!$hailObj) {
 				$hailObj = new static();
 			}
-			$result = $hailObj->importHailData($hailData);						
+			$result = $hailObj->importHailData($hailData);
 			if ($result) {
 				//Build up Hail ID list
 				$hailIdList[] = $hailData->id;
@@ -90,17 +90,17 @@ class HailApiObject extends DataObject {
 
 	/**
 	 * Imports JSON data retrieve from the hail API. Return true if the value
-	 * should be saved to the database. False if it has been excluded. 
+	 * should be saved to the database. False if it has been excluded.
 	 *
 	 * @param StdClass $data JSON data from Hail
 	 * @return boolean
 	 */
 	protected function importHailData($data) {
-		
+
 		if($this->excluded($data)) {
 			return false;
 		}
-		
+
 		$dataMap = array_merge(
 			array('HailID' => 'id'),
 			static::apiMap()
@@ -118,22 +118,22 @@ class HailApiObject extends DataObject {
 		$this->write();
 		return true;
 	}
-	
+
 	/**
 	 * Determine if this object is to be exlucded based on the provided data (private tags).
-	 * 
+	 *
 	 * Can be extened from to exclude tags as required
-	 *  	 
-	 *	@param StdClass $data JSON data from Hail  
+	 *
+	 *	@param StdClass $data JSON data from Hail
 	 *  @return boolean
-	 */	
-	protected function excluded($data) {		
-		$results = $this->extend('excluded', $data);		
+	 */
+	protected function excluded($data) {
+		$results = $this->extend('excluded', $data);
 		if($results && is_array($results)) {
-		        if(max($results)) return true; 
+		        if(max($results)) return true;
 		        else return false;
 		}
-		
+
 		return false;
 	}
 

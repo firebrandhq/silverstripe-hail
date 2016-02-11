@@ -22,14 +22,14 @@ class HailShell extends Controller {
 		HailTag::fetch();
 
 		echo "Fetching Articles and article content.\n";
-		HailArticle::fetchAll();
+		HailArticle::fetch();
 
 		echo "Fetching Images.\n";
 		HailImage::fetch();
 
 		echo "Fetching Publications.\n";
 		HailPublication::fetch();
-		
+
 		echo "Fetching Videos.\n";
 		HailVideo::fetch();
 	}

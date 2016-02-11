@@ -37,10 +37,6 @@ class HailModelAdmin extends ModelAdmin {
 			->removeComponentsByType('GridFieldPrintButton')
 			->addComponent(new GridFieldHailFetchButton());
 
-		if ($this->modelClass=='HailArticle') {
-			$gridField->addComponent(new GridFieldHailFetchArticlesButton());
-		}
-
 		return $form;
 	}
 
