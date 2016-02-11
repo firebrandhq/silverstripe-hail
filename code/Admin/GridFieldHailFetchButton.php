@@ -56,12 +56,6 @@ class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_Acti
 	 * Handle the export, for both the action button and the URL
  	 */
 	public function handleFetchHail($gridField, $request = null) {
-		$hailApiObject = singleton($gridField->getModelClass());
-
-		singleton('QueuedJobService')->queueJob(new DummyQueuedJob());
-
-		$hailApiObject->fetch();
-
-		return;
+		singleton('QueuedJobService')->queueJob(new HailFetchQueueJob($gridField->getModelClass()));
 	}
 }
