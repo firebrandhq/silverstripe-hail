@@ -35,7 +35,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 		'Location' => 'Varchar',
 		'Status' => 'Varchar',
 
-		'Created' => 'Date',
+		'Created' => 'Datetime',
+		'Updated' => 'Datetime',
 		'Rating' => 'Double',
 		'Flagged' => 'Boolean'
 	);
