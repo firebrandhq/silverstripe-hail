@@ -48,7 +48,7 @@ class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_Acti
 
 	public function handleAction(GridField $gridField, $actionName, $arguments, $data) {
 		if($actionName == 'fetchhail') {
-			return $this->handleFetchHail($gridField);
+			return $this->handleFetchHail($gridField, $data);
 		}
 	}
 
@@ -64,7 +64,25 @@ class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_Acti
 	/**
 	 * Handle the export, for both the action button and the URL
  	 */
-	public function handleFetchHail($gridField, $request = null) {
+	public function handleFetchHail($gridField, $data, $request = null) {
+		// Shchedule the job
 		singleton('QueuedJobService')->queueJob(new HailFetchQueueJob($gridField->getModelClass()));
+
+		// Set a message so the smelly user isn't confused as fuck
+		$form = $gridField->getForm();
+		$form->sessionMessage(
+			_t(
+				'Hail',
+				'{type} will be fetched momentarily. Please allow at least 30 minutes for this backgroud process to complete.',
+				['type' => singleton($gridField->getModelClass())->i18n_plural_name()]
+			),
+			'good'
+		);
+
+		// Redirect the user
+		$controller = Controller::curr();
+		$noActionURL = $controller->removeAction($data['url']);
+		return $controller->redirect($noActionURL, 302);
+
 	}
 }
