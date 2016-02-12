@@ -46,11 +46,10 @@ class HailFetchQueueJob extends AbstractQueuedJob implements QueuedJob
         // needed due to quirks with __set
         $times[] = date('Y-m-d H:i:s');
         $this->times = $times;
-        $this->addMessage('Mt Object type is' . $this->hailObjectType);
 
-        // call_user_func($this->hailObjectType . '::fetch()');
         $hailApiObject = singleton($this->hailObjectType);
         $hailApiObject->fetch();
+        $this->addMessage('Done');
 
         $this->isComplete = true;
     }
