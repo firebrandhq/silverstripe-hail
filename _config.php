@@ -1,3 +1,4 @@
 <?php
 
-#Config::inst()->update('HailArticle', 'create_table_options', array('MySQLDatabase' => 'ENGINE=MyISAM'));
+define('HAIL_DIR', 'silverstripe-hail');
+define('HAIL_PATH', BASE_PATH . '/' . CMS_DIR);
