@@ -16,15 +16,24 @@ class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_Acti
 	 */
 	public function getHTMLFragments($gridField) {
 
+
+		$btnLabel = _t(
+			'Hail',
+			'Fetch {type}',
+			['type' => singleton($gridField->getModelClass())->i18n_plural_name()]
+		);
+
 		$button = new GridField_FormAction(
 			$gridField,
 			'fetchhail',
-			_t('Hail', 'Fetch'),
+			$btnLabel,
 			'fetchhail',
 			null
 		);
-		//$button->setAttribute('data-icon', 'download-csv');
-		//$button->addExtraClass('no-ajax');
+
+		$button->setAttribute('data-icon', 'fetchHail');
+		// $button->addExtraClass('ss-ui-action-constructive');
+
 		return array(
 			$this->targetFragment => $button->Field(),
 		);
