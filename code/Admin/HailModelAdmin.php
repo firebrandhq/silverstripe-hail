@@ -25,6 +25,8 @@ class HailModelAdmin extends ModelAdmin {
 
 	public function getEditForm($id = null, $fields = null) {
 
+		Requirements::css(HAIL_DIR . '/css/admin.css');
+
 		$form = parent::getEditForm($id, $fields);
 
 		$gridFieldName = $this->sanitiseClassName($this->modelClass);
@@ -35,7 +37,7 @@ class HailModelAdmin extends ModelAdmin {
 			->removeComponentsByType('GridFieldDeleteAction')
 			->removeComponentsByType('GridFieldExportButton')
 			->removeComponentsByType('GridFieldPrintButton')
-			->addComponent(new GridFieldHailFetchButton());
+			->addComponent(new GridFieldHailFetchButton('buttons-before-left'));
 
 		return $form;
 	}
