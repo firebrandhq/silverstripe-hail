@@ -73,6 +73,15 @@ class HailApiObject extends DataObject {
 		static::get()->exclude('HailID', $hailIdList)->removeAll();
 	}
 
+    /**
+     * Return a list of all the subclasses of HailApiObject that can be fetch from Hail.
+     * @return string[]
+     */
+    public static function fetchables()
+    {
+        return ['HailArticle', 'HailImage', 'HailPublication', 'HailTag', 'HailVideo'];
+    }
+
 	/**
 	 * Returns the name of the HailApiObject this class represents.
 	 *
