@@ -89,7 +89,6 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         $this->processAttachments($data->attachments);
 
         // TODO: Generate Unique URL handler
-        //var_dump($data);
     }
 
     protected static function apiMap() {
@@ -129,7 +128,11 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
         // Remove old tag that are currently assigned to this article,
         // but have not been returned this time around
-        $this->Tags()->exclude('HailID', $tagIdList)->removeAll();
+        if ($tagIdList) {
+            $this->Tags()->exclude('HailID', $tagIdList)->removeAll();
+        } else {
+            $this->Tags()->removeAll();
+        }
     }
 
     // Match the hero image if there's one
@@ -186,7 +189,13 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
         // Remove old attachments that are currently assigned to this article,
         // but have not been returned this time around
-        $this->Attachments()->exclude('HailID', $idList)->removeAll();
+        if ($idList) {
+            $this->Attachments()->exclude('HailID', $idList)->removeAll();
+        } else {
+            // If there's no attachements, just remove everything.
+            $this->Attachments()->removeAll();
+        }
+
     }
 
 
@@ -246,7 +255,11 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         }
 
         // Remove images that are no longer assign to this article
-        $this->ImageGallery()->exclude('HailID', $hailIdList)->removeAll();
+        if ($hailIdList) {
+            $this->ImageGallery()->exclude('HailID', $hailIdList)->removeAll();
+        } else {
+            $this->ImageGallery()->removeAll();
+        }
     }
 
     /**
@@ -278,7 +291,11 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         }
 
         // Remove images that are no longer assign to this article
-        $this->VideoGallery()->exclude('HailID', $hailIdList)->removeAll();
+        if ($hailIdList) {
+            $this->VideoGallery()->exclude('HailID', $hailIdList)->removeAll();
+        } else {
+            $this->VideoGallery()->removeAll();
+        }
     }
 
     public function forTemplate() {
