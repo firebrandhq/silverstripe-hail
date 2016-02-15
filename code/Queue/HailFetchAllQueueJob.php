@@ -36,16 +36,7 @@ class HailFetchAllQueueJob extends AbstractQueuedJob implements QueuedJob
         // just demonstrating how to get a job going...
         // $this->totalSteps = $this->startNumber;
         $this->times = array();
-        $this->totalSteps = sizeof($this->getHailObjectTypes());
-    }
-
-    /**
-     * Return a list of various subclasses of HailApiObject that can be fetched
-     * @return string[]
-     */
-    protected function getHailObjectTypes()
-    {
-        return ['HailArticle', 'HailImage', 'HailPublication', 'HailTag', 'HailVideo'];
+        $this->totalSteps = sizeof(HailApiObject::fetchables());
     }
 
     public function process()
@@ -55,12 +46,12 @@ class HailFetchAllQueueJob extends AbstractQueuedJob implements QueuedJob
         $times[] = date('Y-m-d H:i:s');
         $this->times = $times;
 
-        $hailObjTypes = $this->getHailObjectTypes();
+        $hailObjTypes = HailApiObject::fetchables();
         $hailObjType = $hailObjTypes[$this->currentStep];
 
 
         $this->addMessage("Fetching $hailObjType");
-        $hailApiObject = singleton($this->getHailObjectTypes()[$this->currentStep]);
+        $hailApiObject = singleton($hailObjType);
         $hailApiObject->fetch();
 
         $this->currentStep++;
