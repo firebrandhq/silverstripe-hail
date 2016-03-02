@@ -387,4 +387,17 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
         return $this->HeroImage();
     }
+
+    /**
+     * List of the tag IDs associated to this article seperated by spaces. Suitable to be used as CSS classes.
+     * @return string
+     */
+    public function TagList()
+    {
+        $string = '';
+        foreach ($this->Tags() as $t) {
+            $string .= $t->HailID . ' ';
+        }
+        return trim($string);
+    }
 }
