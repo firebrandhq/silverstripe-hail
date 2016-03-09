@@ -389,6 +389,21 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     }
 
     /**
+     * Whatever the HeroImage is in the Gallery. Will return false if there's no HeroImage at all.
+     *
+     * @return boolean
+     */
+    public function HeroImageInGallery()
+    {
+        $img = $this->HeroImage();
+        if ($img && $img->ID > 0) {
+            return $this->ImageGallery()->where('HailID', $img->HailID)->count() > 0;
+        }
+
+        return false;
+    }
+
+    /**
      * List of the tag IDs associated to this article seperated by spaces. Suitable to be used as CSS classes.
      * @return string
      */
@@ -400,4 +415,5 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         }
         return trim($string);
     }
+
 }
