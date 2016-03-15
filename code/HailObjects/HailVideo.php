@@ -242,9 +242,13 @@ class HailVideo extends HailApiObject {
 			case 'youtube':
 				return '//www.youtube.com/watch?v=' . $this->ServiceData;
 				break;
+			case 'vimeo':
+				return '//vimeo.com/' . $this->ServiceData;
+				break;
 			default:
 				return $this->ServiceData;
 		}
 	}
+
 
 }

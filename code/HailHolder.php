@@ -237,4 +237,15 @@ class HailHolder_Controller extends Page_Controller {
 		}
 	}
 
+	/**
+	 * Return the title, description, keywords and language metatags.
+	 *
+	 * @param bool $includeTitle Show default <title>-tag, set to false for custom templating
+	 * @return string The XHTML metatags
+	 */
+	public function MetaTags($includeTitle = true) {
+		$this->dataRecord->MetaDescription = $this->getMetaDescription();
+		return $this->dataRecord->MetaTags($includeTitle);
+	}
+
 }
