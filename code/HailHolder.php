@@ -83,6 +83,12 @@ class HailHolder_Controller extends Page_Controller {
 		'article/$ID' => 'hailarticle'
 	);
 
+	public function init() {
+		parent::init();
+		Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jquery-dateFormat.min.js');
+		Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'hail.js');
+	}
+
 	/**
 	 * Action to list the {@link HailArticle} in a specific {@link HailList}
 	 *
