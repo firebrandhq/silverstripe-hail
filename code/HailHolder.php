@@ -28,7 +28,7 @@ class HailHolder extends Page {
 		$config = GridFieldConfig_RecordEditor::create();
 
 		$addButton = new GridFieldAddNewMultiClass();
-		$addButton->setClasses(self::getHailListClasses());
+		$addButton->setClasses(HailList::getSubClasses());
 		$config->addComponent($addButton)->removeComponentsByType('GridFieldAddNewButton');
 
 
@@ -54,10 +54,6 @@ class HailHolder extends Page {
 				}
 			}
 		}
-	}
-
-	private static function getHailListClasses() {
-		return ClassInfo::subclassesFor('HailList');
 	}
 }
 
