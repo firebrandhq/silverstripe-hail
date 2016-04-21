@@ -2,13 +2,13 @@
 
 /**
  * Sets twitter configuration in the SiteConfig
- * 
+ *
  * @author Damian Mooyman
- * 
+ *
  * @package twitter
  */
 class HailLoginExtension extends DataExtension {
-	
+
 	private static $db = array(
 		'HailClientID' => 'Varchar(255)',
 		'HailClientSecret' => 'Varchar(255)',
@@ -18,29 +18,29 @@ class HailLoginExtension extends DataExtension {
 		'HailRedirectCode' => 'Varchar(255)',
 		'HailUserID' => 'Varchar(255)',
 		'HailOrgID' => 'Varchar(255)',
-		
+
 	);
-	
+
 	private static $has_one = array(
 		'PrimaryHailHolder' => 'HailHolder'
 	);
-	
+
 	public function updateCMSFields(FieldList $fields) {
 		$redirectUrl = HailProvider::getRedirectUri();
-		
+
 		$redirectField = new TextField('RedirectURL', 'Redirect URL', $redirectUrl);
 		$redirectField->setReadonly(true);
-		
-		
+
+
 		// Twitter setup
 		$fields->addFieldsToTab('Root.Hail', array(
 			new TextField('HailClientID', 'Client ID', null, 255),
 			new TextField('HailClientSecret', 'Client Secret', null, 255),
 			$redirectField
 		));
-		
+
 		$siteconfig = SiteConfig::current_site_config();
-		
+
 		if(HailProvider::isReadyToAuthorised()) {
 			$provider = new HailProvider();
 
@@ -61,8 +61,9 @@ class HailLoginExtension extends DataExtension {
 		} catch(HailApiException $ex) {
 			$fields->addFieldsToTab('Root.Hail', new LiteralField('Retry', 'You Have to Re-Authorise SilverStripe to Access Hail'));
 		}
-		
+
 		$holderField = DropdownField::create('PrimaryHailHolderID', 'Primary Hail Holder', HailHolder::get()->map('ID', 'Title'));
+		$$holderField->setEmptyString('(None)');
 		$fields->addFieldsToTab('Root.Hail', $holderField);
 	}
 }
