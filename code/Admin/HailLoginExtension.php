@@ -63,7 +63,7 @@ class HailLoginExtension extends DataExtension {
 		}
 
 		$holderField = DropdownField::create('PrimaryHailHolderID', 'Primary Hail Holder', HailHolder::get()->map('ID', 'Title'));
-		$$holderField->setEmptyString('(None)');
+		$holderField->setEmptyString('(None)');
 		$fields->addFieldsToTab('Root.Hail', $holderField);
 	}
 }
