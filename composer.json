@@ -19,5 +19,8 @@
 		"silverstripe/restfulserver": "dev-master",
 		"league/oauth2-client": "0.*",
 		"silverstripe/queuedjobs": "^2.8"
+    },
+    "extra": {
+	   "installer-name": "hail"
     }
 }
