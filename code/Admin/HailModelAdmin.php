@@ -1,7 +1,7 @@
 <?php
 
 class HailModelAdmin extends ModelAdmin {
-	private static $menu_icon = 'silverstripe-hail/images/admin-icon.png';
+	private static $menu_icon = 'hail/images/admin-icon.png';
 	private static $menu_title = 'Hail integration';
 	private static $url_segment = 'hail'; // Linked as /admin/products/
 
