@@ -14,18 +14,7 @@
 * Access to create cronjob
 
 ## Installation
-Add the following entry to your ocmposer.json file:
-
-```js
-"repositories": [
-	{
-		"type": "composer",
-		"url": "https://satis.extranet.firebrand.nz"
-	}
-]
-```
-
-Then run the following command:
+Run the following command:
 
 ```sh
 composer require firebrandhq/silverstripe-hail "1.*"
