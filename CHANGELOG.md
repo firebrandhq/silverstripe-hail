@@ -5,6 +5,7 @@
 * Corrected typos in the README.
 * Change to the change log to focus on tags rather than dates.
 
+# Tag 1.0.7
 
 ## Thursday April 21th
 * Make specify a HailHolder in the SiteConfig optional.
