@@ -3,6 +3,9 @@
  * A Gridfiled button that allows a user to download a {@link HailAttachment} from the Silverstripe backend.
  *
  * @package Hail\Admin
+ * @author Maxime Rainville <max@firebrand.nz>
+ * @license <https://raw.githubusercontent.com/firebrandhq/silverstripe-hail/dev/LICENSE> The MIT License (MIT)
+ * @copyright 2016 Firebrand Limited
  */
 class GridFieldHailAttachmentDownloadButton extends GridFieldViewButton
 {

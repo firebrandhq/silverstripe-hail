@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * This GridField button is designed to be displayed above a GridField listing a specific type of {@link HailApiObjects}.
+ *
+ * Once clicked, it will schedule a new {@link HailFetchQueueJob} to run to fetch {@link HailApiObjects} from Hail.
+ *
+ * This Gridfield Component is used by {@link HailModelAdmin}.
+ *
+ * @package Hail\Admin
+ * @author Maxime Rainville <max@firebrand.nz>
+ * @license <https://raw.githubusercontent.com/firebrandhq/silverstripe-hail/dev/LICENSE> The MIT License (MIT)
+ * @copyright 2016 Firebrand Limited
+ */
 class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_ActionProvider, GridField_URLHandler
 {
     /**

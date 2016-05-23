@@ -2,7 +2,9 @@
 
 ## Monday May 23rd
 * Running php-cs-fixer on all the source code to make it as PSR compliant as possible.
-* Tweaking the class doc for GridFieldHailFetchButton
+* Tweaking the class doc for GridFieldHailAttachmentDownloadButton
+* Adding Class PHP doc to GridFieldHailFetchButton.
+* Adding license, author and copyright to GridFieldHailFetchButton and GridFieldHailAttachmentDownloadButton.
 
 # Tag 1.0.8
 
