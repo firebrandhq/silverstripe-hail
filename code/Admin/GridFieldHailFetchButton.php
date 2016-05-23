@@ -73,7 +73,7 @@ class GridFieldHailFetchButton implements GridField_HTMLProvider, GridField_Acti
 		$form->sessionMessage(
 			_t(
 				'Hail',
-				'{type} will be fetched momentarily. Please allow at least 30 minutes for this backgroud process to complete.',
+				'{type} will be fetched momentarily. Please allow at least 30 minutes for this background process to complete.',
 				['type' => singleton($gridField->getModelClass())->i18n_plural_name()]
 			),
 			'good'
