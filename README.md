@@ -1,4 +1,4 @@
-# SilverStripe Queued Jobs Module
+# SilverStripe Hail Integration
 
 ## Requirements
 
@@ -21,39 +21,39 @@ composer require firebrandhq/silverstripe-hail "1.*"
 ```
 
 ## Configuring access to Hail
-* Log in to the back end of Silverstripe and go to Settings > Hail
-* In a separate browser tab, log in to your Hail Account and go to Account > Manage Developer Settings
+* Log in to the back end of Silverstripe and go to _Settings > Hail_.
+* In a separate browser tab, log in to your Hail Account and go to _Account > Manage Developer Settings_.
   * Add a new application
   * Report the _client_id_ and _client_secret_ into the SilverStripe settings and save.
-* In the Hail Application Developer settings, you must register which URLs will be used to callback SIlverStripe.
+* In the Hail Application Developer settings, you must register which URLs will be used to callback SilverStripe.
   * In Hail, click the _Add new_ button in the _URI_ section of your Application's _developer settings_ page
   * In SilverStripe, copy _Redirect URL_ (e.g.: http://example.com/HailCallbackController) and paste that value in Hail.
-* You'll want to repeat the previous step for all the environments your those developer credentials will be used.
+* You'll want to repeat the previous step for all the environments those API credentials will be used.
 * In the SilverStripe Hail Settings page, you should now be able to click the _Authorise SilverSrtipe to access Hail_ link.
   * This will redirect you to Hail, where you can authorise SilverStripe to access Hail. Just follow the steps.
 * After authorising Hail, you can select an Organisation from which the content will be fetch in the SilverStripe Hail Settings.
 
 ### Defining a default HailHolder
-Hail Holder pages are used to display your Hail Content. You can define multiple Hail Holders for you site and personalise them to display different content.
+Hail Holder pages are used to display your Hail Content. You can define multiple Hail Holders for your site and personalise them to display different content.
 
-However, your Hail Content doesn't belong to any specific pages in SilverStripe. So in some context, SilverStripe won't know under which Hail Holder some articles need to be displayed. E.g: If a Hail Page is return in search results.
+However, your Hail Content doesn't belong to any specific pages in SilverStripe. So in some context, SilverStripe won't know under which Hail Holder the articles need to be displayed. E.g: If a Hail Page is return in search results.
 
 In the Hail Settings page of your SilverStripe site, you can choose a default HailHolder used to display Hail Harticle.
 
 ## Configuring Cronjob to fetch Hail Content
-Fetching HailContent can be quite a long process if you have a lots of article. To simplify this process, several background task have been created, however they require a few appropriate cron jobs to be defined.
+Fetching HailContent can be quite a long process if you have a lots of article. To simplify this process, several background task have been created. However, they require a few appropriate cronjobs to be defined.
 
-The following instructions assumes your site is running in Apache on an Ubuntu/Debian system, but it should be similar on most other \*nix system.
+The following instructions assumed your site is running in Apache on an Ubuntu/Debian system, but it should be similar on most other \*nix system.
 
 To edit your crontab use the following command:
 ```
 sudo crontab -u www-data -e
 ```
 
-This will configure your cronjob to run under as the web server user. This has the benefit of avoiding potential file conflicts.
+This will configure your cronjob to run under the web server user. This has the benefit of avoiding potential file conflicts.
 
 ### Periodic automatic full fetch
-A specific dev task (HailFetchTask) as been created to fetch all your Hail content. You can access this task in your browser (e.g.: http://example.com/dev/tasks/HailFetchTask) however this request is likely to timeout. In most cases you'll want to schedule a regular cronjob to refresh your content.
+A specific dev task (HailFetchTask) has been created to fetch all your Hail content. You can access this task in your browser (e.g.: http://example.com/dev/tasks/HailFetchTask) however this request is likely to timeout. In most cases, you will want to schedule a regular cronjob to refresh your content.
 
 Add the following entry to your crontab:
 ```

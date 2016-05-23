@@ -1,5 +1,6 @@
 # Monday May 23rd
 * Corrected typo in GridFieldHailFetchButton message.
+* Corrected typos in the README.
 
 
 # Thursday April 21th
