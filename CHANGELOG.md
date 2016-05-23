@@ -1,3 +1,9 @@
+# Tag 1.0.9
+
+## Monday May 23rd
+* Running php-cs-fixer on all the source code to make it as PSR compliant as possible.
+* Tweaking the class doc for GridFieldHailFetchButton
+
 # Tag 1.0.8
 
 ## Monday May 23rd

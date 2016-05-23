@@ -1,6 +1,8 @@
 <?php
 /**
  * A Gridfiled button that allows a user to download a {@link HailAttachment} from the Silverstripe backend.
+ *
+ * @package Hail\Admin
  */
 class GridFieldHailAttachmentDownloadButton extends GridFieldViewButton
 {
