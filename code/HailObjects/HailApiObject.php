@@ -3,78 +3,78 @@
 /**
  * Abtract representation of an Hail Api object.
  *
- * @package hail
  * @author Maxime Rainville, Firebrand
+ *
  * @version 1.0
  *
  * @property string HailID Unique identifier from Hail
  * @property Datetime Fetched Last time we got a copy of this object from Hail
  */
+class HailApiObject extends DataObject
+{
+    // Make HailApiObject accessible via SilverStripe Restful API
+    private static $api_access = true;
 
-class HailApiObject extends DataObject {
+    // Make sure we index our HailID to make search quicker
+    private static $indexes = array(
+        'HailID' => true,
+    );
 
-	// Make HailApiObject accessible via SilverStripe Restful API
-	private static $api_access = true;
+    private static $db = array(
+        'HailID' => 'Varchar',
+        'Fetched' => 'Datetime',
+    );
 
-	// Make sure we index our HailID to make search quicker
-	private static $indexes = array(
-		'HailID' => true
-	);
+    private static $summary_fields = array(
+        'HailID',
+        'Fetched',
+    );
 
+    public function __construct($record = null, $isSingleton = false, $model = null)
+    {
+        parent::__construct($record, $isSingleton, $model);
 
-	private static $db = array(
-		'HailID' => 'Varchar',
-		'Fetched' => 'Datetime'
-	);
+        // Automate the refresh of hail object
+        if (!$isSingleton) {
+            $this->softRefresh();
+        }
+    }
 
-	private static $summary_fields = array(
-		'HailID',
-		'Fetched'
-	);
+    /**
+     * Retrieves all Hail Api Object of a specific type.
+     */
+    public static function fetch()
+    {
+        try {
+            $list = HailApi::getList(static::getObjectType());
+        } catch (HailApiException $ex) {
+            Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+            die($ex->getMessage());
 
-	public function __construct($record = null, $isSingleton = false, $model = null) {
-		parent::__construct($record, $isSingleton, $model);
+            return;
+        }
 
-		// Automate the refresh of hail object
-		if (!$isSingleton) {
-			$this->softRefresh();
-		}
-	}
+        $hailIdList = array();
 
-	/**
-	 * Retrieves all Hail Api Object of a specific type
-	 *
-	 * @return void
-	 */
-	public static function fetch() {
-		try {
-			$list = HailApi::getList(static::getObjectType());
-		} catch (HailApiException $ex) {
-			Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
-			die($ex->getMessage());
-			return;
-		}
-
-		$hailIdList = array();
-
-		foreach($list as $hailData) {
-			// Check if we can find an existing item.
-			$hailObj = static::get()->filter(array('HailID' => $hailData->id))->First();
-			if (!$hailObj) {
-				$hailObj = new static();
-			}
-			$result = $hailObj->importHailData($hailData);
-			if ($result) {
-				//Build up Hail ID list
-				$hailIdList[] = $hailData->id;
-			}
-		}
-		//Remove all object for which we don't have reference
-		static::get()->exclude('HailID', $hailIdList)->removeAll();
-	}
+        foreach ($list as $hailData) {
+            // Check if we can find an existing item.
+            $hailObj = static::get()->filter(array('HailID' => $hailData->id))->First();
+            if (!$hailObj) {
+                $hailObj = new static();
+            }
+            $result = $hailObj->importHailData($hailData);
+            if ($result) {
+                //Build up Hail ID list
+                $hailIdList[] = $hailData->id;
+            }
+        }
+        //Remove all object for which we don't have reference
+        static::get()->exclude('HailID', $hailIdList)->removeAll();
+    }
 
     /**
      * Return a list of all the subclasses of HailApiObject that can be fetch from Hail.
+     *
      * @return string[]
      */
     public static function fetchables()
@@ -82,226 +82,248 @@ class HailApiObject extends DataObject {
         return ['HailArticle', 'HailImage', 'HailPublication', 'HailTag', 'HailVideo'];
     }
 
-	/**
-	 * Returns the name of the HailApiObject this class represents.
-	 *
-	 * This method needs to be overwritten on children of HailApiObject.
-	 *
-	 * It should never be called directly on HailApiObject. It will throw a
-	 * {@link HailApiException} if called directly.
-	 *
-	 * @return string Name of the hail object
-	 */
-	protected static function getObjectType() {
-		throw new HailApiException('getObjectType() must be redefined in overwritten in children class of HailApiObject.');
-	}
+    /**
+     * Returns the name of the HailApiObject this class represents.
+     *
+     * This method needs to be overwritten on children of HailApiObject.
+     *
+     * It should never be called directly on HailApiObject. It will throw a
+     * {@link HailApiException} if called directly.
+     *
+     * @return string Name of the hail object
+     */
+    protected static function getObjectType()
+    {
+        throw new HailApiException('getObjectType() must be redefined in overwritten in children class of HailApiObject.');
+    }
 
+    /**
+     * Imports JSON data retrieve from the hail API. Return true if the value
+     * should be saved to the database. False if it has been excluded.
+     *
+     * @param StdClass $data JSON data from Hail
+     *
+     * @return bool
+     */
+    protected function importHailData($data)
+    {
+        if ($this->excluded($data)) {
+            return false;
+        }
 
-	/**
-	 * Imports JSON data retrieve from the hail API. Return true if the value
-	 * should be saved to the database. False if it has been excluded.
-	 *
-	 * @param StdClass $data JSON data from Hail
-	 * @return boolean
-	 */
-	protected function importHailData($data) {
+        $dataMap = array_merge(
+            array('HailID' => 'id'),
+            static::apiMap()
+        );
 
-		if($this->excluded($data)) {
-			return false;
-		}
+        foreach ($dataMap as $ssKey => $hailKey) {
+            $this->$ssKey = empty($data->$hailKey) ? '' : $data->$hailKey;
+        }
+        $this->Fetched = date('Y-m-d H:i:s');
 
-		$dataMap = array_merge(
-			array('HailID' => 'id'),
-			static::apiMap()
-		);
+        $this->write();
 
-		foreach ($dataMap as $ssKey => $hailKey) {
-			$this->$ssKey = empty($data->$hailKey) ? '' : $data->$hailKey;
-		}
-		$this->Fetched = date("Y-m-d H:i:s");
+        $this->importing($data);
 
-		$this->write();
+        $this->write();
 
-		$this->importing($data);
+        return true;
+    }
 
-		$this->write();
-		return true;
-	}
+    /**
+     * Determine if this object is to be exlucded based on the provided data (private tags).
+     *
+     * Can be extened from to exclude tags as required
+     *
+     *	@param StdClass $data JSON data from Hail
+     *
+     *  @return bool
+     */
+    protected function excluded($data)
+    {
+        $results = $this->extend('excluded', $data);
+        if ($results && is_array($results)) {
+            if (max($results)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
-	/**
-	 * Determine if this object is to be exlucded based on the provided data (private tags).
-	 *
-	 * Can be extened from to exclude tags as required
-	 *
-	 *	@param StdClass $data JSON data from Hail
-	 *  @return boolean
-	 */
-	protected function excluded($data) {
-		$results = $this->extend('excluded', $data);
-		if($results && is_array($results)) {
-		        if(max($results)) return true;
-		        else return false;
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Allows children class to provide an import map to import scalar values
+     * from hail. Must return an array where the keys are the name of the
+     * property on the HailApiObject and the value is the name of the value on
+     * the Hail JSON response.
+     *
+     * * @return array
+     */
+    protected static function apiMap()
+    {
+        return array();
+    }
 
-	/**
-	 * Allows children class to provide an import map to import scalar values
-	 * from hail. Must return an array where the keys are the name of the
-	 * property on the HailApiObject and the value is the name of the value on
-	 * the Hail JSON response.
-	 *
-	 * * @return array
-	 */
-	protected static function apiMap() {
-		return array();
-	}
+    /**
+     * Retrieve the latest version of this object if it's outdated.
+     *
+     * @return HailApiObject
+     */
+    public function softRefresh()
+    {
+        if ($this->outdated() && $this->HailID) {
+            $this->refresh();
+        }
 
-	/**
-	 * Retrieve the latest version of this object if it's outdated.
-	 *
-	 * @return HailApiObject
-	 */
-	public function softRefresh() {
-		if ($this->outdated() && $this->HailID) {
-			$this->refresh();
-		}
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Determines if a fetched date is outdated.
-	 *
-	 * @param mixed $fetched Date to evaluate.
-	 * @return boolean
-	 */
-	public static function isOutdated($fetched) {
-		if ($fetched) {
-			// Check if $fetched is an object
-			if (!is_object($fetched)) {
-				$dateime = new SS_Datetime();
-				$dateime->setValue($fetched);
-				$fetched = $dateime;
-			}
+    /**
+     * Determines if a fetched date is outdated.
+     *
+     * @param mixed $fetched Date to evaluate.
+     *
+     * @return bool
+     */
+    public static function isOutdated($fetched)
+    {
+        if ($fetched) {
+            // Check if $fetched is an object
+            if (!is_object($fetched)) {
+                $dateime = new SS_Datetime();
+                $dateime->setValue($fetched);
+                $fetched = $dateime;
+            }
 
-			if ($fetched->TimeDiff() > HailApi::getRefreshRate()) {
-				return true;
-			}
-			return false;
-		}
+            if ($fetched->TimeDiff() > HailApi::getRefreshRate()) {
+                return true;
+            }
 
-		return true;
-	}
+            return false;
+        }
 
-	/**
-	 * Determines if this object is outdated and needs to be refreshed.
-	 *
-	 * @return boolean
-	 */
-	public function outdated() {
-		return $this->isOutdated($this->Fetched);
-	}
+        return true;
+    }
 
-	/**
-	 * Retrieves the latest version of this object whatever it's outdated or not.
-	 *
-	 * @return HailApiObject
-	 */
-	public function refresh() {
-		if ($this->ID && $this->HailID) {
-			try {
-				$data = HailApi::getOne(static::getObjectType(), $this->HailID);
-			} catch (HailApiException $ex) {
-				Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
-				return $this;
-			}
+    /**
+     * Determines if this object is outdated and needs to be refreshed.
+     *
+     * @return bool
+     */
+    public function outdated()
+    {
+        return $this->isOutdated($this->Fetched);
+    }
 
-			$this->importHailData($data);
-			$this->refreshing();
-		}
+    /**
+     * Retrieves the latest version of this object whatever it's outdated or not.
+     *
+     * @return HailApiObject
+     */
+    public function refresh()
+    {
+        if ($this->ID && $this->HailID) {
+            try {
+                $data = HailApi::getOne(static::getObjectType(), $this->HailID);
+            } catch (HailApiException $ex) {
+                Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
 
-		return $this;
-	}
+                return $this;
+            }
 
-	/**
-	 * Is called by {@link refresh()} to allow children classes to perform extra action.
-	 *
-	 * @return void
-	 */
-	protected function refreshing() {}
+            $this->importHailData($data);
+            $this->refreshing();
+        }
 
-	/**
-	 * Is called by {@link importHailData()} to allow children classes to perform additional data assignement
-	 *
-	 * @param StdClass $data JSON data from Hail
-	 * @return void
-	 */
-	protected function importing($data) {}
+        return $this;
+    }
 
-	public function canView($member = false) {
-		// Always allow users to view HailApiObject.
-		// This needs to be true to allow HailApiObject to be return via the
-		// SilverStripe Restful web service
-		return true;
-	}
+    /**
+     * Is called by {@link refresh()} to allow children classes to perform extra action.
+     */
+    protected function refreshing()
+    {
+    }
 
-	// We don't want smelly users to start deleting HailApiObjects
-	// This is only allow to happen programmaticaly
-	function canDelete($member = false) {
-		return false;
-	}
+    /**
+     * Is called by {@link importHailData()} to allow children classes to perform additional data assignement.
+     *
+     * @param StdClass $data JSON data from Hail
+     */
+    protected function importing($data)
+    {
+    }
 
-	// We don't want smelly users to start creating HailApiObjects
-	// This is only allow to happen programmaticaly
-	function canCreate($member = false) {
-		return false;
-	}
+    public function canView($member = false)
+    {
+        // Always allow users to view HailApiObject.
+        // This needs to be true to allow HailApiObject to be return via the
+        // SilverStripe Restful web service
+        return true;
+    }
 
-	// Make all fields readonly
-	// We don't want to overrite canEdit to always return false, otherwise our
-	// Record viewer will look ugly.
-	public function getCMSFields( ) {
-		$fields = parent::getCMSFields();
-		$this->makeFieldReadonly($fields);
-		return $fields;
-	}
+    // We don't want smelly users to start deleting HailApiObjects
+    // This is only allow to happen programmaticaly
+    public function canDelete($member = false)
+    {
+        return false;
+    }
 
-	// Recursively go through all our fields and turn them off.
-	private function makeFieldReadonly($fields) {
-		if ($fields->children) {$fields = $fields->children;}
+    // We don't want smelly users to start creating HailApiObjects
+    // This is only allow to happen programmaticaly
+    public function canCreate($member = false)
+    {
+        return false;
+    }
 
-		foreach($fields as $i => $item) {
-			if($item->isComposite()) {
-				$this->makeFieldReadonly($item);
-			} else {
-				$fields->replaceField($item->getName(), $item->transform(new ReadonlyTransformation()));
-			}
-		}
-		$fields->sequentialSet = null;
-	}
+    // Make all fields readonly
+    // We don't want to overrite canEdit to always return false, otherwise our
+    // Record viewer will look ugly.
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+        $this->makeFieldReadonly($fields);
 
+        return $fields;
+    }
 
-	/**
-	 * Helper function to help children class add GridFieldView to display
-	 * their relations to other HailApiObject
-	 *
-	 * @param FieldList $fields
-	 * @param string $name Name that should be given to the GridFieldView
-	 * @param ManyManyList $relation Relation to display
-	 * @return void
-	 */
-	protected function makeRecordViewer($fields, $name, $relation, $viewComponent = 'GridFieldHailViewButton') {
+    // Recursively go through all our fields and turn them off.
+    private function makeFieldReadonly($fields)
+    {
+        if ($fields->children) {
+            $fields = $fields->children;
+        }
 
-		$config = GridFieldConfig_RecordViewer::create();
+        foreach ($fields as $i => $item) {
+            if ($item->isComposite()) {
+                $this->makeFieldReadonly($item);
+            } else {
+                $fields->replaceField($item->getName(), $item->transform(new ReadonlyTransformation()));
+            }
+        }
+        $fields->sequentialSet = null;
+    }
 
-		// Remove the standard GridFieldView button and replace it with our
-		// custom button that will link to our the right action in our HailModelAdmin
-		$config->removeComponentsByType('GridFieldViewButton');
-		$config->addComponents(new $viewComponent());
+    /**
+     * Helper function to help children class add GridFieldView to display
+     * their relations to other HailApiObject.
+     *
+     * @param FieldList    $fields
+     * @param string       $name     Name that should be given to the GridFieldView
+     * @param ManyManyList $relation Relation to display
+     */
+    protected function makeRecordViewer($fields, $name, $relation, $viewComponent = 'GridFieldHailViewButton')
+    {
+        $config = GridFieldConfig_RecordViewer::create();
 
-		$grid = new GridField($name, $name, $relation, $config);
-		$fields->addFieldToTab('Root.' . $name, $grid);
-	}
+        // Remove the standard GridFieldView button and replace it with our
+        // custom button that will link to our the right action in our HailModelAdmin
+        $config->removeComponentsByType('GridFieldViewButton');
+        $config->addComponents(new $viewComponent());
 
+        $grid = new GridField($name, $name, $relation, $config);
+        $fields->addFieldToTab('Root.'.$name, $grid);
+    }
 }

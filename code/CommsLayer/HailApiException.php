@@ -1,6 +1,6 @@
 <?php
 
-class HailApiException extends Exception {
-	protected $hailMessage = '';
-	
+class HailApiException extends Exception
+{
+    protected $hailMessage = '';
 }

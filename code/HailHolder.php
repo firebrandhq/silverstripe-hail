@@ -9,239 +9,247 @@
  * - list of {@link HailArticle} via {@link HailList},
  * - and lists of {@link HailList}
  *
- * @package hail
  * @author Maxime Rainville, Firebrand
+ *
  * @version 1.0
  *
  * @method HasManyList List() List of {@link HailList}
  */
+class HailHolder extends Page
+{
+    private static $has_many = array(
+        'Lists' => 'HailList',
+    );
 
-class HailHolder extends Page {
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
 
-	private static  $has_many = array(
-		'Lists' => 'HailList'
-	);
+        $config = GridFieldConfig_RecordEditor::create();
 
-	public function getCMSFields() {
-		$fields = parent::getCMSFields();
+        $addButton = new GridFieldAddNewMultiClass();
+        $addButton->setClasses(HailList::getSubClasses());
+        $config->addComponent($addButton)->removeComponentsByType('GridFieldAddNewButton');
 
-		$config = GridFieldConfig_RecordEditor::create();
+        $config->addComponent(new GridFieldSortableRows('SortOrder'));
+        $list = new GridField('Lists', 'Lists', $this->Lists()->sort('SortOrder'), $config);
+        $fields->addFieldToTab('Root.HailList', $list);
+        $fields->addFieldToTab('Root.HailList', $list);
 
-		$addButton = new GridFieldAddNewMultiClass();
-		$addButton->setClasses(HailList::getSubClasses());
-		$config->addComponent($addButton)->removeComponentsByType('GridFieldAddNewButton');
+        return $fields;
+    }
 
-
-		$config->addComponent(new GridFieldSortableRows('SortOrder'));
-		$list = new GridField("Lists", "Lists", $this->Lists()->sort("SortOrder"), $config);
-		$fields->addFieldToTab('Root.HailList', $list);
-		$fields->addFieldToTab('Root.HailList', $list);
-
-		return $fields;
-	}
-
-
-	/**
-	 * Returns the first articles with an image.
-	 *
-	 * @return HailArticle First Article with image
-	 */
-	public function getFirst() {
-		foreach ($this->Lists()->sort('SortOrder') as $list) {
-			foreach ($list->Articles() as $art) {
-				if ($art->HeroImage()) {
-					return $art;
-				}
-			}
-		}
-	}
+    /**
+     * Returns the first articles with an image.
+     *
+     * @return HailArticle First Article with image
+     */
+    public function getFirst()
+    {
+        foreach ($this->Lists()->sort('SortOrder') as $list) {
+            foreach ($list->Articles() as $art) {
+                if ($art->HeroImage()) {
+                    return $art;
+                }
+            }
+        }
+    }
 }
 
 /**
  * Controller for type {@link HailHolder} page type
- * Provides the core logic and controller action to display {@link HailArticle}
+ * Provides the core logic and controller action to display {@link HailArticle}.
  *
- * @package hail
  * @author Maxime Rainville, Firebrand
- * @version 1.0
  *
+ * @version 1.0
  */
+class HailHolder_Controller extends Page_Controller
+{
+    private static $allowed_actions = array(
+        'haillist', 'hailarticle',
+    );
 
-class HailHolder_Controller extends Page_Controller {
+    private static $url_handlers = array(
+        'list/$ID' => 'haillist',
+        'article/$ID' => 'hailarticle',
+    );
 
+    public function init()
+    {
+        parent::init();
+        Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jquery-dateFormat.min.js');
+        Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'hail.js');
+    }
 
-	private static $allowed_actions = array (
-		'haillist', 'hailarticle'
-	);
+    /**
+     * Action to list the {@link HailArticle} in a specific {@link HailList}.
+     *
+     * @param SS_HTTPRequest $request
+     *
+     * @return HTMLText First Article with image
+     */
+    public function haillist($request)
+    {
+        $this->myList = $this->Lists()->byID($request->param('ID'));
 
-	private static $url_handlers = array(
-		'list/$ID' => 'haillist',
-		'article/$ID' => 'hailarticle'
-	);
+        return $this->renderWith(array('HailHolder_HailList', 'Page'));
+    }
 
-	public function init() {
-		parent::init();
-		Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jquery-dateFormat.min.js');
-		Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'hail.js');
-	}
+    /**
+     * Action to display a sepcific {@link HailArticle}.
+     *
+     * @param SS_HTTPRequest $request
+     *
+     * @return HTMLText First Article with image
+     */
+    public function hailarticle($request)
+    {
+        $this->myArticle = HailArticle::get()->byID($request->param('ID'));
 
-	/**
-	 * Action to list the {@link HailArticle} in a specific {@link HailList}
-	 *
-	 * @param SS_HTTPRequest $request
-	 * @return HTMLText First Article with image
-	 */
-	public function haillist($request) {
-		$this->myList = $this->Lists()->byID($request->param('ID'));
+        $this->myArticle->refresh();
 
-		return $this->renderWith(array('HailHolder_HailList', 'Page'));
-	}
+        if ($this->myArticle->Content) {
+            $this->myArticle->softRefresh();
+        } else {
+            $this->myArticle->refresh();
+        }
 
-	/**
-	 * Action to display a sepcific {@link HailArticle}
-	 *
-	 * @param SS_HTTPRequest $request
-	 * @return HTMLText First Article with image
-	 */
-	public function hailarticle($request) {
-		$this->myArticle = HailArticle::get()->byID($request->param('ID'));
+        return $this->renderWith(array('HailHolder_HailArticle', 'Page'));
+    }
 
-		$this->myArticle->refresh();
+    /**
+     * Generate a URL to render a specific {@link HailList}.
+     *
+     * @param int $listID
+     *
+     * @return string url
+     */
+    public function ListLink($listID)
+    {
+        return Controller::join_links('list/'.$listID, 'list');
+    }
 
-		if ($this->myArticle->Content) {
-			$this->myArticle->softRefresh();
-		} else {
-			$this->myArticle->refresh();
-		}
+    /**
+     * Return the {@link HailList} to render when the {@link haillist()} action is invoke.
+     *
+     * @return {@link HailList} List to display
+     */
+    public function MyList()
+    {
+        return $this->myList;
+    }
+    protected $myList;
 
-		return $this->renderWith(array('HailHolder_HailArticle', 'Page'));
-	}
+    public function MyPaginatedListArticles()
+    {
+        $plist = new PaginatedList($this->myList->Articles(), $this->request);
+        $plist->setPageLength(20);
 
-	/**
-	 * Generate a URL to render a specific {@link HailList}
-	 *
-	 * @param int $listID
-	 * @return String url
-	 */
-	public function ListLink($listID) {
-		return Controller::join_links('list/' . $listID, 'list');
-	}
+        return $plist;
+    }
 
+    /**
+     * Return the {@link HailArticle} to display when the {@link hailarticle()} action is invoke.
+     *
+     * @return {@link HailList} List to display
+     */
+    public function MyArticle()
+    {
+        return $this->myArticle;
+    }
+    protected $myArticle;
 
+    /**
+     * Returns a relevant hero {@link HailImage} for the current action.
+     *
+     * @return HailImage Hero image of a relevant article
+     */
+    public function HeroImage()
+    {
+        $hero = false;
+        switch ($this->getAction()) {
+            case 'hailarticle':
+                $hero = $this->myArticle->HeroImage;
+                break;
+            case 'haillist':
+                $article = $this->myList->Articles()->First();
+                if ($article) {
+                    $hero = $article->HeroImage();
+                }
+                break;
+            case 'index':
+                $article = $this->getFirst();
+                if ($article) {
+                    $hero = $article->HeroImage();
+                }
+                break;
+        }
 
-	/**
-	 * Return the {@link HailList} to render when the {@link haillist()} action is invoke.
-	 *
-	 * @return {@link HailList} List to display
-	 */
-	public function MyList() {
-		return $this->myList;
-	}
-	protected $myList;
+        return $hero;
+    }
 
-	public function MyPaginatedListArticles() {
-		$plist = new PaginatedList($this->myList->Articles(), $this->request);
-		$plist->setPageLength(20);
-		return $plist;
-	}
+    /**
+     * Returns a sorted list of {@link HailList}.
+     *
+     * @return ArrayList {@link HailList} sorted
+     */
+    public function Lists()
+    {
+        return $this->dataRecord->Lists()->sort('SortOrder');
+    }
 
+    /**
+     * Returns a relevant title for the current action.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        switch ($this->getAction()) {
+            case 'hailarticle':
+                return $this->myArticle->Title;
+                break;
+            case 'haillist':
+                return $this->myList->getTitle();
+                break;
+            default:
+                return parent::getTitle();
+                break;
+        }
+    }
 
-	/**
-	 * Return the {@link HailArticle} to display when the {@link hailarticle()} action is invoke
-	 *
-	 * @return {@link HailList} List to display
-	 */
-	public function MyArticle() {
-		return $this->myArticle;
-	}
-	protected $myArticle;
+    /**
+     * Returns a relevant metadata description for the current action.
+     *
+     * @return string
+     */
+    public function getMetaDescription()
+    {
+        switch ($this->getAction()) {
+            case 'hailarticle':
+                return $this->myArticle->Lead;
+                break;
+            case 'haillist':
+                return $this->myList->Description;
+                break;
+            default:
+                return $this->dataRecord->MetaDescription;
+                break;
+        }
+    }
 
+    /**
+     * Return the title, description, keywords and language metatags.
+     *
+     * @param bool $includeTitle Show default <title>-tag, set to false for custom templating
+     *
+     * @return string The XHTML metatags
+     */
+    public function MetaTags($includeTitle = true)
+    {
+        $this->dataRecord->MetaDescription = $this->getMetaDescription();
 
-	/**
-	 * Returns a relevant hero {@link HailImage} for the current action.
-	 *
-	 * @return HailImage Hero image of a relevant article
-	 */
-	public function HeroImage() {
-		$hero = false;
-		switch($this->getAction()) {
-			case 'hailarticle':
-				$hero = $this->myArticle->HeroImage;
-				break;
-			case 'haillist':
-				$article = $this->myList->Articles()->First();
-				if ($article) {
-					$hero = $article->HeroImage();
-				}
-				break;
-			case 'index':
-				$article = $this->getFirst();
-				if ($article) {
-					$hero = $article->HeroImage();
-				}
-				break;
-		}
-
-		return $hero;
-
-	}
-
-	/**
-	 * Returns a sorted list of {@link HailList}.
-	 *
-	 * @return ArrayList {@link HailList} sorted
-	 */
-	public function Lists() {
-		return $this->dataRecord->Lists()->sort('SortOrder');
-	}
-
-	/**
-	 * Returns a relevant title for the current action.
-	 *
-	 * @return string
-	 */
-	public function getTitle() {
-		switch($this->getAction()) {
-			case 'hailarticle':
-				return $this->myArticle->Title;
-				break;
-			case 'haillist':
-				return $this->myList->getTitle();
-				break;
-			default:
-				return parent::getTitle();
-				break;
-		}
-	}
-
-	/**
-	 * Returns a relevant metadata description for the current action.
-	 *
-	 * @return string
-	 */
-	public function getMetaDescription() {
-		switch($this->getAction()) {
-			case 'hailarticle':
-				return $this->myArticle->Lead;
-				break;
-			case 'haillist':
-				return $this->myList->Description;
-				break;
-			default:
-				return $this->dataRecord->MetaDescription;
-				break;
-		}
-	}
-
-	/**
-	 * Return the title, description, keywords and language metatags.
-	 *
-	 * @param bool $includeTitle Show default <title>-tag, set to false for custom templating
-	 * @return string The XHTML metatags
-	 */
-	public function MetaTags($includeTitle = true) {
-		$this->dataRecord->MetaDescription = $this->getMetaDescription();
-		return $this->dataRecord->MetaTags($includeTitle);
-	}
-
+        return $this->dataRecord->MetaTags($includeTitle);
+    }
 }

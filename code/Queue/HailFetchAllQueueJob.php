@@ -2,14 +2,12 @@
 
 /**
  * Job that that will fetch all Hail content asyncronously. This class relies on
- * {@link silverstripe/queuejob https://github.com/silverstripe-australia/silverstripe-queuedjobs}
+ * {@link silverstripe/queuejob https://github.com/silverstripe-australia/silverstripe-queuedjobs}.
  */
 class HailFetchAllQueueJob extends AbstractQueuedJob implements QueuedJob
 {
-
-
     /**
-     * Construct a new instance of HailFetchAllQueueJob
+     * Construct a new instance of HailFetchAllQueueJob.
      */
     public function __construct()
     {
@@ -49,12 +47,11 @@ class HailFetchAllQueueJob extends AbstractQueuedJob implements QueuedJob
         $hailObjTypes = HailApiObject::fetchables();
         $hailObjType = $hailObjTypes[$this->currentStep];
 
-
         $this->addMessage("Fetching $hailObjType");
         $hailApiObject = singleton($hailObjType);
         $hailApiObject->fetch();
 
-        $this->currentStep++;
+        ++$this->currentStep;
         if ($this->currentStep >= $this->totalSteps) {
             $this->isComplete = true;
         }

@@ -2,13 +2,13 @@
 
 /**
  * Job that allows to fetch data from Hail asyncronously. This class relies on
- * {@link silverstripe/queuejob https://github.com/silverstripe-australia/silverstripe-queuedjobs}
+ * {@link silverstripe/queuejob https://github.com/silverstripe-australia/silverstripe-queuedjobs}.
  */
 class HailFetchQueueJob extends AbstractQueuedJob implements QueuedJob
 {
-
     /**
-     * Construct a new instance of HailFetchQueueJob
+     * Construct a new instance of HailFetchQueueJob.
+     *
      * @param string $hailObjectType Name of the class to fetch
      */
     public function __construct($hailObjectType)

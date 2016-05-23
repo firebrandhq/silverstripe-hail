@@ -1,47 +1,44 @@
 <?php
 
-class HailCallbackController extends Controller {
-	/**
-	* Default URL handlers - (Action)/(ID)/(OtherID)
-	*/
+class HailCallbackController extends Controller
+{
+    /**
+     * Default URL handlers - (Action)/(ID)/(OtherID).
+     */
+    private static $allowed_actions = array(
+        'index',
+    );
 
-	private static $allowed_actions = array(
-		'index',
-	);
+    public function index()
+    {
+        $siteconfig = SiteConfig::current_site_config();
 
-	public function index() {
-		$siteconfig = SiteConfig::current_site_config();
+        if ($siteconfig->canEdit()) {
+            $siteconfig->HailRedirectCode = $_GET['code'];
 
-		if($siteconfig->canEdit()) {
+            $provider = new HailProvider();
 
-			$siteconfig->HailRedirectCode = $_GET['code'];
+            try {
+                $token = $provider->getAccessToken('authorization_code', [
+                    'code' => $siteconfig->HailRedirectCode,
+                ]);
+            } catch (Exception $ex) {
+                die($ex->getMessage());
+            }
 
+            $siteconfig->HailAccessToken = $token->accessToken;
+            $siteconfig->HailAccessTokenExpire = $token->expires;
+            $siteconfig->HailRefreshToken = $token->refreshToken;
 
-			$provider = new HailProvider();
+            $siteconfig->write();
 
-			try {
-				$token = $provider->getAccessToken('authorization_code', [
-					'code' => $siteconfig->HailRedirectCode,
-				]);
+            // Refresh site config and save the user id
+            $user = HailApi::getUser();
+            $siteconfig = SiteConfig::current_site_config();
+            $siteconfig->HailUserID = $user->id;
+            $siteconfig->write();
+        }
 
-			} catch (Exception $ex) {
-				die($ex->getMessage());
-			}
-
-			$siteconfig->HailAccessToken = $token->accessToken;
-			$siteconfig->HailAccessTokenExpire = $token->expires;
-			$siteconfig->HailRefreshToken = $token->refreshToken;
-
-			$siteconfig->write();
-
-			// Refresh site config and save the user id
-			$user = HailApi::getUser();
-			$siteconfig = SiteConfig::current_site_config();
-			$siteconfig->HailUserID = $user->id;
-			$siteconfig->write();
-		}
-
-		$this->redirect('admin/settings');
-
-	}
+        $this->redirect('admin/settings');
+    }
 }

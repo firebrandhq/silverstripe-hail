@@ -3,8 +3,8 @@
 /**
  * Abtract representation of an Hail Article retrieved via the Hail API.
  *
- * @package hail
  * @author Maxime Rainville, Firebrand
+ *
  * @version 1.0
  *
  * @property string Title
@@ -15,22 +15,21 @@
  * @property string Location
  * @property string Status
  * @property SS_Date Created
- * @property double Rating
- * @property boolean Flagged
+ * @property float Rating
+ * @property bool Flagged
  *
  * @method HailImage HeroImage() Hero image for the article
  * @method ManyManyList Tags() List of {@link HailTag}
  * @method ManyManyList ImageGallery() List of {@link HailImage}
  */
-
-class HailArticle extends HailApiObject implements SearchableLinkable {
-
+class HailArticle extends HailApiObject implements SearchableLinkable
+{
     private static $db = array(
         'Title' => 'Text',
         'Author' => 'VarChar',
 
         'Lead' => 'HTMLText',
-        "Content" => 'HTMLText',
+        'Content' => 'HTMLText',
         'Date' => 'Datetime',
         'Location' => 'Varchar',
         'Status' => 'Varchar',
@@ -38,12 +37,10 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         'Created' => 'Datetime',
         'Updated' => 'Datetime',
         'Rating' => 'Double',
-        'Flagged' => 'Boolean'
+        'Flagged' => 'Boolean',
     );
 
-    private static $default_sort = "Date DESC";
-
-
+    private static $default_sort = 'Date DESC';
 
     private static $has_one = array(
         'HeroImage' => 'HailImage',
@@ -52,7 +49,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
     private static $belongs_many_many = array(
         'Tags' => 'HailTag',
-        'Attachments' => 'HailAttachment'
+        'Attachments' => 'HailAttachment',
     );
 
     private static $many_many = array(
@@ -65,20 +62,22 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         'Title',
         'Author',
         'Lead',
-        'Date'
+        'Date',
     );
 
     private static $create_table_options = array('MySQLDatabase' => 'ENGINE=MyISAM');
 
-    static $indexes = array(
-        'SearchFields' => 'fulltext (Title,Lead,Author,Content)'
+    public static $indexes = array(
+        'SearchFields' => 'fulltext (Title,Lead,Author,Content)',
     );
 
-    protected static function getObjectType() {
+    protected static function getObjectType()
+    {
         return HailApi::ARTICLES;
     }
 
-    protected function importing($data) {
+    protected function importing($data)
+    {
         if (!empty($data->body)) {
             $this->Content = $data->body;
         }
@@ -91,7 +90,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         // TODO: Generate Unique URL handler
     }
 
-    protected static function apiMap() {
+    protected static function apiMap()
+    {
         return array(
             'Title' => 'title',
             'Author' => 'author',
@@ -102,12 +102,13 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             'Updated' => 'updated_date',
             'Rating' => 'average_rating',
             'Flagged' => 'flagged',
-            'Date' => 'date'
+            'Date' => 'date',
         );
     }
 
     // Go through the list of tags and assign them to this article.
-    private function processTags($data) {
+    private function processTags($data)
+    {
         $tagIdList = array();
         foreach ($data as $tagData) {
             $tagIdList[] = $tagData->id;
@@ -136,7 +137,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     }
 
     // Match the hero image if there's one
-    private function processHeroImage($heroImgData) {
+    private function processHeroImage($heroImgData)
+    {
         if ($heroImgData) {
             $hero = HailImage::get()->filter(array('HailID' => $heroImgData->id))->first();
             if (!$hero) {
@@ -152,7 +154,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     }
 
     // Match the hero video if there's one
-    private function processHeroVideo($heroVidData) {
+    private function processHeroVideo($heroVidData)
+    {
         if ($heroVidData) {
             $hero = HailVideo::get()->filter(array('HailID' => $heroVidData->id))->first();
             if (!$hero) {
@@ -168,7 +171,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     }
 
     // Go through the attachments and assign them to this article.
-    private function processAttachments($data) {
+    private function processAttachments($data)
+    {
         $idList = array();
         foreach ($data as $attachmentData) {
             $idList[] = $attachmentData->id;
@@ -195,22 +199,21 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             // If there's no attachements, just remove everything.
             $this->Attachments()->removeAll();
         }
-
     }
 
-
-    public function getCMSFields( ) {
+    public function getCMSFields()
+    {
         $fields = parent::getCMSFields();
 
         // Show relations
-        $this->makeRecordViewer($fields, "Tags", $this->Tags());
-        $this->makeRecordViewer($fields, "Images", $this->ImageGallery());
-        $this->makeRecordViewer($fields, "Attachments", $this->Attachments(), 'GridFieldHailAttachmentDownloadButton');
+        $this->makeRecordViewer($fields, 'Tags', $this->Tags());
+        $this->makeRecordViewer($fields, 'Images', $this->ImageGallery());
+        $this->makeRecordViewer($fields, 'Attachments', $this->Attachments(), 'GridFieldHailAttachmentDownloadButton');
 
         // Display a thumbnail of the hero image
         if ($this->HeroImage()) {
-            $heroField = new LiteralField (
-                "HeroImage",
+            $heroField = new LiteralField(
+                'HeroImage',
                 $this->HeroImage()->getThumbnail()
             );
             $fields->replaceField('HeroImageID', $heroField);
@@ -221,27 +224,28 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         return $fields;
     }
 
-    protected function refreshing() {
+    protected function refreshing()
+    {
         $this->fetchImages();
         $this->fetchVideos();
     }
 
     /**
-     * Fetch the image gallery of this article from the Hail API
-     *
-     * @return void
+     * Fetch the image gallery of this article from the Hail API.
      */
-    public function fetchImages() {
+    public function fetchImages()
+    {
         try {
             $list = HailApi::getImagesByArticles($this->HailID);
         } catch (HailApiException $ex) {
             Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+
             return;
         }
 
         $hailIdList = array();
 
-        foreach($list as $hailData) {
+        foreach ($list as $hailData) {
             // Build up Hail ID list
             $hailIdList[] = $hailData->id;
 
@@ -263,21 +267,21 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     }
 
     /**
-     * Fetch the video gallery of this article from the Hail API
-     *
-     * @return void
+     * Fetch the video gallery of this article from the Hail API.
      */
-    public function fetchVideos() {
+    public function fetchVideos()
+    {
         try {
             $list = HailApi::getVideosByArticles($this->HailID);
         } catch (HailApiException $ex) {
             Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+
             return;
         }
 
         $hailIdList = array();
 
-        foreach($list as $hailData) {
+        foreach ($list as $hailData) {
             // Build up Hail ID list
             $hailIdList[] = $hailData->id;
 
@@ -298,8 +302,9 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         }
     }
 
-    public function forTemplate() {
-        return $this->renderWith('HailArticle', array('HailHolder' => Controller::curr()) );
+    public function forTemplate()
+    {
+        return $this->renderWith('HailArticle', array('HailHolder' => Controller::curr()));
     }
 
     protected function importHailData($data)
@@ -314,7 +319,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         return $return;
     }
 
-    public function getFirstSentence() {
+    public function getFirstSentence()
+    {
         if ($this->Content) {
             $sentence = strip_tags($this->Content);
             $sentence = str_replace("\r\n", ' ', $sentence);
@@ -322,13 +328,15 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             $sentence = str_replace("\r", ' ', $sentence);
             $sentence = trim($sentence);
             $sentence = preg_replace('/(.*?[?!.](?=\s|$)).*/', '\\1', $sentence);
+
             return $sentence;
         } else {
             return '';
         }
     }
 
-    public function Link() {
+    public function Link()
+    {
         $holder = SiteConfig::current_site_config()->PrimaryHailHolder;
         if (!$holder) {
             $holder = HailHolder::get()->first();
@@ -336,54 +344,68 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         if (!$holder) {
             return false;
         }
-        return $holder->Link('article/' . $this->ID);
+
+        return $holder->Link('article/'.$this->ID);
     }
 
     /**
      * Filter array
-     * eg. array('Disabled' => 0);
+     * eg. array('Disabled' => 0);.
+     *
      * @return array
      */
-    public static function getSearchFilter() {
+    public static function getSearchFilter()
+    {
         return array();
     }
 
     /**
      * Fields that compose the Title
-     * eg. array('Title', 'Subtitle');
+     * eg. array('Title', 'Subtitle');.
+     *
      * @return array
      */
-    public function getTitleFields() {
+    public function getTitleFields()
+    {
         return array('Title');
     }
 
     /**
      * Fields that compose the Content
-     * eg. array('Teaser', 'Content');
+     * eg. array('Teaser', 'Content');.
+     *
      * @return array
      */
-    public function getContentFields() {
+    public function getContentFields()
+    {
         return array(
-            "Title",
-            "Lead",
-            "Content",
+            'Title',
+            'Lead',
+            'Content',
         );
     }
 
-    public function getOwner() {
+    public function getOwner()
+    {
         return $this;
     }
 
-    public function IncludeInSearch() {
+    public function IncludeInSearch()
+    {
         return true;
     }
 
-    public function getHeroImage() {
+    public function getHeroImage()
+    {
         $img = $this->HeroImage();
-        if ($img && $img->ID > 0) { return $img; }
+        if ($img && $img->ID > 0) {
+            return $img;
+        }
 
         $img = $this->HeroVideo();
-        if ($img && $img->ID > 0) { return $img; }
+        if ($img && $img->ID > 0) {
+            return $img;
+        }
 
         return $this->HeroImage();
     }
@@ -391,7 +413,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     /**
      * Whatever the HeroImage is in the Gallery. Will return false if there's no HeroImage at all.
      *
-     * @return boolean
+     * @return bool
      */
     public function HeroImageInGallery()
     {
@@ -405,15 +427,16 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
 
     /**
      * List of the tag IDs associated to this article seperated by spaces. Suitable to be used as CSS classes.
+     *
      * @return string
      */
     public function TagList()
     {
         $string = '';
         foreach ($this->Tags() as $t) {
-            $string .= $t->HailID . ' ';
+            $string .= $t->HailID.' ';
         }
+
         return trim($string);
     }
-
 }
