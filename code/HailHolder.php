@@ -114,7 +114,9 @@ class HailHolder_Controller extends Page_Controller {
 			$this->myArticle->refresh();
 		}
 
-		return $this->renderWith(array('HailHolder_HailArticle', 'Page'));
+		return $this->customise(array(
+			'Title' => $this->myArticle->Title
+			))->renderWith(array('HailHolder_HailArticle', 'Page'));
 	}
 
 	/**

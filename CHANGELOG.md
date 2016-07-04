@@ -1,3 +1,8 @@
+# Tag 1.0.9
+
+## Monday July 4th
+* Added some logic to Hail Holder so the Title of HailHarticle action matches the title of the Article.
+
 # Tag 1.0.8
 
 ## Monday May 23rd
