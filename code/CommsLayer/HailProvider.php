@@ -1,10 +1,16 @@
 <?php
 
 class HailProvider extends League\OAuth2\Client\Provider\AbstractProvider {
-	
+
+	/**
+	 * The timeout for checking the Hail API. Defaults to 10 minutes.
+	 * @var int
+	 */
+	private static $hail_timeout = 10;
+
 	public function __construct($options = []) {
-		
-		
+
+
 		if (! array_key_exists('redirectUri', $options)) {
 			$options['redirectUri'] = static::getRedirectUri();
 		}
@@ -52,9 +58,16 @@ class HailProvider extends League\OAuth2\Client\Provider\AbstractProvider {
 		if (! static::isAuthorised()) {
 			throw new HailApiException('Need to reauthorize SilverStripe to access Hail.');
 		}
-		
-		// If there's less than 5 min before our Token expires
-		if ( $siteconfig->HailAccessTokenExpire-60*5 < time() ) {
+
+		$hailTimeout = Config::inst()->get('HailProvider', 'hail_timeout');
+
+		// Use a default timeout of 10 minutes if a timeout isn't specified in the SiteConfig
+		if($siteconfig->HailTimeout !== "0") {
+			$hailTimeout = intval($siteconfig->HailTimeout);
+		};
+
+		// If the Hail timeout is less before our Token expires
+		if ( $siteconfig->HailAccessTokenExpire-60 * $hailTimeout < time() ) {
 			try {
 				$provider = new static();
 				$grant = new \League\OAuth2\Client\Grant\RefreshToken();

@@ -18,7 +18,7 @@ class HailLoginExtension extends DataExtension {
 		'HailRedirectCode' => 'Varchar(255)',
 		'HailUserID' => 'Varchar(255)',
 		'HailOrgID' => 'Varchar(255)',
-
+		'HailTimeout' => 'Int'
 	);
 
 	private static $has_one = array(
@@ -28,9 +28,7 @@ class HailLoginExtension extends DataExtension {
 	public function updateCMSFields(FieldList $fields) {
 		$redirectUrl = HailProvider::getRedirectUri();
 
-		$redirectField = new TextField('RedirectURL', 'Redirect URL', $redirectUrl);
-		$redirectField->setReadonly(true);
-
+		$redirectField = new ReadonlyField('RedirectURL', 'Redirect URL', $redirectUrl);
 
 		// Twitter setup
 		$fields->addFieldsToTab('Root.Hail', array(
@@ -65,5 +63,8 @@ class HailLoginExtension extends DataExtension {
 		$holderField = DropdownField::create('PrimaryHailHolderID', 'Primary Hail Holder', HailHolder::get()->map('ID', 'Title'));
 		$holderField->setEmptyString('(None)');
 		$fields->addFieldsToTab('Root.Hail', $holderField);
+
+		$fields->addFieldToTab('Root.Hail', NumericField::create('HailTimeout', 'Hail Timeout'));
 	}
+
 }
