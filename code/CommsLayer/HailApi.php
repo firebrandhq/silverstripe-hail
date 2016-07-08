@@ -49,7 +49,7 @@ class HailApi extends Object {
 	protected static function get($uri, $request=false) {
 		// Initialise request
 		$response = Request::get(static::config()->Url . $uri)
-			->addHeader('Authorization', 'Bearer ' . HailProvider::getHailAccessToken() )
+			->addHeader('Authorization', 'Bearer ' . HailProvider::getHailAccessToken())
 			->timeoutIn(static::config()->Timeout);
 
 		// If we have a request body

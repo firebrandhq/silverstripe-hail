@@ -22,5 +22,8 @@
     },
     "extra": {
 	   "installer-name": "hail"
+    },
+    "suggest": {
+        "maknz/slack": "Get error notifications from Hail sent to Slack"
     }
 }
