@@ -49,7 +49,7 @@ class HailProvider extends League\OAuth2\Client\Provider\AbstractProvider {
 	}
 	
 	public function userDetails($response, \League\OAuth2\Client\Token\AccessToken $token) {
-		return $reponse;
+		return $response;
 	}
 	
 	public static function getHailAccessToken() {
