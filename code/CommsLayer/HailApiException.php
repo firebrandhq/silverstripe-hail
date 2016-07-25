@@ -15,18 +15,20 @@ class HailApiException extends Exception {
 
 		$notifiers = Config::inst()->get('HailApiException', 'notifiers');
 
-		foreach($notifiers as $notifier) {
+		if($notifiers) {
+			foreach($notifiers as $notifier) {
 
-			if(!class_exists($notifier)) {
-				user_error("$notifier class does not exist");
+				if(!class_exists($notifier)) {
+					user_error("$notifier class does not exist");
+				}
+
+				if(!class_implements('HailNotifier')) {
+					user_error("$notifier must implement HailNotifier");
+				}
+
+				$obj = new $notifier();
+				$obj->sendNotification($message);
 			}
-
-			if(!class_implements('HailNotifier')) {
-				user_error("$notifier must implement HailNotifier");
-			}
-
-			$obj = new $notifier();
-			$obj->sendNotification($message);
 		}
 
 	}
