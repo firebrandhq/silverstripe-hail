@@ -22,10 +22,6 @@ class HailApiException extends Exception {
 					user_error("$notifier class does not exist");
 				}
 
-				if(!class_implements('HailNotifier')) {
-					user_error("$notifier must implement HailNotifier");
-				}
-
 				$obj = new $notifier();
 				$obj->sendNotification($message);
 			}
