@@ -69,6 +69,7 @@ class HailApiObject extends DataObject {
 				$hailObj = new static();
 			}
 			$hailObj->OrganisationID = $org->ID;
+			$hailObj->write();
 
 			$result = $hailObj->importHailData($hailData);
 			if ($result) {
@@ -213,19 +214,18 @@ class HailApiObject extends DataObject {
 	/**
 	 * Retrieves the latest version of this object whatever it's outdated or not.
 	 *
-	 * @param HailOrganisation $org The Hail organisation
 	 * @return HailApiObject
 	 */
-	public function refresh(HailOrganisation $org) {
+	public function refresh() {
 		if ($this->ID && $this->HailID) {
 			try {
-				$data = HailApi::getOne(static::getObjectType(), $this->HailID);
+				$data = HailApi::getOne(static::getObjectType(), $this->HailID, HailOrganisation::get()->byID($this->OrganisationID));
 			} catch (HailApiException $ex) {
 				Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
 				return $this;
 			}
 
-			$this->importHailData($data, $org);
+			$this->importHailData($data);
 			$this->refreshing();
 		}
 
@@ -273,6 +273,16 @@ class HailApiObject extends DataObject {
 		$fields = parent::getCMSFields();
 		$this->makeFieldReadonly($fields);
 		return $fields;
+	}
+
+	public function validate() {
+		$results = parent::validate();
+
+		if(!$this->OrganisationID) {
+			$results->error('Hail organisation ID is required');
+		}
+
+		return $results;
 	}
 
 	// Recursively go through all our fields and turn them off.

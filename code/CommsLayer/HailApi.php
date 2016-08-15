@@ -234,24 +234,26 @@ class HailApi extends Object {
 	 * Retrieve a list of images for a given article.
 	 *
 	 * @param string $id ID of the article in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getImagesByArticles($id, $parameter=false) {
+	public static function getImagesByArticles($id, $org, $parameter=false) {
 		$uri = self::ARTICLES . '/' . $id . '/' . self::IMAGES;
-		return self::get($uri, $parameter);
+		return self::get($uri, $org, $parameter);
 	}
 
 	/**
 	 * Retrieve a list of videos for a given article.
 	 *
 	 * @param string $id ID of the article in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getVideosByArticles($id, $parameter=false) {
+	public static function getVideosByArticles($id, $org, $parameter=false) {
 		$uri = self::ARTICLES . '/' . $id . '/' . self::VIDEOS;
-		return self::get($uri, $parameter);
+		return self::get($uri, $org, $parameter);
 	}
 
 	/**

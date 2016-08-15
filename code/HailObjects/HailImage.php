@@ -87,6 +87,7 @@ class HailImage extends HailApiObject {
 			if (!$tag) {
 				$tag = new HailTag();
 			}
+			$tag->OrganisationID = $this->OrganisationID;
 			
 			$tag->importHailData($tagData);
 			
