@@ -61,11 +61,12 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     );
 
     private static $summary_fields = array(
-        'HailID',
-        'Title',
-        'Author',
-        'Lead',
-        'Date'
+		'Organisation.Title' => 'Hail Organisation',
+        'HailID' => 'Hail ID',
+        'Title' => 'Title',
+        'Author' => 'Author',
+        'Lead' => 'Lead',
+        'Date' => 'Date'
     );
 
     private static $create_table_options = array('MySQLDatabase' => 'ENGINE=MyISAM');
@@ -308,7 +309,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         $return = parent::importHailData($data);
 
         if ($originalUpdated != $this->Updated) {
-            $this->refresh();
+
+            $this->refresh(HailOrganisation::get()->byID($this->OrganisationID));
         }
 
         return $return;

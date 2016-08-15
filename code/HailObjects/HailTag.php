@@ -20,10 +20,11 @@ class HailTag extends HailApiObject {
 	private static $api_access = true;
 
 	private static $summary_fields = array(
-		'HailID',
-		'Name',
-		'Description',
-		'Fetched'
+		'Organisation.Title' => 'Hail Organisation',
+		'HailID' => 'Hail ID',
+		'Name' => 'Name',
+		'Description' => 'Description',
+		'Fetched' => 'Fetched'
 	);
 
 	protected static function getObjectType() {

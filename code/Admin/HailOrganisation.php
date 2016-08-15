@@ -3,6 +3,7 @@
 class HailOrganisation extends DataObject {
 
 	public static $db = array(
+		'Title' => 'Varchar',
 		'HailClientID' => 'Varchar(255)',
 		'HailClientSecret' => 'Varchar(255)',
 		'HailAccessToken' => 'Varchar(255)',
@@ -32,14 +33,15 @@ class HailOrganisation extends DataObject {
 
 		$redirectUrl = HailProvider::getRedirectUri($this);
 
-		$redirectField = new ReadonlyField('RedirectURL', 'Redirect URL', $redirectUrl);
-
 		// Twitter setup
 		$fields->addFieldsToTab('Root.Main', array(
 			new TextField('HailClientID', 'Client ID', null, 255),
 			new TextField('HailClientSecret', 'Client Secret', null, 255),
-			$redirectField
 		));
+
+		if($this->ID) {
+			$fields->addFieldToTab('Root.Main', new ReadonlyField('RedirectURL', 'Redirect URL', $redirectUrl));
+		}
 
 		if(HailProvider::isReadyToAuthorised($this)) {
 			$provider = new HailProvider($this);
@@ -74,18 +76,6 @@ class HailOrganisation extends DataObject {
 
 	public function getRedirectURL() {
 		return HailProvider::getRedirectUri($this);
-	}
-
-	public function getTitle() {
-		$orgs = HailApi::getOrganisationList($this);
-
-		if($orgs && isset($orgs[$this->HailOrgID])) {
-			return $orgs[$this->HailOrgID];
-		} else if($this->ID) {
-			return 'Hail organisation ' . $this->ID;
-		} else {
-			return 'Hail organisation';
-		}
 	}
 
 }

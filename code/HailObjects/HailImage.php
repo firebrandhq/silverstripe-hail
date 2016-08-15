@@ -62,11 +62,12 @@ class HailImage extends HailApiObject {
 	);
 	
 	private static $summary_fields = array(
-		'HailID',
-		'Thumbnail',
-		'Caption',
-		'Date',
-		'Fetched'
+		'Organisation.Title' => 'Hail Organisation',
+		'HailID' => 'Hail ID',
+		'Thumbnail' => 'Thumbnail',
+		'Caption' => 'Caption',
+		'Date' => 'Date',
+		'Fetched' => 'Fetched'
 	);
 	
 	private static $api_access = true;

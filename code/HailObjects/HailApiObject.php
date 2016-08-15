@@ -27,6 +27,10 @@ class HailApiObject extends DataObject {
 		'Fetched' => 'Datetime'
 	);
 
+	private static $has_one = array(
+		'Organisation' => 'HailOrganisation'
+	);
+
 	private static $summary_fields = array(
 		'HailID',
 		'Fetched'
@@ -44,11 +48,12 @@ class HailApiObject extends DataObject {
 	/**
 	 * Retrieves all Hail Api Object of a specific type
 	 *
+	 * @param HailOrganisation The Hail organisation
 	 * @return void
 	 */
-	public static function fetch() {
+	public static function fetch(HailOrganisation $org) {
 		try {
-			$list = HailApi::getList(static::getObjectType());
+			$list = HailApi::getList(static::getObjectType(), $org);
 		} catch (HailApiException $ex) {
 			Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
 			die($ex->getMessage());
@@ -63,6 +68,8 @@ class HailApiObject extends DataObject {
 			if (!$hailObj) {
 				$hailObj = new static();
 			}
+			$hailObj->OrganisationID = $org->ID;
+
 			$result = $hailObj->importHailData($hailData);
 			if ($result) {
 				//Build up Hail ID list
@@ -70,7 +77,7 @@ class HailApiObject extends DataObject {
 			}
 		}
 		//Remove all object for which we don't have reference
-		static::get()->exclude('HailID', $hailIdList)->removeAll();
+		static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
 	}
 
     /**
@@ -206,9 +213,10 @@ class HailApiObject extends DataObject {
 	/**
 	 * Retrieves the latest version of this object whatever it's outdated or not.
 	 *
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return HailApiObject
 	 */
-	public function refresh() {
+	public function refresh(HailOrganisation $org) {
 		if ($this->ID && $this->HailID) {
 			try {
 				$data = HailApi::getOne(static::getObjectType(), $this->HailID);
@@ -217,7 +225,7 @@ class HailApiObject extends DataObject {
 				return $this;
 			}
 
-			$this->importHailData($data);
+			$this->importHailData($data, $org);
 			$this->refreshing();
 		}
 

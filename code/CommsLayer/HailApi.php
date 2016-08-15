@@ -90,7 +90,7 @@ class HailApi extends Object {
 			case self::TAGS:
 				$uri =
 					self::ORGS . '/' .
-					static::getOrganisationId() . '/' .
+					static::getOrganisationId($org) . '/' .
 					self::TAGS;
 					//$request = array('status' => 'published');
 					if (self::getDisplayUnpublished()) {
@@ -175,10 +175,11 @@ class HailApi extends Object {
 	 *
 	 * @param string $objectType Object type to retrieve
 	 * @param string $hailID ID of the object in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return StdClass
 	 * @throws HailApiException
 	 */
-	public static function getOne($objectType, $hailID) {
+	public static function getOne($objectType, $hailID, HailOrganisation $org) {
 		$uri = '';
 		$request = false;
 
@@ -206,7 +207,7 @@ class HailApi extends Object {
 				break;
 		}
 
-		return self::get($uri, $request);
+		return self::get($uri, $org, $request);
 	}
 
 	/**

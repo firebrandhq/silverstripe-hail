@@ -22,11 +22,12 @@ class HailPublication extends HailApiObject {
 	);
 	
 	private static $summary_fields = array(
-		'HailID',
-		'Title',
-		'Editorial',
-		'Style',
-		'Fetched'
+		'Organisation.Title' => 'Hail Organisation',
+		'HailID' => 'Hail ID',
+		'Title' => 'Title',
+		'Editorial' => 'Editorial',
+		'Style' => 'Style',
+		'Fetched' => 'Fetched'
 	);
 	
 	protected static function getObjectType() {
