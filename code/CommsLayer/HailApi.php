@@ -214,10 +214,11 @@ class HailApi extends Object {
 	 * Retrieve a list of articles for a given tag.
 	 *
 	 * @param string $tagId ID of the Tag in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getArticlesByTag($tagId, $parameter=false) {
+	public static function getArticlesByTag($tagId, HailOrganisation $org, $parameter=false) {
 		$uri = self::TAGS . '/' . $tagId . '/' . self::ARTICLES;
 		if (self::getDisplayUnpublished()) {
 			$request= array();
@@ -227,7 +228,7 @@ class HailApi extends Object {
 		if (is_array($parameter)) {
 			$request = array_merge($request, $parameter);
 		}
-		return self::get($uri, $request);
+		return self::get($uri, $org, $request);
 	}
 
 	/**
@@ -238,7 +239,7 @@ class HailApi extends Object {
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getImagesByArticles($id, $org, $parameter=false) {
+	public static function getImagesByArticles($id, HailOrganisation $org, $parameter=false) {
 		$uri = self::ARTICLES . '/' . $id . '/' . self::IMAGES;
 		return self::get($uri, $org, $parameter);
 	}
@@ -251,7 +252,7 @@ class HailApi extends Object {
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getVideosByArticles($id, $org, $parameter=false) {
+	public static function getVideosByArticles($id, HailOrganisation $org, $parameter=false) {
 		$uri = self::ARTICLES . '/' . $id . '/' . self::VIDEOS;
 		return self::get($uri, $org, $parameter);
 	}

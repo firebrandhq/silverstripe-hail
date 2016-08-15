@@ -56,7 +56,7 @@ class HailTag extends HailApiObject {
 
 	public function fetchArticles() {
 		try {
-			$list = HailApi::getArticlesByTag($this->HailID);
+			$list = HailApi::getArticlesByTag($this->HailID, HailOrganisation::get()->byID($this->OrganisationID));
 		} catch (HailApiException $ex) {
 			Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
 			return;
