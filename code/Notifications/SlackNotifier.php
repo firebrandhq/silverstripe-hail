@@ -93,11 +93,14 @@ class SlackNotifier implements HailNotifier {
 	 */
 	public function sendNotification($message) {
 
-		$config = SiteConfig::current_site_config();
+        // Only send a notification if we are running in production mode
+        if(Director::isLive()) {
+		    $config = SiteConfig::current_site_config();
 
-		$message = $config->Title . ' (' . Director::absoluteBaseURL() . ') - ' . $message;
+		    $message = $config->Title . ' (' . Director::absoluteBaseURL() . ') - ' . $message;
 
-		$this->client->send($message);
+		    $this->client->send($message);
+        }
 
 	}
 
