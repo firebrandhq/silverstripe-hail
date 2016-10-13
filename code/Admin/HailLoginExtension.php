@@ -17,8 +17,7 @@ class HailLoginExtension extends DataExtension {
 		'HailRefreshToken' => 'Varchar(255)',
 		'HailRedirectCode' => 'Varchar(255)',
 		'HailUserID' => 'Varchar(255)',
-		'HailOrgID' => 'Varchar(255)',
-		'HailTimeout' => 'Int'
+		'HailOrgID' => 'Varchar(255)'
 	);
 
 	private static $has_one = array(
@@ -63,8 +62,6 @@ class HailLoginExtension extends DataExtension {
 		$holderField = DropdownField::create('PrimaryHailHolderID', 'Primary Hail Holder', HailHolder::get()->map('ID', 'Title'));
 		$holderField->setEmptyString('(None)');
 		$fields->addFieldsToTab('Root.Hail', $holderField);
-
-		$fields->addFieldToTab('Root.Hail', NumericField::create('HailTimeout', 'Hail Timeout'));
 	}
 
 }
