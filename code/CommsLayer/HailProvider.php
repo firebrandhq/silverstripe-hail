@@ -53,7 +53,7 @@ class HailProvider extends League\OAuth2\Client\Provider\AbstractProvider {
 		$siteconfig = SiteConfig::current_site_config();
 		
 		if (! static::isAuthorised($org)) {
-			throw new HailApiException('Need to reauthorize SilverStripe to access Hail.');
+			throw new HailApiException('(Organisation: ' .$org->Title . ') - Need to reauthorize SilverStripe to access Hail.');
 		}
 
 		// Calculate the time difference between the current time and the token expiry
@@ -70,7 +70,7 @@ class HailProvider extends League\OAuth2\Client\Provider\AbstractProvider {
 					['refresh_token' => $org->HailRefreshToken]
 				);
 			} catch (Exception $ex) {
-				throw new HailApiException('Need to reauthorize SilverStripe to access Hail.');
+				throw new HailApiException('(Organisation: ' .$org->Title . ') - Need to reauthorize SilverStripe to access Hail.');
 			}
 			
 			$org->HailAccessToken = $token->accessToken;
