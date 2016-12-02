@@ -348,6 +348,30 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         return array();
     }
 
+    public static function getSearchFilterByCallback() {
+        return function($item, $list) { 
+            $hailLists = HailList::get();
+
+            // Index all articles if a HailList is used anywhere
+            if($hailLists->filter('ClassName', 'HailList')->count() > 0) {
+                return true;
+            }
+
+            $hailTagLists = TagHailList::get()->column('TagID');
+            $hailMultiTagLists = SQLQuery::create()->setFrom('MultiTagHailList_Tags')->execute()->column('HailTagID');
+
+            $allowedTags = array_merge($hailTagLists, $hailMultiTagLists);
+            $tags = $item->Tags()->column('ID');
+
+            // Index articles if the tag is used in a HailList
+            if(array_intersect($allowedTags, $tags)) {
+                return true;
+            }
+
+            return false;
+        };
+    }
+
     /**
      * Fields that compose the Title
      * eg. array('Title', 'Subtitle');
