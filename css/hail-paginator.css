@@ -1,0 +1,23 @@
+.pagination-source {
+    display: none;
+}
+.pagination.bootpag {
+    display: flex;
+    justify-content: center; /* center ul horizontally */
+    align-items: center; /* center ul vertically (if necessary) */
+    width: auto !important;
+}
+.pagination-page-number {
+    /*margin-top: 50px;*/
+    position: absolute;
+    left: 50%;
+}
+.pagination-page-number > div {
+    position: relative;
+    left: -50%;
+}
+@media (max-width: 768px) {
+    .pagination.bootpag  {
+        width: 100%;
+    }
+}
