@@ -3,7 +3,6 @@ $('.HailList').hailList({nextFunction: nextHailArticle, backFunction: backHailAr
 
 function nextHailArticle(event) {
 	// var nextLead = event.article.Lead.trim().substr(0,200) + '...';
-	// console.log(nextLead);
 	var slideInner = event.hailList.find('.slide-inner');
 	slideInner.
 		append(event.clone).
