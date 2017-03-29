@@ -28,7 +28,7 @@ class MultiTagHailList extends HailList {
 		$fields->removeByName('Tags');
 
 		foreach(HailTag::get() as $tag) {
-			$tags[$tag->ID] = $tag->Organisation()->Title . ' - ' . $tag->Name; 
+			$tags[$tag->ID] = function_exists('Organisation') ? $tag->Organisation()->Title . ' - ' . $tag->Name : $tag->Name;
 		}
 
 		asort($tags);
