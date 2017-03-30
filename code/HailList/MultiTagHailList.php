@@ -56,6 +56,8 @@ class MultiTagHailList extends HailList {
 				$list->merge($tag->Articles());
 			}
 
+			$list->removeDuplicates();
+
 			return $list->sort('Date', 'DESC');
 		}
 		
