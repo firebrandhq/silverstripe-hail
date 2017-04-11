@@ -30,7 +30,13 @@ class HailProvider extends League\OAuth2\Client\Provider\AbstractProvider {
 	 * @return string
 	 */
 	public static function getRedirectUri($org) {
-		return Director::absoluteURL('HailCallbackController', true) . '?org=' . $org->ID;
+		
+		// If only one Hail organisation exists, then don't suffix the org idate
+		if(HailOrganisation::get()->count() > 1) {
+			return Director::absoluteURL('HailCallbackController', true) . '?org=' . $org->ID;
+		} else {
+			return Director::absoluteURL('HailCallbackController', true);
+		}
 	}
 	
 	public function urlAuthorize() {
