@@ -81,8 +81,12 @@ class HailHolder_Controller extends Page_Controller {
 
 	public function init() {
 		parent::init();
-		Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jquery-dateFormat.min.js');
-		Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'hail.js');
+        Requirements::css(HAIL_DIR.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'hail-paginator.css');
+
+        Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'bootpag.js');
+        Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'jquery-dateFormat.min.js');
+        Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'hail.js');
+        Requirements::javascript(HAIL_DIR.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'hail-paginator.js');
 	}
 
 	/**
