@@ -141,6 +141,10 @@ class HailHolder_Controller extends Page_Controller {
 	 * @return {@link HailList} List to display
 	 */
 	public function MyList() {
+		if(is_null($this->myList)) {
+			$this->myList = $this->Lists();
+		}
+
 		return $this->myList;
 	}
 	protected $myList;

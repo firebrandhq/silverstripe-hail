@@ -47,8 +47,11 @@ class HailFetchQueueJob extends AbstractQueuedJob implements QueuedJob
         $times[] = date('Y-m-d H:i:s');
         $this->times = $times;
 
-        $hailApiObject = singleton($this->hailObjectType);
-        $hailApiObject->fetch();
+		foreach(HailOrganisation::get() as $org) {
+			$hailApiObject = singleton($this->hailObjectType);
+			$hailApiObject->fetch($org);
+		}
+
         $this->addMessage('Done');
 
         $this->isComplete = true;

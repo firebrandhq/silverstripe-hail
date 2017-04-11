@@ -46,10 +46,10 @@ class HailApi extends Object {
 	 * @return StdClass Reply from Hail
 	 * @throws HailApiException
 	 */
-	protected static function get($uri, $request=false) {
+	protected static function get($uri, HailOrganisation $org, $request=false) {
 		// Initialise request
 		$response = Request::get(static::config()->Url . $uri)
-			->addHeader('Authorization', 'Bearer ' . HailProvider::getHailAccessToken())
+			->addHeader('Authorization', 'Bearer ' . HailProvider::getHailAccessToken($org))
 			->timeoutIn(static::config()->Timeout);
 
 		// If we have a request body
@@ -78,10 +78,11 @@ class HailApi extends Object {
 	 * Retrieve a list of Hail API objects.
 	 *
 	 * @param string $objectType Object type to retrieve
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return array
 	 * @throws HailApiExceptioncd
 	 */
-	public static function getList($objectType) {
+	public static function getList($objectType, HailOrganisation $org) {
 		$uri = '';
 		$request = false;
 
@@ -89,7 +90,7 @@ class HailApi extends Object {
 			case self::TAGS:
 				$uri =
 					self::ORGS . '/' .
-					static::getOrganisationId() . '/' .
+					static::getOrganisationId($org) . '/' .
 					self::TAGS;
 					//$request = array('status' => 'published');
 					if (self::getDisplayUnpublished()) {
@@ -101,7 +102,7 @@ class HailApi extends Object {
 			case self::PRIVATE_TAGS:
 				$uri =
 					self::ORGS . '/' .
-					static::getOrganisationId() . '/' .
+					static::getOrganisationId($org) . '/' .
 					self::PRIVATE_TAGS;
 					//$request = array('status' => 'published');
 					if (self::getDisplayUnpublished()) {
@@ -113,7 +114,7 @@ class HailApi extends Object {
 			case self::ARTICLES:
 				$uri =
 					self::ORGS . '/' .
-					static::getOrganisationId() . '/' .
+					static::getOrganisationId($org) . '/' .
 					self::ARTICLES ;
 					//$request = array('status' => 'published');
 					if (self::getDisplayUnpublished()) {
@@ -125,7 +126,7 @@ class HailApi extends Object {
 			case self::IMAGES:
 				$uri =
 					self::ORGS . '/' .
-					static::getOrganisationId() . '/' .
+					static::getOrganisationId($org) . '/' .
 					self::IMAGES ;
 					if (self::getDisplayUnpublished()) {
 						$request= array();
@@ -136,7 +137,7 @@ class HailApi extends Object {
 			case self::VIDEOS:
 				$uri =
 					self::ORGS . '/' .
-					static::getOrganisationId() . '/' .
+					static::getOrganisationId($org) . '/' .
 					self::VIDEOS ;
 					if (self::getDisplayUnpublished()) {
 						$request= array();
@@ -147,7 +148,7 @@ class HailApi extends Object {
 			case self::PUBLICATIONS:
 				$uri =
 					self::ORGS . '/' .
-					static::getOrganisationId() . '/' .
+					static::getOrganisationId($org) . '/' .
 					self::PUBLICATIONS;
 					//$request = array('status' => 'published');
 					if (self::getDisplayUnpublished()) {
@@ -158,14 +159,14 @@ class HailApi extends Object {
 				break;
 			case self::ORGS:
 				$uri =
-					'users/' . self::getUserId() . '/'. self::ORGS;
+					'users/' . self::getUserId($org) . '/'. self::ORGS;
 				break;
 			default:
 				throw new HailApiException('Invalid object type.');
 				break;
 		}
 
-		return self::get($uri, $request);
+		return self::get($uri, $org, $request);
 	}
 
 
@@ -174,10 +175,11 @@ class HailApi extends Object {
 	 *
 	 * @param string $objectType Object type to retrieve
 	 * @param string $hailID ID of the object in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return StdClass
 	 * @throws HailApiException
 	 */
-	public static function getOne($objectType, $hailID) {
+	public static function getOne($objectType, $hailID, HailOrganisation $org) {
 		$uri = '';
 		$request = false;
 
@@ -205,17 +207,18 @@ class HailApi extends Object {
 				break;
 		}
 
-		return self::get($uri, $request);
+		return self::get($uri, $org, $request);
 	}
 
 	/**
 	 * Retrieve a list of articles for a given tag.
 	 *
 	 * @param string $tagId ID of the Tag in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getArticlesByTag($tagId, $parameter=false) {
+	public static function getArticlesByTag($tagId, HailOrganisation $org, $parameter=false) {
 		$uri = self::TAGS . '/' . $tagId . '/' . self::ARTICLES;
 		if (self::getDisplayUnpublished()) {
 			$request= array();
@@ -225,42 +228,45 @@ class HailApi extends Object {
 		if (is_array($parameter)) {
 			$request = array_merge($request, $parameter);
 		}
-		return self::get($uri, $request);
+		return self::get($uri, $org, $request);
 	}
 
 	/**
 	 * Retrieve a list of images for a given article.
 	 *
 	 * @param string $id ID of the article in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getImagesByArticles($id, $parameter=false) {
+	public static function getImagesByArticles($id, HailOrganisation $org, $parameter=false) {
 		$uri = self::ARTICLES . '/' . $id . '/' . self::IMAGES;
-		return self::get($uri, $parameter);
+		return self::get($uri, $org, $parameter);
 	}
 
 	/**
 	 * Retrieve a list of videos for a given article.
 	 *
 	 * @param string $id ID of the article in Hail
+	 * @param HailOrganisation $org The Hail organisation
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getVideosByArticles($id, $parameter=false) {
+	public static function getVideosByArticles($id, HailOrganisation $org, $parameter=false) {
 		$uri = self::ARTICLES . '/' . $id . '/' . self::VIDEOS;
-		return self::get($uri, $parameter);
+		return self::get($uri, $org, $parameter);
 	}
 
 	/**
 	 * Retrieve user details about the credentials we're using to access hail
 	 *
 	 * @param string $id ID of the article in Hail
+	 * @param HailOrganisation The Hail organisation
 	 * @return array
 	 * @throws HailApiException
 	 */
-	public static function getUser() {
-		return self::get('me');
+	public static function getUser($org) {
+		return self::get('me', $org);
 	}
 
 	/**
@@ -274,8 +280,8 @@ class HailApi extends Object {
 		return static::config()->RefreshRate;
 	}
 
-	public static function getOrganisationList() {
-		$lists = self::getList(self::ORGS);
+	public static function getOrganisationList(HailOrganisation $org) {
+		$lists = self::getList(self::ORGS, $org);
 		$orgs = array();
 		foreach ($lists as $org) {
 			$orgs[$org->id] = $org->name;
@@ -287,8 +293,8 @@ class HailApi extends Object {
 		return static::config()->DisplayUnpublished;
 	}
 
-	private static function getUserId() {
-		$hailUserId = SiteConfig::current_site_config()->HailUserID;
+	private static function getUserId(HailOrganisation $org) {
+		$hailUserId = $org->HailUserID;
 
 		if (!$hailUserId) {
 			throw new HailApiException('You must reauthorize SilverStripe\'s access to Hail.');
@@ -297,8 +303,8 @@ class HailApi extends Object {
 		return $hailUserId;
 	}
 
-	private static function getOrganisationId() {
-		$hailOrgID = SiteConfig::current_site_config()->HailOrgID;
+	private static function getOrganisationId(HailOrganisation $org) {
+		$hailOrgID = $org->HailOrgID;
 
 		if (!$hailOrgID) {
 			throw new HailApiException('You must choose what organisation SilverStripe will be fetching data from.');

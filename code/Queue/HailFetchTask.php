@@ -22,8 +22,10 @@ class HailFetchTask extends BuildTask {
 	public function run($request) {
         foreach (HailApiObject::fetchables() as $hailObjType) {
             echo "Fetching $hailObjType";
-            $hailApiObject = singleton($hailObjType);
-            $hailApiObject->fetch();
+			foreach(HailOrganisation::get() as $org) {
+				$hailApiObject = singleton($hailObjType);
+				$hailApiObject->fetch($org);
+			}
         }
 	}
 
