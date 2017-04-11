@@ -361,6 +361,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             $hailMultiTagLists = SQLQuery::create()->setFrom('MultiTagHailList_Tags')->execute()->column('HailTagID');
 
             $allowedTags = array_merge($hailTagLists, $hailMultiTagLists);
+
             $tags = $item->Tags()->column('ID');
 
             // Index articles if the tag is used in a HailList
