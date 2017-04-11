@@ -62,11 +62,12 @@ class HailImage extends HailApiObject {
 	);
 	
 	private static $summary_fields = array(
-		'HailID',
-		'Thumbnail',
-		'Caption',
-		'Date',
-		'Fetched'
+		'Organisation.Title' => 'Hail Organisation',
+		'HailID' => 'Hail ID',
+		'Thumbnail' => 'Thumbnail',
+		'Caption' => 'Caption',
+		'Date' => 'Date',
+		'Fetched' => 'Fetched'
 	);
 	
 	private static $api_access = true;
@@ -86,6 +87,7 @@ class HailImage extends HailApiObject {
 			if (!$tag) {
 				$tag = new HailTag();
 			}
+			$tag->OrganisationID = $this->OrganisationID;
 			
 			$tag->importHailData($tagData);
 			

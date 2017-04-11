@@ -61,11 +61,12 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     );
 
     private static $summary_fields = array(
-        'HailID',
-        'Title',
-        'Author',
-        'Lead',
-        'Date'
+        'Organisation.Title' => 'Hail Organisation',
+        'HailID' => 'Hail ID',
+        'Title' => 'Title',
+        'Author' => 'Author',
+        'Lead' => 'Lead',
+        'Date' => 'Date'
     );
 
     private static $create_table_options = array('MySQLDatabase' => 'ENGINE=MyISAM');
@@ -119,6 +120,8 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
                 $tag = new HailTag();
             }
 
+            $tag->OrganisationID = $this->OrganisationID;
+
             // Update the Hail Tag
             $tag->importHailData($tagData);
             if (!$this->Tags()->byID($tag->ID)) {
@@ -142,6 +145,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             if (!$hero) {
                 $hero = new HailImage();
             }
+            $hero->OrganisationID = $this->OrganisationID;
             $hero->importHailData($heroImgData);
             $hero = $hero->ID;
         } else {
@@ -158,6 +162,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             if (!$hero) {
                 $hero = new HailVideo();
             }
+            $hero->OrganisationID = $this->OrganisationID;
             $hero->importHailData($heroVidData);
             $hero = $hero->ID;
         } else {
@@ -179,6 +184,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             if (!$attachment) {
                 $attachment = new HailAttachment();
             }
+            $attachment->OrganisationID = $this->OrganisationID;
 
             // Update the Hail Attachments
             $attachment->importHailData($attachmentData);
@@ -233,7 +239,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
      */
     public function fetchImages() {
         try {
-            $list = HailApi::getImagesByArticles($this->HailID);
+            $list = HailApi::getImagesByArticles($this->HailID, HailOrganisation::get()->byID($this->OrganisationID));
         } catch (HailApiException $ex) {
             Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
             return;
@@ -250,6 +256,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             if (!$hailObj) {
                 $hailObj = new HailImage();
             }
+            $hailObj->OrganisationID = $this->OrganisationID;
             $hailObj->importHailData($hailData);
             $this->ImageGallery()->add($hailObj);
         }
@@ -269,7 +276,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
      */
     public function fetchVideos() {
         try {
-            $list = HailApi::getVideosByArticles($this->HailID);
+            $list = HailApi::getVideosByArticles($this->HailID, HailOrganisation::get()->byID($this->OrganisationID));
         } catch (HailApiException $ex) {
             Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
             return;
@@ -286,6 +293,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             if (!$hailObj) {
                 $hailObj = new HailVideo();
             }
+            $hailObj->OrganisationID = $this->OrganisationID;
             $hailObj->importHailData($hailData);
             $this->VideoGallery()->add($hailObj);
         }
@@ -308,6 +316,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
         $return = parent::importHailData($data);
 
         if ($originalUpdated != $this->Updated) {
+
             $this->refresh();
         }
 

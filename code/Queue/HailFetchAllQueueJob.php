@@ -51,8 +51,10 @@ class HailFetchAllQueueJob extends AbstractQueuedJob implements QueuedJob
 
 
         $this->addMessage("Fetching $hailObjType");
-        $hailApiObject = singleton($hailObjType);
-        $hailApiObject->fetch();
+        foreach(HailOrganisation::get() as $org) {
+			$hailApiObject = singleton($this->hailObjectType);
+			$hailApiObject->fetch($org);
+		}
 
         $this->currentStep++;
         if ($this->currentStep >= $this->totalSteps) {

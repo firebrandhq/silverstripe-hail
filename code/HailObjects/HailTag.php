@@ -24,10 +24,11 @@ class HailTag extends HailApiObject {
 	private static $api_access = true;
 
 	private static $summary_fields = array(
-		'HailID',
-		'Name',
-		'Description',
-		'Fetched'
+		'Organisation.Title' => 'Hail Organisation',
+		'HailID' => 'Hail ID',
+		'Name' => 'Name',
+		'Description' => 'Description',
+		'Fetched' => 'Fetched'
 	);
 
 	protected static function getObjectType() {
@@ -59,7 +60,7 @@ class HailTag extends HailApiObject {
 
 	public function fetchArticles() {
 		try {
-			$list = HailApi::getArticlesByTag($this->HailID);
+			$list = HailApi::getArticlesByTag($this->HailID, HailOrganisation::get()->byID($this->OrganisationID));
 		} catch (HailApiException $ex) {
 			Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
 			return;

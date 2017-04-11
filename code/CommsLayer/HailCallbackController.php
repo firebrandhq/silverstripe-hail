@@ -9,39 +9,38 @@ class HailCallbackController extends Controller {
 		'index',
 	);
 
-	public function index() {
-		$siteconfig = SiteConfig::current_site_config();
+	public function index(SS_HTTPRequest $request) {
 
-		if($siteconfig->canEdit()) {
+		$org = isset($_GET['org']) ? HailOrganisation::get()->byID($_GET['org']) : HailOrganisation::get()->first();
 
-			$siteconfig->HailRedirectCode = $_GET['code'];
+		if($org->canEdit()) {
 
+			$org->HailRedirectCode = $_GET['code'];
 
-			$provider = new HailProvider();
+			$provider = new HailProvider($org);
 
 			try {
 				$token = $provider->getAccessToken('authorization_code', [
-					'code' => $siteconfig->HailRedirectCode,
+					'code' => $org->HailRedirectCode,
 				]);
 
 			} catch (Exception $ex) {
 				die($ex->getMessage());
 			}
 
-			$siteconfig->HailAccessToken = $token->accessToken;
-			$siteconfig->HailAccessTokenExpire = $token->expires;
-			$siteconfig->HailRefreshToken = $token->refreshToken;
+			$org->HailAccessToken = $token->accessToken;
+			$org->HailAccessTokenExpire = $token->expires;
+			$org->HailRefreshToken = $token->refreshToken;
 
-			$siteconfig->write();
+			$org->write();
 
 			// Refresh site config and save the user id
-			$user = HailApi::getUser();
-			$siteconfig = SiteConfig::current_site_config();
-			$siteconfig->HailUserID = $user->id;
-			$siteconfig->write();
+			$user = HailApi::getUser($org);
+			$org->HailUserID = $user->id;
+			$org->write();
 		}
 
-		$this->redirect('admin/settings');
+		$this->redirect('admin/settings/EditForm/field/Organisations/item/' . $org->ID);
 
 	}
 }
