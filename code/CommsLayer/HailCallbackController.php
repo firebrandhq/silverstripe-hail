@@ -11,7 +11,7 @@ class HailCallbackController extends Controller {
 
 	public function index(SS_HTTPRequest $request) {
 
-		$org = HailOrganisation::get()->byID($_GET['org']);
+		$org = isset($_GET['org']) ? HailOrganisation::get()->byID($_GET['org']) : HailOrganisation::get()->first();
 
 		if($org->canEdit()) {
 
