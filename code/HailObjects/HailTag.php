@@ -10,6 +10,7 @@ class HailTag extends HailApiObject {
 	private static $many_many = array(
 		'Articles' => 'HailArticle',
 		'Images' => 'HailImage',
+		'Publications' => 'HailPublication',
 		'Videos' => 'HailVideo',
 	);
 

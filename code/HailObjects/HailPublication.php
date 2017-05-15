@@ -1,7 +1,7 @@
 <?php
 
 class HailPublication extends HailApiObject {
-	
+
 	private static $db = array(
 		'Title' => 'Varchar',
 		'Editorial' => 'HTMLText',
@@ -11,16 +11,20 @@ class HailPublication extends HailApiObject {
 		'Created' => 'Datetime',
 		'Url' => 'Text',
 	);
-	
+
 	private static $has_one = array(
 		'FeaturedArticle' => 'HailArticle',
 		'HeroImage' => 'HailImage'
 	);
-	
+
 	private static $searchable_fields = array(
 		'Title','Editorial','Created','Style'
 	);
-	
+
+    private static $belongs_many_many = array(
+        'Tags' => 'HailTag',
+    );
+
 	private static $summary_fields = array(
 		'Organisation.Title' => 'Hail Organisation',
 		'HailID' => 'Hail ID',
@@ -29,19 +33,20 @@ class HailPublication extends HailApiObject {
 		'Style' => 'Style',
 		'Fetched' => 'Fetched'
 	);
-	
+
 	protected static function getObjectType() {
 		return HailApi::PUBLICATIONS;
 	}
-	
+
 	protected function importing($data) {
 		if (!empty($data->style)) {
 			$this->Style = empty($data->style->name) ? '' : $data->style->name ;
 		}
-		
+
+        $this->processTags(null, $data->private_tags);
 		$this->processFeaturedArticle($data->featured_article);
 	}
-	
+
 	protected static function apiMap() {
 		return array(
 			'Title' => 'title',
@@ -52,14 +57,14 @@ class HailPublication extends HailApiObject {
 			'Url' => 'url',
 		);
 	}
-	
+
 	public function getCMSFields( ) {
 		$fields = parent::getCMSFields();
-		
+
 
 		return $fields;
 	}
-	
+
 		// Match the featured article if there's one
 	private function processFeaturedArticle($articleData) {
 		if ($articleData) {
@@ -68,22 +73,22 @@ class HailPublication extends HailApiObject {
 				$article = new HailArticle();
 			}
 			$article->importHailData($articleData);
-			
+
 			$heroImage = $article->HeroImageID;
-			
+
 			$article = $article->ID;
 		} else {
 			$article = null;
 		}
-		
+
 		$this->FeaturedArticleID = $article;
-		
+
 		if (isset($heroImage) && $heroImage) {
 			$this->HeroImageID = $heroImage;
 		}
-		
+
 	}
-	
+
 	public function forTemplate() {
 		return $this->renderWith('HailPublication', array('HailHolder' => Controller::curr()) );
 	}

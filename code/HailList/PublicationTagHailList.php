@@ -1,6 +1,6 @@
 <?php
 
-class TagHailList extends HailList {
+class PublicationTagHailList extends HailList {
 
 	private static $db = array(
 	);
@@ -44,9 +44,9 @@ class TagHailList extends HailList {
 	public function Articles() {
 		if ($this->TagID) {
 			$this->fetch();
-			return $this->Tag()->Articles()->sort('Date', 'DESC');
+			return $this->Tag()->Publications()->sort('DueDate', 'DESC');
 		} else {
-			return HailArticle::get()->sort('Date', 'DESC');
+			return HailPublication::get()->sort('DueDate', 'DESC');
 		}
 
 	}
@@ -56,7 +56,7 @@ class TagHailList extends HailList {
 	}
 
 	public function Type() {
-		return 'Tag List';
+		return 'Publication Tag List';
 	}
 
 }

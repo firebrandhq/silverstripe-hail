@@ -5,7 +5,7 @@ class HailModelAdmin extends ModelAdmin {
 	private static $menu_title = 'Hail integration';
 	private static $url_segment = 'hail'; // Linked as /admin/products/
 
-	private static $managed_models = array('HailTag', 'HailArticle', 'HailImage', 'HailVideo', 'HailPublication');
+	private static $managed_models = array('HailTag', 'HailPrivateTag', 'HailArticle', 'HailImage', 'HailVideo', 'HailPublication');
 
 	private static $allowed_actions = array(
 		'fetchForm'

@@ -29,6 +29,7 @@ class MultiTagHailList extends HailList {
 
 		foreach(HailTag::get() as $tag) {
 			$tags[$tag->ID] = function_exists('Organisation') ? $tag->Organisation()->Title . ' - ' . $tag->Name : $tag->Name;
+			if(get_class($tag)=='HailPrivateTag') $tags[$tag->ID].= ' [Private]';
 		}
 
 		asort($tags);
@@ -60,7 +61,7 @@ class MultiTagHailList extends HailList {
 
 			return $list->sort('Date', 'DESC');
 		}
-		
+
 		return HailArticle::get()->sort('Date', 'DESC');
 	}
 

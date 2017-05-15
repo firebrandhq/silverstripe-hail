@@ -68,6 +68,7 @@ class HailApiObject extends DataObject {
 			if (!$hailObj) {
 				$hailObj = new static();
 			}
+
 			$hailObj->OrganisationID = $org->ID;
 			$hailObj->write();
 
@@ -277,7 +278,6 @@ class HailApiObject extends DataObject {
 
 	public function validate() {
 		$results = parent::validate();
-
 		if(!$this->OrganisationID) {
 			$results->error('Hail organisation ID is required');
 		}
@@ -321,5 +321,44 @@ class HailApiObject extends DataObject {
 		$grid = new GridField($name, $name, $relation, $config);
 		$fields->addFieldToTab('Root.' . $name, $grid);
 	}
+
+    // Go through the list of tags and assign them to this HailAPIObject.
+    public function processTags($tags, $private_tags) {
+    	$tagIdList = array();
+    	if($tags) $tagIdList = array_merge($tagIdList,$this->processTagsOfType($tags,'HailTag'));
+    	if($private_tags) $tagIdList = array_merge($tagIdList,$this->processTagsOfType($private_tags,'HailTag'));
+
+        // Remove old tag that are currently assigned to this article,
+        // but have not been returned this time around
+        if ($tagIdList) {
+            $this->Tags()->exclude('HailID', $tagIdList)->removeAll();
+        } else {
+            $this->Tags()->removeAll();
+        }
+    }
+
+    private function processTagsOfType($data, $className) {
+	    $tagIdList = array();
+        foreach ($data as $tagData) {
+            $tagIdList[] = $tagData->id;
+
+            // Find a matching HailTag or create an new one
+            $tag = $className::get()->filter(array('HailID' => $tagData->id))->first();
+
+            if (!$tag) {
+                $tag = new $className();
+            }
+
+            $tag->OrganisationID = $this->OrganisationID;
+
+            // Update the Hail Tag
+            $tag->importHailData($tagData);
+            if (!$this->Tags()->byID($tag->ID)) {
+                $this->Tags()->add($tag);
+            }
+        }
+
+        return $tagIdList;
+    }
 
 }

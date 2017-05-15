@@ -96,26 +96,8 @@ class HailVideo extends HailApiObject {
 	}
 
 	protected function importing($data) {
-		// Process Tags
-		$tagIdList = array();
-		foreach ($data->tags as $tagData) {
-			$tagIdList[] = $tagData->id;
 
-			$tag = HailTag::get()->filter(array('HailID' => $tagData->id))->first();
-
-			if (!$tag) {
-				$tag = new HailTag();
-			}
-
-			$tag->importHailData($tagData);
-
-			if (!$this->Tags()->byID($tag->ID)) {
-				$this->Tags()->add($tag);
-			}
-		}
-
-		// Remove old tags
-		$this->Tags()->exclude('HailID', $this->HailID)->removeAll();
+        $this->processTags($data->tags, $data->private_tags);
 
 		$preview = $data->preview;
 
