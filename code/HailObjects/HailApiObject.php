@@ -88,7 +88,7 @@ class HailApiObject extends DataObject {
      */
     public static function fetchables()
     {
-        return ['HailArticle', 'HailImage', 'HailPublication', 'HailTag', 'HailVideo'];
+        return ['HailTag', 'HailPrivateTag', 'HailArticle', 'HailImage', 'HailPublication', 'HailVideo'];
     }
 
 	/**
