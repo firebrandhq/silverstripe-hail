@@ -42,7 +42,7 @@ class TagHailList extends HailList {
 	}
 
 	public function Articles() {
-		if ($this->TagID) {
+		if ($this->Tag()->TagID) {
 			$this->fetch();
 			return $this->Tag()->Articles()->sort('Date', 'DESC');
 		} else {

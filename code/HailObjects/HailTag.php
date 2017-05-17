@@ -32,10 +32,6 @@ class HailTag extends HailApiObject {
 		'Fetched' => 'Fetched'
 	);
 
-	protected static function getObjectType() {
-		return HailApi::TAGS;
-	}
-
 	public function importHailData($data) {
 		$this->Name = $data->name;
 		$this->Description = $data->description;
