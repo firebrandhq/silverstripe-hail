@@ -42,7 +42,7 @@ class PublicationTagHailList extends HailList {
 	}
 
 	public function Articles() {
-		if ($this->Tag()->TagID) {
+		if ($this->Tag()->ID) {
 			$this->fetch();
 			return $this->Tag()->Publications()->sort('DueDate', 'DESC');
 		} else {
