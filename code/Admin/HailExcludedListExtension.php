@@ -1,21 +1,29 @@
 <?php
 
-class HailExcludedListExtension extends DataExtension {
+class HailExcludedListExtension extends DataExtension
+{
 
     private static $db = array(
-        'HailExcludedTagID' => 'Varchar(255)',
+        'HailExcludedTagIDs' => 'Varchar(255)',
     );
 
-    public function updateCMSFields(FieldList $fields) {
+    public function updateCMSFields(FieldList $fields)
+    {
+//        $fields = parent::updateCMSFields($fields);
 
-
-        if(HailProvider::isAuthorised()) {
-            if($this->getOwner()->HailOrgID) {
-                $tags = HailApi::getPrivateTagList();
-                $tags[''] = '';
-                $tagField = DropdownField::create('HailExcludedTagID', 'Private Excluded Tag', $tags)->setEmptyString('None');
-                $fields->addFieldsToTab('Root.Private Excluded Tag', $tagField);
+        $orgs = HailOrganisation::get();
+        $tags = array();
+        foreach ($orgs as $org) {
+            if (HailProvider::isAuthorised($org)) {
+                    $tags = array_merge(HailApi::getPrivateTagList($org), $tags);
             }
+        }
+        //Check if at least 1 organisation is authorized
+        if(sizeof($tags) > 0) {
+            $fields->addFieldToTab('Root.Hail',Tab::create('ExcludedTags', 'Excluded Private Tags'));
+            $tagField = ListboxField ::create('HailExcludedTagIDs', 'Hail Private Tags to exclude:', $tags)->setEmptyString('None')->setMultiple(true);
+            $fields->addFieldToTab('Root.Hail.ExcludedTags', $tagField);
+
         }
     }
 }

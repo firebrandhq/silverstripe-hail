@@ -313,11 +313,11 @@ class HailApi extends Object {
 		return $hailOrgID;
 	}
 	
-	public static function getPrivateTagList() {
-		$lists = self::getList(self::PRIVATE_TAGS);
+	public static function getPrivateTagList(HailOrganisation $org) {
+		$lists = self::getList(self::PRIVATE_TAGS, $org);
 		$ptags = array();
 		foreach ($lists as $ptag) {
-			$ptags[$ptag->id] = $ptag->name;
+			$ptags[$ptag->id] = $org->title . ' - ' . $ptag->name;
 		}
 		return $ptags;
 	}

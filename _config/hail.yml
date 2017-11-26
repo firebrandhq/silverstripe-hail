@@ -6,7 +6,7 @@ HailApi:
   RefreshRate: 86400
 SiteConfig:
   extensions:
-    - HailLoginExtension
+    - HailSettingsExtension
     - HailExcludedListExtension
 HailArticle:
   extensions:
