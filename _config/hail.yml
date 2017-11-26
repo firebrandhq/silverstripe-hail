@@ -7,9 +7,14 @@ HailApi:
 SiteConfig:
   extensions:
     - HailLoginExtension
+    - HailExcludedListExtension
 HailArticle:
   extensions:
     - SearchableDataObject
+    - HailExcludedExtension
+HailPublication:
+  extensions:
+    - HailExcludedExtension
 Director:
   rules:
     'HailCallbackController': 'HailCallbackController'
