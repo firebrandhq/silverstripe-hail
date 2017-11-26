@@ -84,7 +84,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             $this->Content = $data->body;
         }
 
-        $this->processTags($data->tags);
+        $this->processTags($data->tags, $data->private_tags);
         $this->processHeroImage($data->hero_image);
         $this->processHeroVideo($data->hero_video);
         $this->processAttachments($data->attachments);
@@ -105,37 +105,6 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
             'Flagged' => 'flagged',
             'Date' => 'date'
         );
-    }
-
-    // Go through the list of tags and assign them to this article.
-    private function processTags($data) {
-        $tagIdList = array();
-        foreach ($data as $tagData) {
-            $tagIdList[] = $tagData->id;
-
-            // Find a matching HailTag or create an new one
-            $tag = HailTag::get()->filter(array('HailID' => $tagData->id))->first();
-
-            if (!$tag) {
-                $tag = new HailTag();
-            }
-
-            $tag->OrganisationID = $this->OrganisationID;
-
-            // Update the Hail Tag
-            $tag->importHailData($tagData);
-            if (!$this->Tags()->byID($tag->ID)) {
-                $this->Tags()->add($tag);
-            }
-        }
-
-        // Remove old tag that are currently assigned to this article,
-        // but have not been returned this time around
-        if ($tagIdList) {
-            $this->Tags()->exclude('HailID', $tagIdList)->removeAll();
-        } else {
-            $this->Tags()->removeAll();
-        }
     }
 
     // Match the hero image if there's one
@@ -358,7 +327,7 @@ class HailArticle extends HailApiObject implements SearchableLinkable {
     }
 
     public static function getSearchFilterByCallback() {
-        return function($item, $list) { 
+        return function($item, $list) {
             $hailLists = HailList::get();
 
             // Index all articles if a HailList is used anywhere

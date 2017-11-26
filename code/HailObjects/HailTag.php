@@ -10,6 +10,7 @@ class HailTag extends HailApiObject {
 	private static $many_many = array(
 		'Articles' => 'HailArticle',
 		'Images' => 'HailImage',
+		'Publications' => 'HailPublication',
 		'Videos' => 'HailVideo',
 	);
 
@@ -30,10 +31,6 @@ class HailTag extends HailApiObject {
 		'Description' => 'Description',
 		'Fetched' => 'Fetched'
 	);
-
-	protected static function getObjectType() {
-		return HailApi::TAGS;
-	}
 
 	public function importHailData($data) {
 		$this->Name = $data->name;

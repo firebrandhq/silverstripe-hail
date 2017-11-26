@@ -6,7 +6,7 @@
  * @package hail
  * @author Maxime Rainville, Firebrand
  * @version 1.0
- * 
+ *
  * @property string Caption
  * @property string People
  * @property SS_Datetime Date
@@ -29,7 +29,7 @@
  * @method ManyManyList Articles() List of {@link HailArticle}
  */
 class HailImage extends HailApiObject {
-	
+
 	private static $db = array(
 		'Caption' => 'Varchar',
 		'People' => 'Varchar',
@@ -49,18 +49,18 @@ class HailImage extends HailApiObject {
 		'Created' => 'Date',
 		'Rating' => 'Double',
 		'Flagged' => 'Boolean',
-		
+
 		'FaceCentreX' => 'Int',
 		'FaceCentreY' => 'Int',
 		'OriginalWidth' => 'Int',
 		'OriginalHeight' => 'Int',
 	);
-	
+
 	private static $belongs_many_many = array(
 		'Tags' => 'HailTag',
 		'Articles' => 'HailArticle'
 	);
-	
+
 	private static $summary_fields = array(
 		'Organisation.Title' => 'Hail Organisation',
 		'HailID' => 'Hail ID',
@@ -69,36 +69,17 @@ class HailImage extends HailApiObject {
 		'Date' => 'Date',
 		'Fetched' => 'Fetched'
 	);
-	
+
 	private static $api_access = true;
-	
+
 	protected static function getObjectType() {
 		return HailApi::IMAGES;
 	}
-	
-	protected function importing($data) {
-		// Process Tags
-		$tagIdList = array();
-		foreach ($data->tags as $tagData) {
-			$tagIdList[] = $tagData->id;
 
-			$tag = HailTag::get()->filter(array('HailID' => $tagData->id))->first();
-			
-			if (!$tag) {
-				$tag = new HailTag();
-			}
-			$tag->OrganisationID = $this->OrganisationID;
-			
-			$tag->importHailData($tagData);
-			
-			if (!$this->Tags()->byID($tag->ID)) {
-				$this->Tags()->add($tag);
-			}
-		}
-		
-		// Remove old tags
-		$this->Tags()->exclude('HailID', $this->HailID)->removeAll();
-		
+	protected function importing($data) {
+
+        $this->processTags($data->tags, $data->private_tags);
+
 		// Import face position data
 		if (empty($data->focal_point)) {
 			$this->FaceCentreX = -1;
@@ -108,7 +89,7 @@ class HailImage extends HailApiObject {
 			$this->FaceCentreY = empty($data->focal_point->y) ? -1 : $data->focal_point->y;
 		}
 	}
-	
+
 	protected static function apiMap() {
 		return array(
 			'Caption' => 'caption',
@@ -125,7 +106,7 @@ class HailImage extends HailApiObject {
 			'Url1000Square' => 'file_1000_square_url',
 			'Url2000' => 'file_2000_url',
 			'Urloriginal' => 'file_original_url',
-			
+
 			'OriginalWidth' => 'original_width',
 			'OriginalHeight' => 'original_height',
 
@@ -133,7 +114,7 @@ class HailImage extends HailApiObject {
 			'Flagged' => 'flagged',
 		);
 	}
-	
+
 	/**
 	 * Renders out a thumbnail of this Hail Image.
 	 *
@@ -146,34 +127,34 @@ class HailImage extends HailApiObject {
 
 		return $data->renderWith('HailImageThumbnail');
 	}
-	
+
 	public function getRelativeCenterX() {
 		$pos = 50;
 		if ($this->FaceCentreX > 0 && $this->OriginalWidth > 0) {
 			$pos = $this->FaceCentreX / $this->OriginalWidth * 100;
 			$pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
 		}
-		
+
 		return $pos;
 	}
-	
+
 	public function getRelativeCenterY() {
 		$pos = 50;
 		if ($this->FaceCentreY > 0 && $this->OriginalHeight > 0) {
 			$pos = $this->FaceCentreY / $this->OriginalHeight * 100;
 			$pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
 		}
-		
+
 		return $pos;
 	}
-	
+
 	public function getCMSFields( ) {
 		$fields = parent::getCMSFields();
-		
+
 		// Display relations
 		$this->makeRecordViewer($fields, "Tags", $this->Tags());
 		$this->makeRecordViewer($fields, "Articles", $this->Articles());
-		
+
 		// Hide all those URL
 		$fields->removeByName('Url150Square');
 		$fields->removeByName('Url500');
@@ -185,7 +166,7 @@ class HailImage extends HailApiObject {
 
 		$fields->removeByName('FaceCentreX');
 		$fields->removeByName('FaceCentreY');
-		
+
 		// Display a thumbnail
 		$heroField = new LiteralField (
 			"Thumbnail",
@@ -195,9 +176,9 @@ class HailImage extends HailApiObject {
 
 		return $fields;
 	}
-	
+
 	public function getUrl() {
 		return $this->Urloriginal;
 	}
-	
+
 }
