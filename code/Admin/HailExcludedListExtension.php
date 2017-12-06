@@ -14,8 +14,9 @@ class HailExcludedListExtension extends DataExtension
         $orgs = HailOrganisation::get();
         $tags = array();
         foreach ($orgs as $org) {
-            if (HailProvider::isAuthorised($org)) {
-                    $tags = array_merge(HailApi::getPrivateTagList($org), $tags);
+            //To avoid errors when you authorize the app with Hail
+            if($org->HailOrgID) {
+                $tags = array_merge(HailApi::getPrivateTagList($org), $tags);
             }
         }
         //Check if at least 1 organisation is authorized
