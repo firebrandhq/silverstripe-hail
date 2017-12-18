@@ -109,6 +109,12 @@ class HailHolder_Controller extends Page_Controller {
 	 */
 	public function hailarticle($request) {
 		$this->myArticle = HailArticle::get()->byID($request->param('ID'));
+        
+		// Return 404 if article not found
+		if(is_null($this->myArticle))
+		{
+			return $this->httpError(404);
+		}
 
 		$this->myArticle->refresh();
 
