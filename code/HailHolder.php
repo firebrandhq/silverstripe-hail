@@ -116,6 +116,11 @@ class HailHolder_Controller extends Page_Controller {
 			return $this->httpError(404);
 		}
 
+		//Check if article is using the correct Holder
+        if($this->myArticle->getHailHolder()->ID != $this->ID) {
+            return $this->httpError(404);
+        }
+
 		$this->myArticle->refresh();
 
 		if ($this->myArticle->Content) {

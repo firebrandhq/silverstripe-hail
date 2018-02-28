@@ -16,7 +16,9 @@ class HailOrganisation extends DataObject {
 	);
 
 	private static $has_one = array(
-		'PrimaryHailHolder' => 'HailHolder'
+		'PrimaryHailHolder' => 'HailHolder',
+		'SecondaryHailHolder' => 'HailHolder',
+		'SecondaryHailTag' => 'HailTag',
 	);
 
 	private static $summary_fields = array(
@@ -65,9 +67,18 @@ class HailOrganisation extends DataObject {
 			$fields->addFieldsToTab('Root.Hail', new LiteralField('Retry', 'You Have to Re-Authorise SilverStripe to Access Hail'));
 		}
 
-		$holderField = DropdownField::create('PrimaryHailHolderID', 'Primary Hail Holder', HailHolder::get()->map('ID', 'Title'));
+		$holderField = DropdownField::create('PrimaryHailHolderID', 'Primary Hail Holder', HailHolder::get()->filter("ID:not", $this->SecondaryHailHolderID)->map('ID', 'Title'));
 		$holderField->setEmptyString('(None)');
-		$fields->addFieldsToTab('Root.Main', $holderField);
+		$fields->addFieldToTab('Root.Main', $holderField, 'RedirectURL');
+
+        $secHolderField = DropdownField::create('SecondaryHailHolderID', 'Secondary Hail Holder', HailHolder::get()->filter("ID:not", $this->PrimaryHailHolderID)->map('ID', 'Title'));
+        $secHolderField->setEmptyString('(None)');
+        $secHolderField->setRightTitle('All articles that have the "Secondary Hail Tag" (set below) will use the Secondary Holder');
+        $fields->addFieldToTab('Root.Main', $secHolderField, 'RedirectURL');
+
+        $secHailTag = DropdownField::create('SecondaryHailTagID', 'Secondary Hail Tag', HailTag::get()->map('ID', 'Name'));
+        $secHailTag->setEmptyString('(None)');
+        $fields->addFieldToTab('Root.Main', $secHailTag, 'RedirectURL');
 
 		$fields->addFieldToTab('Root.Main', NumericField::create('HailTimeout', 'Hail Timeout'));
 
