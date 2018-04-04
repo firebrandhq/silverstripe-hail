@@ -16,7 +16,7 @@
     	"undefinedoffset/sortablegridfield": "0.6 - 1",
     	"colymba/gridfield-bulk-editing-tools": "2.1.10",
 		"nategood/httpful": "dev-master",
-		"silverstripe/restfulserver": "dev-master",
+		"silverstripe/restfulserver": "1.0.x-dev",
 		"league/oauth2-client": "0.*",
 		"silverstripe/queuedjobs": "^2.8"
     }
