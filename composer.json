@@ -1,0 +1,14 @@
+{
+    "name": "firebrand/silverstripe-hail",
+    "description": "Hail plugin for SilverStripe 4",
+    "type": "library",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Firebrand",
+            "email": "developers@firebrand.nz"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
