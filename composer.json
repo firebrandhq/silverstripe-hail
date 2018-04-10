@@ -1,14 +1,13 @@
 {
-    "name": "firebrand/silverstripe-hail",
-    "description": "Hail plugin for SilverStripe 4",
-    "type": "library",
-    "license": "GPL-3.0",
-    "authors": [
-        {
-            "name": "Firebrand",
-            "email": "developers@firebrand.nz"
-        }
-    ],
+    "name": "firebrandhq/silverstripe-hail",
+    "description": "Silverstripe 4 plugin to integrate with Hail (https://get.hail.to)",
+    "type": "silverstripe-module",
+    "keywords": ["silverstripe", "News", "Hail", "Content"],
+    "license": "MIT",
+    "authors": [{
+        "name": "Firebrand Limited",
+        "email": "developers@firebrand.nz"
+    }],
     "minimum-stability": "stable",
     "require": {}
 }
