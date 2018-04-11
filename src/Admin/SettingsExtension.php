@@ -7,7 +7,9 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LabelField;
+use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\MultiSelectField;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
@@ -53,9 +55,9 @@ class SettingsExtension extends DataExtension
             $notice->addExtraClass($class);
             $fields->addFieldToTab("Root.Hail", $notice);
             //remove notice from the session so it's not displayed on next page load
-//            $session->clear('notice');
-//            $session->clear('noticeType');
-//            $session->clear('noticeText');
+            $session->clear('notice');
+            $session->clear('noticeType');
+            $session->clear('noticeText');
         }
         //Hail settings fields
         $client_id = TextField::create("HailClientID", "Hail Client ID");
@@ -71,7 +73,13 @@ class SettingsExtension extends DataExtension
                 'Authorise SilverStripe to Access Hail';
 
             $auth = $hail_provider->getAuthorizationURL();
-            $fields->addFieldsToTab('Root.Hail', new LiteralField('Go', "<div class='form-group form__field-label'><a class='btn btn-primary' href='$auth'>$link</a></div>"));
+            $fields->addFieldToTab('Root.Hail', new LiteralField('Go', "<div class='form-group form__field-label'><a class='btn btn-primary' href='$auth'>$link</a></div>"));
+        }
+        if($hail_provider->isAuthorised()) {
+            //Organisations list
+            $organisations = $hail_provider->getAvailableOrganisations(true);
+            $org_selector = ListboxField::create("HailOrgsIDs","Hail organisations", $organisations);
+            $fields->addFieldToTab('Root.Hail',$org_selector);
         }
 
     }

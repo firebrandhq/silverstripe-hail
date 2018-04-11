@@ -33,48 +33,79 @@ class Provider
         $this->orgs_ids = $config->HailOrgsIDs;
     }
 
-    public function get()
+    public function get($uri, $body = null)
     {
+        $options = [];
+        $http = $this->getHTTPClient();
+        $options['headers'] = [
+            "Authorization" => "Bearer " . $this->getAccessToken()
+        ];
 
+        //Pass the body if needed
+        if ($body) {
+            $options['form_params'] = $body;
+        }
+
+        // Request access token
+        $response = $http->request('GET', $uri, $options);
+
+        $responseBody = $response->getBody();
+        $responseArr = json_decode($responseBody, true);
+
+        return $responseArr;
     }
 
-    public function setAccessToken($access_token)
+    public function getHTTPClient()
     {
-        $config = SiteConfig::current_site_config();
-        $config->HailAccessToken = $access_token;
-        $config->write();
-        $this->access_token = $access_token;
+        return new Client(["base_uri" => $this->getApiBaseURL()]);
     }
 
-    public function setAccessTokenExpire($access_token_expire)
+
+    public function fetchAccessToken($redirect_code)
     {
-        $config = SiteConfig::current_site_config();
-        $config->HailAccessTokenExpire = $access_token_expire;
-        $config->write();
-        $this->access_token_expire = $access_token_expire;
+        $http = $this->getHTTPClient();
+        $post_data = [
+            'client_id' => $this->client_id,
+            'client_secret' => $this->client_secret,
+            'grant_type' => 'authorization_code',
+            'code' => $redirect_code,
+            'redirect_uri' => $this->getRedirectURL(),
+        ];
+        // Request access token
+        $response = $http->request('POST', 'oauth/access_token', [
+            'form_params' => $post_data
+        ]);
+
+        $responseBody = $response->getBody();
+        $responseArr = json_decode($responseBody, true);
+
+        //Set new data into the config and update the current instance
+        $this->setAccessToken($responseArr['access_token']);
+        $this->setAccessTokenExpire($responseArr['expires_in']);
+        $this->setRefreshToken($responseArr['refresh_token']);
     }
 
-    public function setRefreshToken($refresh_token)
+    public function refreshAccessToken()
     {
-        $config = SiteConfig::current_site_config();
-        $config->HailrefreshToken = $refresh_token;
-        $config->write();
-        $this->refresh_token = $refresh_token;
-    }
+        $http = $this->getHTTPClient();
+        $post_data = [
+            'client_id' => $this->client_id,
+            'client_secret' => $this->client_secret,
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $redirect_code,
+        ];
+        // Refresh access token
+        $response = $http->request('POST', 'oauth/access_token', [
+            'form_params' => $post_data
+        ]);
 
-    public function setUserID()
-    {
+        $responseBody = $response->getBody();
+        $responseArr = json_decode($responseBody, true);
 
-    }
-
-    public function isAuthorised()
-    {
-        return $this->access_token_expire && $this->access_token && $this->refresh_token;
-    }
-
-    public function isReadyToAuthorised()
-    {
-        return $this->client_id && $this->client_secret;
+        //Set new data into the config and update the current instance
+        $this->setAccessToken($responseArr['access_token']);
+        $this->setAccessTokenExpire($responseArr['expires_in']);
+        $this->setRefreshToken($responseArr['refresh_token']);
     }
 
     public function getRedirectURL()
@@ -99,32 +130,75 @@ class Provider
         return $url . "?" . http_build_query($params);
     }
 
-    public function getHTTPClient()
+    public function getAccessToken()
     {
-        return new Client(["base_uri" => $this->getApiBaseURL()]);
+        //Check if AccessToken needs to be refreshed
+        $now = time();
+        $time = time();
+        $difference = $this->access_token_expire - $time;
+        if ($difference < strtotime('15 minutes', 0)) {
+            $this->refreshAccessToken();
+        }
+
+        return $this->access_token;
     }
 
-    public function fetchAccessToken($redirect_code)
+    public function setAccessToken($access_token)
     {
-        $http = $this->getHTTPClient();
-        $post_data = [
-            'client_id' => $this->client_id,
-            'client_secret' => $this->client_secret,
-            'grant_type' => 'authorization_code',
-            'code' => $redirect_code,
-            'redirect_uri' => $this->getRedirectURL(),
-        ];
-        // Request access token
-        $response = $http->request('POST', 'oauth/access_token', [
-            'form_params' => $post_data
-        ]);
+        $config = SiteConfig::current_site_config();
+        $config->HailAccessToken = $access_token;
+        $config->write();
+        $this->access_token = $access_token;
+    }
 
-        $responseBody = $response->getBody();
-        $responseArr = json_decode($responseBody, true);
+    public function setAccessTokenExpire($access_token_expire)
+    {
+        //Store expiry date as unix timestamp (now + expires in)
+        $access_token_expire = time() + $access_token_expire;
+        $config = SiteConfig::current_site_config();
+        $config->HailAccessTokenExpire = $access_token_expire;
+        $config->write();
+        $this->access_token_expire = $access_token_expire;
+    }
 
-        //Set new data into the config and update the current instance
-        $this->setAccessToken($responseArr['access_token']);
-        $this->setAccessTokenExpire($responseArr['expires_in']);
-        $this->setRefreshToken($responseArr['refresh_token']);
+    public function setRefreshToken($refresh_token)
+    {
+        $config = SiteConfig::current_site_config();
+        $config->HailrefreshToken = $refresh_token;
+        $config->write();
+        $this->refresh_token = $refresh_token;
+    }
+
+    public function setUserID()
+    {
+        $response = $this->get("me");
+        $config = SiteConfig::current_site_config();
+        $config->HailUserID = $response['id'];
+        $config->write();
+        $this->user_id = $response['id'];
+    }
+
+    public function isAuthorised()
+    {
+        return $this->access_token_expire && $this->access_token && $this->refresh_token;
+    }
+
+    public function isReadyToAuthorised()
+    {
+        return $this->client_id && $this->client_secret;
+    }
+
+    public function getAvailableOrganisations($as_simple_array = false) {
+        $organisations = $this->get('users/' . $this->user_id . '/organisations');
+        //If simple array is true, we send back an array with [id] => [name] instead of the full list
+        if($as_simple_array) {
+            $temp = [];
+            foreach ($organisations as $org) {
+                $temp[$org['id']] = $org['name'];
+            }
+            $organisations = $temp;
+        }
+        asort($organisations);
+        return $organisations;
     }
 }

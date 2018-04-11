@@ -3,6 +3,7 @@
 namespace Firebrand\Hail\Controllers;
 
 use Firebrand\Hail\Api\Provider;
+use GuzzleHttp\Exception\ClientException;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Security\Permission;
@@ -30,16 +31,15 @@ class CallbackController extends Controller
             $provider = new Provider();
             try {
                 $provider->fetchAccessToken($_GET['code']);
-            } catch (Exception $ex) {
+                // Update user ID everytime, in case Client ID has changed
+                $provider->setUserID();
+            } catch (ClientException $ex) {
                 $request->getSession()->set('notice', true);
                 $request->getSession()->set('noticeType', 'bad');
                 $request->getSession()->set('noticeText', $ex->getMessage());
 
                 return $this->redirect('admin/settings');
             }
-
-            // Update user ID everytime, in case Client ID has changed
-            $provider->setUserID();
 
             //Return message for user
             $request->getSession()->set('notice', true);
