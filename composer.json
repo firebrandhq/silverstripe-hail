@@ -1,7 +1,7 @@
 {
-    "name": "firebrandhq/silverstripe-hail",
+    "name": "firebrand/silverstripe-hail",
     "description": "Silverstripe 4 plugin to integrate with Hail (https://get.hail.to)",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "keywords": ["silverstripe", "News", "Hail", "Content"],
     "license": "MIT",
     "authors": [{
@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Firebrand\\Hail\\": "code/"
+            "Firebrand\\Hail\\": "src/"
         }
     },
     "extra": {
