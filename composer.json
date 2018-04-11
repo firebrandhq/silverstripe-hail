@@ -8,11 +8,20 @@
         "name": "Firebrand Limited",
         "email": "developers@firebrand.nz"
     }],
-    "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "php": ">=7.1",
+        "guzzlehttp/guzzle": "^6.3"
+    },
     "autoload": {
         "psr-4": {
-            "Firebrand\\Hail\\": "code/",
+            "Firebrand\\Hail\\": "code/"
         }
-    }
+    },
+    "extra": {
+        "expose": [
+            "client"
+        ]
+    },
+    "prefer-stable": true,
+    "minimum-stability": "stable"
 }

@@ -1,0 +1,17 @@
+---
+Name: hailconfig
+---
+Firebrand\Hail\Api\Provider:
+  AccessKey: false
+  OrganisationId: false
+  Timeout: 0
+  BaseApiUrl: 'https://hail.to/api/v1/'
+  AuthorizationUrl: 'https://hail.to/oauth/authorise'
+  RefreshRate: 86400
+
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - Firebrand\Hail\Admin\SettingsExtension
+SilverStripe\Control\Director:
+  rules:
+    'HailCallbackController': 'Firebrand\Hail\Controllers\CallbackController'
