@@ -1,0 +1,43 @@
+{
+  "name": "silverstripe-hail",
+  "version": "3.0.0",
+  "description": "Silverstripe 4 plugin to integrate with Hail (https://get.hail.to)",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn && yarn test && NODE_ENV=production webpack -p --bail --progress",
+    "dev": "NODE_ENV=development webpack --progress",
+    "watch": "NODE_ENV=development webpack --watch --progress",
+    "css": "WEBPACK_CHILD=css npm run build",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "lock": "npm-shrinkwrap --dev",
+    "lint": "eslint client/src && sass-lint client/src",
+    "lint-js": "eslint client/src",
+    "lint-js-fix": "eslint client/src --fix",
+    "lint-sass": "sass-lint client/src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@gitlab.firebrand.nz/firebrand/silverstripe-hail.git"
+  },
+  "keywords": [
+    "silverstripe",
+    "news",
+    "hail",
+    "content"
+  ],
+  "author": "Firebrand Limited",
+  "license": "MIT",
+  "devDependencies": {
+    "@silverstripe/webpack-config": "^0.7.0"
+  },
+  "babel": {
+    "presets": [
+      ["env", { "modules": false }],
+      "react"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  }
+}

@@ -14,7 +14,19 @@ SilverStripe\SiteConfig\SiteConfig:
     - Firebrand\Hail\Admin\SettingsExtension
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_css:
-    - vendor/firebrand/silverstripe-hail/client/styles/admin.css
+    - vendor/firebrand/silverstripe-hail/client/dist/styles/main.css
+  extra_requirements_javascript:
+    - vendor/firebrand/silverstripe-hail/client/dist/js/main.bundle.js
 SilverStripe\Control\Director:
   rules:
     'HailCallbackController': 'Firebrand\Hail\Controllers\CallbackController'
+SilverStripe\GraphQL\Controller:
+  schema:
+    scaffolding:
+      types:
+        Firebrand\Hail\Models\Article:
+          fields: [ID, Content]
+          operations:
+            read:
+              paginate: false
+            create: true
