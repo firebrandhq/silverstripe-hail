@@ -1,9 +1,9 @@
 ---
 Name: hailconfig
 ---
-Firebrand\Hail\Api\Provider:
-  AccessKey: false
-  OrganisationId: false
+SilverStripe\Core\Manifest\ModuleManifest:
+  project: 'silverstripe-hail'
+Firebrand\Hail\Api\Client:
   Timeout: 0
   BaseApiUrl: 'https://hail.to/api/v1/'
   AuthorizationUrl: 'https://hail.to/oauth/authorise'
@@ -15,18 +15,8 @@ SilverStripe\SiteConfig\SiteConfig:
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_css:
     - vendor/firebrand/silverstripe-hail/client/dist/styles/main.css
-  extra_requirements_javascript:
-    - vendor/firebrand/silverstripe-hail/client/dist/js/main.bundle.js
+#  extra_requirements_javascript:
+#    - vendor/firebrand/silverstripe-hail/client/dist/js/main.bundle.js
 SilverStripe\Control\Director:
   rules:
     'HailCallbackController': 'Firebrand\Hail\Controllers\CallbackController'
-SilverStripe\GraphQL\Controller:
-  schema:
-    scaffolding:
-      types:
-        Firebrand\Hail\Models\Article:
-          fields: [ID, Content]
-          operations:
-            read:
-              paginate: false
-            create: true

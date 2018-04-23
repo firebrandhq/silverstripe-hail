@@ -2,17 +2,19 @@
 
 namespace Firebrand\Hail\Admin;
 
-use Firebrand\Hail\Api\Provider;
+use Firebrand\Hail\Api\Client;
+use Firebrand\Hail\Models\Article;
+use Firebrand\Hail\Models\Organisation;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\LabelField;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\LiteralField;
-use SilverStripe\Forms\MultiSelectField;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class SettingsExtension extends DataExtension
 {
@@ -22,18 +24,19 @@ class SettingsExtension extends DataExtension
         "HailAccessToken" => "Varchar(255)",
         "HailAccessTokenExpire" => "Varchar(255)",
         "HailRefreshToken" => "Varchar(255)",
-        "HailRedirectCode" => "Varchar(255)",
         "HailUserID" => "Varchar(255)",
         "HailOrgsIDs" => "Varchar(255)",
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
+//        Article::fetchAll();
+
         parent::updateCMSFields($fields);
         //Create Hail tab
         $fields->insertAfter(TabSet::create('Hail', 'Hail'), 'Root');
 
-        $hail_provider = new Provider();
+        $hail_api_client = new Client();
         $request = Injector::inst()->get(HTTPRequest::class);
         $session = $request->getSession();
 
@@ -66,22 +69,45 @@ class SettingsExtension extends DataExtension
             $client_id,
             $client_secret
         ]);
-        if ($hail_provider->isReadyToAuthorised()) {
+        if ($hail_api_client->isReadyToAuthorised()) {
 
-            $link = $hail_provider->isAuthorised() ?
+            $link = $hail_api_client->isAuthorised() ?
                 'Reauthorise SilverStripe to Access Hail' :
                 'Authorise SilverStripe to Access Hail';
 
-            $auth = $hail_provider->getAuthorizationURL();
+            $auth = $hail_api_client->getAuthorizationURL();
             $fields->addFieldToTab('Root.Hail', new LiteralField('Go', "<div class='form-group form__field-label'><a class='btn btn-primary' href='$auth'>$link</a></div>"));
         }
-        if($hail_provider->isAuthorised()) {
+        if ($hail_api_client->isAuthorised()) {
             //Organisations list
-            $organisations = $hail_provider->getAvailableOrganisations(true);
-            $org_selector = ListboxField::create("HailOrgsIDs","Hail organisations", $organisations);
-            $fields->addFieldToTab('Root.Hail',$org_selector);
+            $organisations = $hail_api_client->getAvailableOrganisations(true);
+            $org_selector = ListboxField::create("HailOrgsIDs", "Hail organisations", $organisations);
+            $fields->addFieldToTab('Root.Hail', $org_selector);
         }
 
     }
 
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+        //Populate the Organisations table depending on what is configured for the Hail module
+        $prev_config = DataObject::get_one(SiteConfig::class);
+        if ($prev_config->HailOrgsIDs !== $this->getOwner()->HailOrgsIDs) {
+            $orgs = json_decode($this->getOwner()->HailOrgsIDs);
+            if ($orgs) {
+                $hail_api_client = new Client();
+                $organisations = $hail_api_client->getAvailableOrganisations(true);
+                foreach ($orgs as $id) {
+                    $organisation = DataObject::get_one(Organisation::class, ['HailID' => $id]);
+                    //Create or udpate
+                    if ($organisation) {
+                        $organisation->Title = $organisations[$id];
+                    } else {
+                        $organisation = Organisation::create(['HailID' => $id, "Title" => $organisations[$id]]);
+                    }
+                    $organisation->write();
+                }
+            }
+        }
+    }
 }
