@@ -2,11 +2,12 @@
 
 namespace Firebrand\Hail\Models;
 
+use Firebrand\Hail\Api\Client;
 use SilverStripe\Forms\LiteralField;
 
 class Article extends ApiObject
 {
-    protected static $object_endpoint = "articles";
+    public static $object_endpoint = "articles";
     protected static $api_map = [
         'Title' => 'title',
         'Author' => 'author',
@@ -58,6 +59,44 @@ class Article extends ApiObject
         'Date' => 'Date'
     ];
 
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        // Show relations, SilverStripe can't do Read Only Gridfield by default yet
+        $this->makeRecordViewer($fields, "Public Tags", $this->PublicTags());
+        $this->makeRecordViewer($fields, "Private Tags", $this->PrivateTags());
+        $this->makeRecordViewer($fields, "Image Gallery", $this->ImageGallery());
+        $this->makeRecordViewer($fields, "Video Gallery", $this->VideoGallery());
+        $this->makeRecordViewer($fields, "Attachments", $this->Attachments(), 'Firebrand\Hail\Forms\GridFieldAttachmentDownloadButton');
+
+        // Display a thumbnail of the hero image
+        if ($this->HeroImage()->ID !== 0) {
+            $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Image</label><div class='form__field-holder'>{$this->HeroImage()->getThumbnail()}</div></div>";
+            $heroField = new LiteralField(
+                "HeroImage",
+                $html
+            );
+            $fields->replaceField('HeroImageID', $heroField);
+        } else {
+            $fields->removeByName('HeroImageID');
+        }
+
+        // Display a thumbnail of the hero image
+        if ($this->HeroVideo()->ID !== 0) {
+            $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Video</label><div class='form__field-holder'>{$this->HeroVideo()->getThumbnail()}</div></div>";
+            $heroField = new LiteralField(
+                "HeroVideo",
+                $html
+            );
+            $fields->replaceField('HeroVideoID', $heroField);
+        } else {
+            $fields->removeByName('HeroVideoID');
+        }
+
+        return $fields;
+    }
+    
     protected function importing($data)
     {
         if (!empty($data['body'])) {
@@ -71,40 +110,93 @@ class Article extends ApiObject
         $this->processAttachments($data['attachments']);
     }
 
-    public function getCMSFields()
+
+    protected function refreshing()
     {
-        $fields = parent::getCMSFields();
-//        // Show relations
-        $this->makeRecordViewer($fields, "Public Tags", $this->PublicTags());
-        $this->makeRecordViewer($fields, "Private Tags", $this->PrivateTags());
-        $this->makeRecordViewer($fields, "Image Gallery", $this->ImageGallery());
-        $this->makeRecordViewer($fields, "Video Gallery", $this->VideoGallery());
-        $this->makeRecordViewer($fields, "Attachments", $this->Attachments(), 'Firebrand\Hail\Forms\GridFieldAttachmentDownloadButton');
+        $this->fetchImages();
+        $this->fetchVideos();
+    }
 
-        // Display a thumbnail of the hero image
-        if ($this->HeroImage()) {
-            $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Image</label><div class='form__field-holder'>{$this->HeroImage()->getThumbnail()}</div></div>";
-            $heroField = new LiteralField(
-                "HeroImage",
-                $html
-            );
-            $fields->replaceField('HeroImageID', $heroField);
-        } else {
-            $fields->removeByName('HeroImageID');
+    /**
+     * Fetch the image gallery of this article from the Hail API
+     *
+     * @return void
+     */
+    public function fetchImages()
+    {
+        try {
+            $api_client = new Client();
+            $list = $api_client->getImagesByArticles($this->HailID);
+        } catch (\Exception $ex) {
+            return;
         }
 
-        // Display a thumbnail of the hero image
-        if ($this->HeroVideo()) {
-            $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Video</label><div class='form__field-holder'>{$this->HeroVideo()->getThumbnail()}</div></div>";
-            $heroField = new LiteralField(
-                "HeroVideo",
-                $html
-            );
-            $fields->replaceField('HeroVideoID', $heroField);
-        } else {
-            $fields->removeByName('HeroVideoID');
+        $hailIdList = [];
+
+        foreach ($list as $hailData) {
+            // Build up Hail ID list
+            $hailIdList[] = $hailData['id'];
+
+            // Check if we can find an existing item.
+            $hailObj = Image::get()->filter(['HailID' => $hailData['id']])->First();
+
+            if (!$hailObj) {
+                $hailObj = new Image();
+            }
+            $hailObj->OrganisationID = $this->OrganisationID;
+            $hailObj->HailOrgID = $this->HailOrgID;
+            $hailObj->HailOrgName = $this->HailOrgName;
+
+            $hailObj->importHailData($hailData);
+            $this->ImageGallery()->add($hailObj);
         }
 
-        return $fields;
+        // Remove images that are no longer assign to this article
+        if ($hailIdList) {
+            $this->ImageGallery()->exclude('HailID', $hailIdList)->removeAll();
+        } else {
+            $this->ImageGallery()->removeAll();
+        }
+    }
+
+    /**
+     * Fetch the video gallery of this article from the Hail API
+     *
+     * @return void
+     */
+    public function fetchVideos()
+    {
+        try {
+            $api_client = new Client();
+            $list = $api_client->getVideosByArticles($this->HailID);
+        } catch (\Exception $ex) {
+            return;
+        }
+
+        $hailIdList = [];
+
+        foreach ($list as $hailData) {
+            // Build up Hail ID list
+            $hailIdList[] = $hailData['id'];
+
+            // Check if we can find an existing item.
+            $hailObj = HailVideo::get()->filter(['HailID' => $hailData['id']])->First();
+            if (!$hailObj) {
+                $hailObj = new HailVideo();
+            }
+            $hailObj->OrganisationID = $this->OrganisationID;
+            $hailObj->HailOrgID = $this->HailOrgID;
+            $hailObj->HailOrgName = $this->HailOrgName;
+
+            $hailObj->importHailData($hailData);
+            $this->VideoGallery()->add($hailObj);
+        }
+
+        // Remove images that are no longer assign to this article
+        if ($hailIdList) {
+            $this->VideoGallery()->exclude('HailID', $hailIdList)->removeAll();
+        } else {
+            $this->VideoGallery()->removeAll();
+        }
     }
 }

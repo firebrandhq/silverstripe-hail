@@ -2,6 +2,9 @@
 
 namespace Firebrand\Hail\Api;
 
+use Firebrand\Hail\Models\Article;
+use Firebrand\Hail\Models\Image;
+use Firebrand\Hail\Models\Organisation;
 use GuzzleHttp\Client as HTTPClient;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
@@ -160,6 +163,11 @@ class Client
         return $responseArr;
     }
 
+    public function getOne($hail_object) {
+        $uri = $hail_object::$object_endpoint . '/' . $hail_object->HailID;
+        return $this->get($uri);
+    }
+
     public function getAccessToken()
     {
         //Check if AccessToken needs to be refreshed
@@ -243,5 +251,27 @@ class Client
      */
     public static function getRefreshRate() {
         return Config::inst()->get(get_class(new self), 'RefreshRate');
+    }
+
+    /**
+     * Retrieve a list of images for a given article.
+     *
+     * @param string $id ID of the article in Hail
+     * @return array
+     */
+    public function getImagesByArticles($id) {
+        $uri = Article::$object_endpoint . '/' . $id . '/' . Image::$object_endpoint;
+        return $this->get($uri);
+    }
+
+    /**
+     * Retrieve a list of videos for a given article.
+     *
+     * @param string $id ID of the article in Hail
+     * @return array
+     */
+    public function getVideosByArticles($id) {
+        $uri = Article::$object_endpoint . '/' . $id . '/' . Video::$object_endpoint;
+        return $this->get($uri);
     }
 }

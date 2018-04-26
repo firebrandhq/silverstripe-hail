@@ -4,7 +4,7 @@ namespace Firebrand\Hail\Models;
 
 class Publication extends ApiObject
 {
-    protected static $object_endpoint = "images";
+    public static $object_endpoint = "images";
     protected static $api_map = [
         'Title' => 'title',
         'Editorial' => 'editorial',

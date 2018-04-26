@@ -4,7 +4,7 @@ namespace Firebrand\Hail\Models;
 
 class Attachment extends ApiObject
 {
-    protected static $object_endpoint = "attachments";
+    public static $object_endpoint = "attachments";
     protected static $api_map = [
         'UploadedName' => 'uploaded_name',
         'UploadedExtension' => 'uploaded_extension',

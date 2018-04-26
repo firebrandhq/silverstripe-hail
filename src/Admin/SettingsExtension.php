@@ -30,8 +30,8 @@ class SettingsExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields)
     {
-//        Article::fetchAll();
-
+        Article::fetchAll();
+//
         parent::updateCMSFields($fields);
         //Create Hail tab
         $fields->insertAfter(TabSet::create('Hail', 'Hail'), 'Root');

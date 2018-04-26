@@ -4,12 +4,12 @@ namespace Firebrand\Hail\Models;
 
 class PublicTag extends ApiObject
 {
-    protected static $object_endpoint = "tags";
+    public static $object_endpoint = "tags";
     protected static $api_map = [
         'Name' => 'name',
         'Description' => 'description',
     ];
-    private static $table_name = "HailTag";
+    private static $table_name = "HailPublicTag";
     private static $db = [
         'Name' => 'Varchar',
         'Description' => 'Varchar',

@@ -1,1 +1,1 @@
-<img src="{$Url150Square}" alt="$Caption" />
+<img src="{$HailVideo.Url150Square}" alt="$HailVideo.Caption" />

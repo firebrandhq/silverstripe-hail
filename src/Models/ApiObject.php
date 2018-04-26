@@ -3,6 +3,7 @@
 namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
+use Firebrand\Hail\Forms\GridFieldForReadonly;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\Forms\ReadonlyTransformation;
@@ -12,7 +13,7 @@ use SilverStripe\SiteConfig\SiteConfig;
 
 class ApiObject extends DataObject
 {
-    protected static $object_endpoint;
+    public static $object_endpoint;
     protected static $api_map;
     private static $table_name = "HailApiObject";
     private static $api_access = true;
@@ -101,16 +102,16 @@ class ApiObject extends DataObject
     {
         if ($this->ID && $this->HailID) {
             try {
-                $data = HailApi::getOne(static::getObjectType(), $this->HailID, HailOrganisation::get()->byID($this->OrganisationID));
-            } catch (HailApiException $ex) {
-                Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+                $api_client = new Client();
+                $data = $api_client->getOne($this);
+            } catch (\Exception $ex) {                
                 return $this;
             }
 
             $this->importHailData($data);
             $this->refreshing();
         }
-
+        
         return $this;
     }
 
@@ -278,7 +279,7 @@ class ApiObject extends DataObject
     // This is only allow to happen programmaticaly
     function canCreate($member = false, $context = [])
     {
-        return false;
+        return true;
     }
 
     // We don't want smelly users to start creating HailApiObjects
@@ -286,35 +287,6 @@ class ApiObject extends DataObject
     function canEdit($member = false)
     {
         return false;
-    }
-
-//      // Make all fields readonly
-//    // We don't want to overrite canEdit to always return false, otherwise our
-//    // Record viewer will look ugly.
-//    public function getCMSFields()
-//    {
-//        $fields = parent::getCMSFields();
-//        //Make the whole form Read Only
-////        $this->makeFieldReadonly($fields);
-//        //Remove save button
-//
-//        return $fields;
-//    }
-
-    private function makeFieldReadonly($fields)
-    {
-        if ($fields->children) {
-            $fields = $fields->children;
-        }
-
-        foreach ($fields as $i => $item) {
-            if ($item->isComposite()) {
-                $this->makeFieldReadonly($item);
-            } else {
-                $fields->replaceField($item->getName(), $item->transform(new ReadonlyTransformation()));
-            }
-        }
-        $fields->sequentialSet = null;
     }
 
     /**
@@ -328,7 +300,6 @@ class ApiObject extends DataObject
      */
     protected function makeRecordViewer($fields, $name, $relation, $viewComponent = 'Firebrand\Hail\Forms\GridFieldViewButton')
     {
-
         $config = GridFieldConfig_RecordViewer::create();
 
         // Remove the standard GridFieldView button and replace it with our
@@ -338,7 +309,7 @@ class ApiObject extends DataObject
 
         //Relation tab names don't have spaces in SS4
         $tab_name = str_replace(" ", "", $name);
-        $grid = new GridField($tab_name, $name, $relation, $config);
+        $grid = new GridFieldForReadonly($tab_name, $name, $relation, $config);
         $fields->addFieldToTab('Root.' . $tab_name, $grid);
     }
 
@@ -346,6 +317,9 @@ class ApiObject extends DataObject
     protected function processPublicTags($data)
     {
         $tagIdList = [];
+        // Clean tags before importing the new ones
+        // but have not been returned this time around
+        $this->PublicTags()->removeAll();
         foreach ($data as $tagData) {
             $tagIdList[] = $tagData['id'];
 
@@ -367,19 +341,13 @@ class ApiObject extends DataObject
             }
         }
 
-        // Remove old tag that are currently assigned to this object,
-        // but have not been returned this time around
-        if ($tagIdList) {
-            $this->PublicTags()->exclude('HailID', $tagIdList)->removeAll();
-        } else {
-            $this->PublicTags()->removeAll();
-        }
     }
 
     // Go through the list of tags and assign them to this object.
     protected function processPrivateTags($data)
     {
         $tagIdList = [];
+        $this->PrivateTags()->removeAll();
         foreach ($data as $tagData) {
             $tagIdList[] = $tagData['id'];
 
@@ -399,14 +367,6 @@ class ApiObject extends DataObject
             if (!$this->PrivateTags()->byID($tag->ID)) {
                 $this->PrivateTags()->add($tag);
             }
-        }
-
-        // Remove old tag that are currently assigned to this object,
-        // but have not been returned this time around
-        if ($tagIdList) {
-            $this->PrivateTags()->exclude('HailID', $tagIdList)->removeAll();
-        } else {
-            $this->PrivateTags()->removeAll();
         }
     }
 

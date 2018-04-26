@@ -2,9 +2,11 @@
 
 namespace Firebrand\Hail\Models;
 
+use SilverStripe\View\ArrayData;
+
 class Video extends ApiObject
 {
-    protected static $object_endpoint = "videos";
+    public static $object_endpoint = "videos";
     protected static $api_map = [
         'Caption' => 'caption',
         'Description' => 'description',
@@ -70,12 +72,16 @@ class Video extends ApiObject
      */
     public function getThumbnail()
     {
+        $data = new ArrayData([
+            'HailVideo' => $this
+        ]);
+
         switch ($this->Service) {
             case 'youtube':
-                return $this->renderWith('VideoYouTubeThumbnail');
+                return $data->renderWith('VideoYoutubeThumbnail');
                 break;
             default:
-                return $this->renderWith('VideoThumbnail');
+                return $data->renderWith('VideoThumbnail');
         }
     }
 

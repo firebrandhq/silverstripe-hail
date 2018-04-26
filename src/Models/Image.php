@@ -6,7 +6,7 @@ use SilverStripe\View\ArrayData;
 
 class Image extends ApiObject
 {
-    protected static $object_endpoint = "images";
+    public static $object_endpoint = "images";
     protected static $api_map = [
         'Caption' => 'caption',
         'People' => 'people',
