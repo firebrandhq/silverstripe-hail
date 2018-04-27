@@ -165,7 +165,8 @@ class Video extends ApiObject
         if (!$color) {
             $color = new Color();
         }
-        $color->OrganisationID = $this->OrganisationID;
+        $this->Fetched = date("Y-m-d H:i:s");
+        $this->OrganisationID = $this->OrganisationID;
         $color->HailOrgID = $this->HailOrgID;
         $color->HailOrgName = $this->HailOrgName;
 

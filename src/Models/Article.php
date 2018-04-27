@@ -8,6 +8,7 @@ use SilverStripe\Forms\LiteralField;
 class Article extends ApiObject
 {
     public static $object_endpoint = "articles";
+    private static $api_access = true;
     protected static $api_map = [
         'Title' => 'title',
         'Author' => 'author',
@@ -71,7 +72,7 @@ class Article extends ApiObject
         $this->makeRecordViewer($fields, "Attachments", $this->Attachments(), 'Firebrand\Hail\Forms\GridFieldAttachmentDownloadButton');
 
         // Display a thumbnail of the hero image
-        if ($this->HeroImage()->ID !== 0) {
+        if ($this->HeroImage()->ID != 0) {
             $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Image</label><div class='form__field-holder'>{$this->HeroImage()->getThumbnail()}</div></div>";
             $heroField = new LiteralField(
                 "HeroImage",
@@ -83,7 +84,7 @@ class Article extends ApiObject
         }
 
         // Display a thumbnail of the hero image
-        if ($this->HeroVideo()->ID !== 0) {
+        if ($this->HeroVideo()->ID != 0) {
             $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Video</label><div class='form__field-holder'>{$this->HeroVideo()->getThumbnail()}</div></div>";
             $heroField = new LiteralField(
                 "HeroVideo",
@@ -108,13 +109,15 @@ class Article extends ApiObject
         $this->processHeroImage($data['hero_image']);
         $this->processHeroVideo($data['hero_video']);
         $this->processAttachments($data['attachments']);
-    }
 
-
-    protected function refreshing()
-    {
-        $this->fetchImages();
-        $this->fetchVideos();
+        //IF we have an image gallery, fetch every images
+        if(count($data['short_gallery']) > 0) {
+            $this->fetchImages();
+        }
+        //IF we have an video gallery, fetch every videos
+        if(count($data['short_video_gallery']) > 0) {
+            $this->fetchVideos();
+        }
     }
 
     /**
@@ -133,6 +136,9 @@ class Article extends ApiObject
 
         $hailIdList = [];
 
+        // Clean before importing
+        $this->ImageGallery()->removeAll();
+
         foreach ($list as $hailData) {
             // Build up Hail ID list
             $hailIdList[] = $hailData['id'];
@@ -149,13 +155,6 @@ class Article extends ApiObject
 
             $hailObj->importHailData($hailData);
             $this->ImageGallery()->add($hailObj);
-        }
-
-        // Remove images that are no longer assign to this article
-        if ($hailIdList) {
-            $this->ImageGallery()->exclude('HailID', $hailIdList)->removeAll();
-        } else {
-            $this->ImageGallery()->removeAll();
         }
     }
 
@@ -174,15 +173,17 @@ class Article extends ApiObject
         }
 
         $hailIdList = [];
+        // CLean before importing
+        $this->VideoGallery()->removeAll();
 
         foreach ($list as $hailData) {
             // Build up Hail ID list
             $hailIdList[] = $hailData['id'];
 
             // Check if we can find an existing item.
-            $hailObj = HailVideo::get()->filter(['HailID' => $hailData['id']])->First();
+            $hailObj = Video::get()->filter(['HailID' => $hailData['id']])->First();
             if (!$hailObj) {
-                $hailObj = new HailVideo();
+                $hailObj = new Video();
             }
             $hailObj->OrganisationID = $this->OrganisationID;
             $hailObj->HailOrgID = $this->HailOrgID;
@@ -190,13 +191,6 @@ class Article extends ApiObject
 
             $hailObj->importHailData($hailData);
             $this->VideoGallery()->add($hailObj);
-        }
-
-        // Remove images that are no longer assign to this article
-        if ($hailIdList) {
-            $this->VideoGallery()->exclude('HailID', $hailIdList)->removeAll();
-        } else {
-            $this->VideoGallery()->removeAll();
         }
     }
 }

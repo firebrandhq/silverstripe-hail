@@ -12,6 +12,7 @@ class PrivateTag extends ApiObject
     ];
     private static $many_many = [
         'Articles' => 'Firebrand\Hail\Models\Article',
+        'Publications' => 'Firebrand\Hail\Models\Publication',
         'Images' => 'Firebrand\Hail\Models\Image',
         'Videos' => 'Firebrand\Hail\Models\Video',
     ];

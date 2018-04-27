@@ -4,11 +4,8 @@ namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Forms\GridFieldForReadonly;
-use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
-use SilverStripe\Forms\ReadonlyTransformation;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class ApiObject extends DataObject
@@ -35,56 +32,18 @@ class ApiObject extends DataObject
     ];
     private static $organisations_endpoint = "organisations";
 
-    public function __construct($record = null, $isSingleton = false, $model = null)
-    {
-        parent::__construct($record, $isSingleton, $model);
-
-        // Automate the refresh of hail object
-        if (!$isSingleton) {
-            $this->softRefresh();
-        }
-    }
-
     /**
-     * Retrieve the latest version of this object if it's outdated.
-     *
-     * @return HailApiObject
-     */
-    public function softRefresh()
-    {
-        if ($this->outdated() && $this->HailID) {
-            $this->refresh();
-        }
-        return $this;
-    }
-
-    /**
-     * Determines if this object is outdated and needs to be refreshed.
+     * Determines if the object is outdated
      *
      * @return boolean
      */
-    public function outdated()
+    public function isOutdated()
     {
-        return $this->isOutdated($this->Fetched);
-    }
-
-    /**
-     * Determines if a fetched date is outdated.
-     *
-     * @param mixed $fetched Date to evaluate.
-     * @return boolean
-     */
-    public static function isOutdated($fetched)
-    {
-        if ($fetched) {
-            // Check if $fetched is an object
-            if (!is_object($fetched)) {
-                $datetime = new DBDatetime();
-                $datetime->setValue($fetched);
-                $fetched = $datetime;
-            }
-
-            if ($fetched->TimeDiff() > Client::getRefreshRate()) {
+        if ($this->Fetched) {
+            $fetched = new \DateTime($this->Fetched);
+            $now = new \DateTime("now");
+            $diff = $now->getTimestamp() - $fetched->getTimestamp();
+            if ($diff > Client::getRefreshRate()) {
                 return true;
             }
             return false;
@@ -94,7 +53,7 @@ class ApiObject extends DataObject
     }
 
     /**
-     * Retrieves the latest version of this object whatever it's outdated or not.
+     * Retrieves the latest version of this object from the Hail API
      *
      * @return HailApiObject
      */
@@ -104,30 +63,14 @@ class ApiObject extends DataObject
             try {
                 $api_client = new Client();
                 $data = $api_client->getOne($this);
-            } catch (\Exception $ex) {                
+            } catch (\Exception $ex) {
                 return $this;
             }
 
             $this->importHailData($data);
-            $this->refreshing();
         }
-        
-        return $this;
-    }
 
-    /**
-     * Returns the name of the HailApiObject this class represents.
-     *
-     * This method needs to be overwritten on children of HailApiObject.
-     *
-     * It should never be called directly on HailApiObject. It will throw a
-     * {@link HailApiException} if called directly.
-     *
-     * @return string Name of the hail object
-     */
-    protected static function getObjectType()
-    {
-        throw new HailApiException('getObjectType() must be redefined in overwritten in children class of HailApiObject.');
+        return $this;
     }
 
     /**
@@ -166,21 +109,12 @@ class ApiObject extends DataObject
     /**
      * Determine if this object is to be exlucded based on the provided data (private tags).
      *
-     * Can be extened from to exclude tags as required
-     *
      * @param StdClass $data JSON data from Hail
      * @return boolean
      */
     protected function excluded($data)
     {
         $results = $this->extend('excluded', $data);
-        if ($results && is_array($results)) {
-            if (max($results)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
 
         return false;
     }
@@ -192,15 +126,6 @@ class ApiObject extends DataObject
      * @return void
      */
     protected function importing($data)
-    {
-    }
-
-    /**
-     * Is called by {@link refresh()} to allow children classes to perform extra action.
-     *
-     * @return void
-     */
-    protected function refreshing()
     {
     }
 
@@ -225,7 +150,7 @@ class ApiObject extends DataObject
             //Get Objects
             $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
             $results = $hail_api_client->get($url);
-
+            $hailIdList = [];
             foreach ($results as $result) {
                 // Check if we can find an existing item.
                 $hailObj = DataObject::get_one(static::class, ['HailID' => $result['id']]);
@@ -246,7 +171,11 @@ class ApiObject extends DataObject
             }
             if ($org) {
                 //Remove all object for which we don't have reference
-                static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
+                if(count($hailIdList) > 0 ) {
+                    static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
+                } else {
+                    static::get()->filter('OrganisationID', $org->ID)->removeAll();
+                }
             }
         }
     }
@@ -279,7 +208,7 @@ class ApiObject extends DataObject
     // This is only allow to happen programmaticaly
     function canCreate($member = false, $context = [])
     {
-        return true;
+        return false;
     }
 
     // We don't want smelly users to start creating HailApiObjects

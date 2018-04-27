@@ -5,12 +5,14 @@ namespace Firebrand\Hail\Api;
 use Firebrand\Hail\Models\Article;
 use Firebrand\Hail\Models\Image;
 use Firebrand\Hail\Models\Organisation;
+use Firebrand\Hail\Models\Video;
 use GuzzleHttp\Client as HTTPClient;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class Client
@@ -240,6 +242,64 @@ class Client
         }
         asort($organisations);
         return $organisations;
+    }
+
+    public function getAvailablePrivateTags($as_simple_array = false)
+    {
+        $orgs_ids = json_decode($this->orgs_ids);
+        if (!$orgs_ids) {
+            //No organisations configured
+            $hail_api_client->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
+            return false;
+        }
+        $tag_list = [];
+        foreach ($orgs_ids as $org_id) {
+            //Get Org Name
+            $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
+            $org_name = $org ? $org->Title : "";
+
+            $results = $this->get('organisations/' . $org_id . '/private-tags');
+            //If simple array is true, we send back an array with [id] => [name] instead of the full list
+            if ($as_simple_array) {
+                foreach ($results as $result) {
+                    $tag_list[$result['id']] = $org_name . " - " . $result['name'];
+                }
+            } else {
+                $tag_list = array_merge($results, $tag_list);
+            }
+        }
+
+        asort($tag_list);
+        return $tag_list;
+    }
+
+    public function getAvailablePublicTags($as_simple_array = false)
+    {
+        $orgs_ids = json_decode($this->orgs_ids);
+        if (!$orgs_ids) {
+            //No organisations configured
+            $hail_api_client->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
+            return false;
+        }
+        $tag_list = [];
+        foreach ($orgs_ids as $org_id) {
+            //Get Org Name
+            $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
+            $org_name = $org ? $org->Title : "";
+
+            $results = $this->get('organisations/' . $org_id . '/tags');
+            //If simple array is true, we send back an array with [id] => [name] instead of the full list
+            if ($as_simple_array) {
+                foreach ($results as $result) {
+                    $tag_list[$result['id']] = $org_name . " - " . $result['name'];
+                }
+            } else {
+                $tag_list = array_merge($results, $tag_list);
+            }
+        }
+
+        asort($tag_list);
+        return $tag_list;
     }
 
     /**
