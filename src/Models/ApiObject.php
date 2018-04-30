@@ -114,9 +114,33 @@ class ApiObject extends DataObject
      */
     protected function excluded($data)
     {
-        $results = $this->extend('excluded', $data);
+        $isExcluded = false;
+        //Check global exclusion in SiteConfig
+        $config = SiteConfig::current_site_config();
 
-        return false;
+        //IF private tags exclusion if configured and object has private tags
+        if (!empty($config->HailExcludePrivateTagsIDs) && isset($data['private_tags']) && count($data['private_tags']) > 0) {
+            $private_tags = json_decode($config->HailExcludePrivateTagsIDs);
+            foreach ($data['private_tags'] as $tag) {
+                if (in_array($tag['id'], $private_tags)) {
+                    $isExcluded = true;
+                    break;
+                }
+            }
+        }
+        //IF public tags exclusion if configured and object has public tags
+        if (!empty($config->HailExcludePublicTagsIDs) && isset($data['tags']) && count($data['tags']) > 0) {
+            $public_tags = json_decode($config->HailExcludePublicTagsIDs);
+            foreach ($data['tags'] as $tag) {
+                if (in_array($tag['id'], $public_tags)) {
+                    $isExcluded = true;
+                    break;
+                }
+            }
+        }
+        $results = $this->extend('updateExcluded', $isExcluded, $data);
+
+        return $isExcluded;
     }
 
     /**
@@ -171,7 +195,7 @@ class ApiObject extends DataObject
             }
             if ($org) {
                 //Remove all object for which we don't have reference
-                if(count($hailIdList) > 0 ) {
+                if (count($hailIdList) > 0) {
                     static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
                 } else {
                     static::get()->filter('OrganisationID', $org->ID)->removeAll();

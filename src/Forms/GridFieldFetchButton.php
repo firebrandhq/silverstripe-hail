@@ -3,11 +3,13 @@
 namespace Firebrand\Hail\Forms;
 
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Convert;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridField_ActionProvider;
 use SilverStripe\Forms\GridField\GridField_FormAction;
 use SilverStripe\Forms\GridField\GridField_HTMLProvider;
 use SilverStripe\Forms\GridField\GridField_URLHandler;
+use SilverStripe\ORM\ValidationResult;
 
 class GridFieldFetchButton implements GridField_HTMLProvider, GridField_ActionProvider, GridField_URLHandler
 {
@@ -43,6 +45,7 @@ class GridFieldFetchButton implements GridField_HTMLProvider, GridField_ActionPr
         );
 
         $button->setAttribute('data-icon', 'fetchHail');
+        $button->addExtraClass("btn btn-secondary font-icon-sync btn--icon-large action_fetch");
 
         return [
             $this->targetFragment => $button->Field(),
@@ -62,6 +65,7 @@ class GridFieldFetchButton implements GridField_HTMLProvider, GridField_ActionPr
         if ($actionName == 'fetchhail') {
             return $this->handleFetchHail($gridField, $data);
         }
+        return null;
     }
 
     /**
@@ -76,12 +80,13 @@ class GridFieldFetchButton implements GridField_HTMLProvider, GridField_ActionPr
 
     /**
      * Handle the export, for both the action button and the URL
+     * @param GridField $gridField
      */
     public function handleFetchHail($gridField, $data, $request = null)
     {
-        // Shchedule the job
-        //todo: take a look at how we do the jobs
-//        singleton('QueuedJobService')->queueJob(new HailFetchQueueJob($gridField->getModelClass()));
+        $classname = $gridField->getModelClass();
+        //Fetch it from Hail API
+//        $classname::fetchAll();
 
         // Set a message so the smelly user isn't confused as fuck
         $form = $gridField->getForm();
@@ -94,10 +99,12 @@ class GridFieldFetchButton implements GridField_HTMLProvider, GridField_ActionPr
             'good'
         );
 
+//        $gridField->setTitle("Fetch successful !");
+
         // Redirect the user
         $controller = Controller::curr();
-        $noActionURL = $controller->removeAction($data['url']);
-        return $controller->redirect($noActionURL, 302);
-
+        $url = $controller->getRequest()->getURL();
+        $noActionURL = $controller->removeAction($url);
+        return $controller->redirect($noActionURL);
     }
 }

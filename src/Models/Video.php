@@ -2,6 +2,7 @@
 
 namespace Firebrand\Hail\Models;
 
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\View\ArrayData;
 
 class Video extends ApiObject
@@ -52,9 +53,9 @@ class Video extends ApiObject
         'Detail' => 'Firebrand\Hail\Models\Color',
     ];
     private static $belongs_many_many = [
+        'Articles' => 'Firebrand\Hail\Models\Article',
         'PublicTags' => 'Firebrand\Hail\Models\PublicTag',
         'PrivateTags' => 'Firebrand\Hail\Models\PrivateTag',
-        'Articles' => 'Firebrand\Hail\Models\Article'
     ];
     private static $summary_fields = [
         'Organisation.Title' => 'Hail Organisation',
@@ -64,6 +65,67 @@ class Video extends ApiObject
         'Date' => 'Date',
         'Fetched' => 'Fetched'
     ];
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        // Display relations
+        $this->makeRecordViewer($fields, "Articles", $this->Articles());
+        $this->makeRecordViewer($fields, "PublicTags", $this->PublicTags());
+        $this->makeRecordViewer($fields, "PrivateTags", $this->PrivateTags());
+
+        // Hide all those URL
+        $fields->removeByName('Url150Square');
+        $fields->removeByName('Url500');
+        $fields->removeByName('Url500Square');
+        $fields->removeByName('Url1000');
+        $fields->removeByName('Url1000Square');
+        $fields->removeByName('Url2000');
+        $fields->removeByName('Urloriginal');
+
+        $fields->removeByName('FaceCentreX');
+        $fields->removeByName('FaceCentreY');
+
+        //Display the colors
+        if ($this->Background()->ID != 0) {
+            $bg_field = new LiteralField(
+                "BackgroundID",
+                $this->Background()->getThumnailField("Background")
+            );
+            $fields->replaceField('BackgroundID', $bg_field);
+        }
+        if ($this->Primary()->ID != 0) {
+            $bg_field = new LiteralField(
+                "PrimaryID",
+                $this->Primary()->getThumnailField("Primary")
+            );
+            $fields->replaceField('PrimaryID', $bg_field);
+        }
+        if ($this->Secondary()->ID != 0) {
+            $bg_field = new LiteralField(
+                "SecondaryID",
+                $this->Secondary()->getThumnailField("Secondary")
+            );
+            $fields->replaceField('SecondaryID', $bg_field);
+        }
+        if ($this->Detail()->ID != 0) {
+            $bg_field = new LiteralField(
+                "DetailID",
+                $this->Detail()->getThumnailField("Detail")
+            );
+            $fields->replaceField('DetailID', $bg_field);
+        }
+
+        // Display a thumbnail
+        $heroField = new LiteralField(
+            "Thumbnail",
+            $this->getThumbnailField('Thumbnail')
+        );
+        $fields->addFieldToTab('Root.Main', $heroField);
+
+        return $fields;
+    }
 
     /**
      * Renders out a thumbnail of this Hail Image.
@@ -83,6 +145,17 @@ class Video extends ApiObject
             default:
                 return $data->renderWith('VideoThumbnail');
         }
+    }
+
+    /**
+     * Returns the CMS Field HTML for the thumbnail
+     *
+     * @param string $label
+     * @return HTMLText
+     */
+    public function getThumbnailField($label)
+    {
+        return "<div class='form-group field lookup readonly '><label class='form__field-label'>$label</label><div class='form__field-holder'>{$this->getThumbnail()}</div></div>";
     }
 
     public function getRelativeCenterX()

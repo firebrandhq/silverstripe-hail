@@ -8,3 +8,9 @@ input.notice-bad {
     color: white !important;
     font-weight: 700 !important;
 }
+
+.ui-state-default .ui-icon.btn-icon-fetchHail {
+    background-image: url(../images/admin-icon.png);
+    background-position:center;
+}
+

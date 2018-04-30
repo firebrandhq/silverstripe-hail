@@ -44,7 +44,7 @@ const config = [
     {
         name: 'css',
         entry: {
-            main: './client/src/css/main.css',
+            main: './client/src/styles/main.css',
         },
         output: {
             path: Path.resolve('client/dist'),

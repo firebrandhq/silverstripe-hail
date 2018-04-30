@@ -31,11 +31,20 @@ class PublicTag extends ApiObject
         'Fetched' => 'Fetched'
     ];
 
+    public function getCMSFields( ) {
+        $fields = parent::getCMSFields();
+
+        $this->makeRecordViewer($fields, "Articles", $this->Articles());
+        $this->makeRecordViewer($fields, "Images", $this->Images());
+        $this->makeRecordViewer($fields, "Videos", $this->Videos());
+
+        return $fields;
+    }
+
     public function importHailData($data)
     {
         $this->Name = $data['name'];
         $this->Description = $data['description'];
         return parent::importHailData($data);
     }
-
 }

@@ -165,7 +165,8 @@ class Client
         return $responseArr;
     }
 
-    public function getOne($hail_object) {
+    public function getOne($hail_object)
+    {
         $uri = $hail_object::$object_endpoint . '/' . $hail_object->HailID;
         return $this->get($uri);
     }
@@ -262,7 +263,12 @@ class Client
             //If simple array is true, we send back an array with [id] => [name] instead of the full list
             if ($as_simple_array) {
                 foreach ($results as $result) {
-                    $tag_list[$result['id']] = $org_name . " - " . $result['name'];
+                    $tag_title = $result['name'];
+                    //Add organisation name on tag title if more than 1 org
+                    if (count($orgs_ids) > 1) {
+                        $tag_title = $org_name . " - " . $tag_title;
+                    }
+                    $tag_list[$result['id']] = $tag_title;
                 }
             } else {
                 $tag_list = array_merge($results, $tag_list);
@@ -291,7 +297,12 @@ class Client
             //If simple array is true, we send back an array with [id] => [name] instead of the full list
             if ($as_simple_array) {
                 foreach ($results as $result) {
-                    $tag_list[$result['id']] = $org_name . " - " . $result['name'];
+                    $tag_title = $result['name'];
+                    //Add organisation name on tag title if more than 1 org
+                    if (count($orgs_ids) > 1) {
+                        $tag_title = $org_name . " - " . $tag_title;
+                    }
+                    $tag_list[$result['id']] = $tag_title;
                 }
             } else {
                 $tag_list = array_merge($results, $tag_list);
@@ -309,7 +320,8 @@ class Client
      *
      * @return int
      */
-    public static function getRefreshRate() {
+    public static function getRefreshRate()
+    {
         return Config::inst()->get(get_class(new self), 'RefreshRate');
     }
 
@@ -319,7 +331,8 @@ class Client
      * @param string $id ID of the article in Hail
      * @return array
      */
-    public function getImagesByArticles($id) {
+    public function getImagesByArticles($id)
+    {
         $uri = Article::$object_endpoint . '/' . $id . '/' . Image::$object_endpoint;
         return $this->get($uri);
     }
@@ -330,7 +343,8 @@ class Client
      * @param string $id ID of the article in Hail
      * @return array
      */
-    public function getVideosByArticles($id) {
+    public function getVideosByArticles($id)
+    {
         $uri = Article::$object_endpoint . '/' . $id . '/' . Video::$object_endpoint;
         return $this->get($uri);
     }

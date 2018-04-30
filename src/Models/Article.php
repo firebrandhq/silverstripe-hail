@@ -73,10 +73,9 @@ class Article extends ApiObject
 
         // Display a thumbnail of the hero image
         if ($this->HeroImage()->ID != 0) {
-            $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Image</label><div class='form__field-holder'>{$this->HeroImage()->getThumbnail()}</div></div>";
             $heroField = new LiteralField(
                 "HeroImage",
-                $html
+                $this->HeroImage()->getThumbnailField("Hero Image")
             );
             $fields->replaceField('HeroImageID', $heroField);
         } else {
@@ -85,10 +84,9 @@ class Article extends ApiObject
 
         // Display a thumbnail of the hero image
         if ($this->HeroVideo()->ID != 0) {
-            $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Hero Video</label><div class='form__field-holder'>{$this->HeroVideo()->getThumbnail()}</div></div>";
             $heroField = new LiteralField(
                 "HeroVideo",
-                $html
+                $this->HeroVideo()->getThumbnailField("Hero Video")
             );
             $fields->replaceField('HeroVideoID', $heroField);
         } else {

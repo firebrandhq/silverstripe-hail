@@ -3,7 +3,11 @@
 namespace Firebrand\Hail\Admin;
 
 use Firebrand\Hail\Api\Client;
+use Firebrand\Hail\Models\Article;
 use Firebrand\Hail\Models\Organisation;
+use Firebrand\Hail\Models\PrivateTag;
+use Firebrand\Hail\Models\Publication;
+use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
@@ -31,8 +35,11 @@ class SettingsExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields)
     {
+//        PrivateTag::fetchAll();
+//        PublicTag::fetchAll();
+//        Article::fetchAll();
 //        Publication::fetchAll();
-//
+
         parent::updateCMSFields($fields);
         //Create Hail tab
         $fields->insertAfter(TabSet::create('Hail', 'Hail'), 'Root');
