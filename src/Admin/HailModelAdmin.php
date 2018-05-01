@@ -3,7 +3,9 @@
 namespace Firebrand\Hail\Admin;
 
 use Firebrand\Hail\Forms\GridFieldFetchButton;
+use Firebrand\Hail\Models\ApiObject;
 use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\View\Requirements;
 
 class HailModelAdmin extends ModelAdmin
 {
@@ -23,6 +25,10 @@ class HailModelAdmin extends ModelAdmin
 
     public function getEditForm($id = null, $fields = null)
     {
+        Requirements::javascript(HAIL_DIR . '/client/dist/js/popper.min.js');
+        Requirements::javascript('vendor/silverstripe/admin/thirdparty/bootstrap/js/dist/dropdown.js');
+        Requirements::javascript(HAIL_DIR . '/client/dist/js/hailadmin.js');
+
         $form = parent::getEditForm($id, $fields);
 
         $gridFieldName = $this->sanitiseClassName($this->modelClass);
@@ -33,8 +39,11 @@ class HailModelAdmin extends ModelAdmin
             ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldDeleteAction')
             ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldExportButton')
             ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldPrintButton')
-            ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldImportButton')
-            ->addComponent(new GridFieldFetchButton('buttons-before-left'));
+            ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldImportButton');
+        //Only show Fetch button for fetchable objects
+        if (ApiObject::isFetchable($this->modelClass)) {
+            $gridField->addComponent(new GridFieldFetchButton('buttons-before-left'));
+        }
 
         return $form;
     }

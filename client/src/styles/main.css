@@ -3,6 +3,7 @@ input.notice-good {
     color: white !important;
     font-weight: 700 !important;
 }
+
 input.notice-bad {
     background-color: red !important;
     color: white !important;
@@ -11,6 +12,19 @@ input.notice-bad {
 
 .ui-state-default .ui-icon.btn-icon-fetchHail {
     background-image: url(../images/admin-icon.png);
-    background-position:center;
+    background-position: center;
 }
 
+#hail-fetch-wrapper .dropdown-item {
+    cursor: pointer;
+}
+#hail-fetch-wrapper {
+    display:flex;
+}
+#hail-fetch-progress {
+    margin-left:20px;
+}
+#hail-fetch-progress .progress-bar {
+    -webkit-transition: width 0.5s ease;
+    transition: width 0.5s ease;
+}

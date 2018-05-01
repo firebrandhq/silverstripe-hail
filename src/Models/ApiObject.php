@@ -31,6 +31,15 @@ class ApiObject extends DataObject
         'Organisation' => 'Firebrand\Hail\Models\Organisation'
     ];
     private static $organisations_endpoint = "organisations";
+    /**
+     * List of all the subclasses of Hail ApiObject that can be fetched from Hail.     *
+     */
+    public static $fetchables = [
+        'Firebrand\Hail\Models\Article',
+        'Firebrand\Hail\Models\Publication',
+        'Firebrand\Hail\Models\PublicTag',
+        'Firebrand\Hail\Models\PrivateTag'
+    ];
 
     /**
      * Determines if the object is outdated
@@ -50,6 +59,17 @@ class ApiObject extends DataObject
         }
 
         return true;
+    }
+
+    /**
+     * Determines if the object is fetchable
+     *
+     * @param string $classname
+     * @return boolean
+     */
+    public static function isFetchable($classname)
+    {
+        return in_array($classname, self::$fetchables);
     }
 
     /**
@@ -153,6 +173,57 @@ class ApiObject extends DataObject
     {
     }
 
+    public static function fetchForOrg($hail_api_client, $org_id, $job = null)
+    {
+        //Get Org Name
+        $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
+        $org_name = $org ? $org->Title : "";
+
+        //Get Objects
+        $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
+        $results = $hail_api_client->get($url);
+        $hailIdList = [];
+
+        //If this is launched from a queued job, update it to display realtime info on the frontend
+        if (count($results) > 0 && $job) {
+            $job->CurrentObject = $org_name . " - " . static::plural_name();
+            $job->CurrentTotal = count($results);
+            $job->write();
+        }
+
+        foreach ($results as $result) {
+            // Check if we can find an existing item.
+            $hailObj = DataObject::get_one(static::class, ['HailID' => $result['id']]);
+            if (!$hailObj) {
+                $hailObj = new static();
+            }
+            $hailObj->OrganisationID = $org ? $org->ID : 0;
+            $hailObj->HailOrgID = $org_id;
+            $hailObj->HailOrgName = $org_name;
+            $hailObj->write();
+
+            $imported = $hailObj->importHailData($result);
+
+            if ($imported) {
+                //Build up Hail ID list
+                $hailIdList[] = $result['id'];
+                //Update job count if necessary
+                if ($job) {
+                    $job->CurrentDone++;
+                    $job->write();
+                }
+            }
+        }
+        if ($org) {
+            //Remove all object for which we don't have reference
+            if (count($hailIdList) > 0) {
+                static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
+            } else {
+                static::get()->filter('OrganisationID', $org->ID)->removeAll();
+            }
+        }
+    }
+
     public static function fetchAll()
     {
         //Hail Api Client
@@ -167,50 +238,8 @@ class ApiObject extends DataObject
         }
         //Fetch objects for all configured Hail organisations
         foreach ($orgs_ids as $org_id) {
-            //Get Org Name
-            $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
-            $org_name = $org ? $org->Title : "";
-
-            //Get Objects
-            $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
-            $results = $hail_api_client->get($url);
-            $hailIdList = [];
-            foreach ($results as $result) {
-                // Check if we can find an existing item.
-                $hailObj = DataObject::get_one(static::class, ['HailID' => $result['id']]);
-                if (!$hailObj) {
-                    $hailObj = new static();
-                }
-                $hailObj->OrganisationID = $org ? $org->ID : 0;
-                $hailObj->HailOrgID = $org_id;
-                $hailObj->HailOrgName = $org_name;
-                $hailObj->write();
-
-                $imported = $hailObj->importHailData($result);
-
-                if ($imported) {
-                    //Build up Hail ID list
-                    $hailIdList[] = $result['id'];
-                }
-            }
-            if ($org) {
-                //Remove all object for which we don't have reference
-                if (count($hailIdList) > 0) {
-                    static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
-                } else {
-                    static::get()->filter('OrganisationID', $org->ID)->removeAll();
-                }
-            }
+            self::fetchForOrg($hail_api_client, $org_id);
         }
-    }
-
-    /**
-     * Return a list of all the subclasses of HailApiObject that can be fetch from Hail.
-     * @return string[]
-     */
-    public static function fetchables()
-    {
-        return ['HailArticle', 'HailImage', 'HailPublication', 'HailTag', 'HailVideo'];
     }
 
     public function canView($member = false)
