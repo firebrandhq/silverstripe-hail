@@ -66,7 +66,8 @@ class HailController extends Controller
 
     public function progress(HTTPRequest $request)
     {
-        $latest_job = FetchJob::get()->filter(['Status:not' => 'Done'])->sort('Created DESC')->first();
+        $latest_job = FetchJob::get()->sort('Created DESC')->first();
+
         if ($latest_job) {
             $map = $latest_job->toMap();
 
@@ -74,7 +75,7 @@ class HailController extends Controller
         }
 
         return $this->makeJsonReponse(200, [
-            'message' => 'No hail job in progress.',
+            'message' => 'No hail job found.',
             'Status' => 'Done'
         ]);
 

@@ -14,9 +14,9 @@ SilverStripe\SiteConfig\SiteConfig:
     - Firebrand\Hail\Admin\SettingsExtension
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_css:
-    - vendor/firebrand/silverstripe-hail/client/dist/styles/main.css
+    - vendor/firebrand/silverstripe-hail/client/dist/styles/hail.bundle.css
 #  extra_requirements_javascript:
-#    - vendor/firebrand/silverstripe-hail/client/dist/js/main.bundle.js
+#    - vendor/firebrand/silverstripe-hail/client/dist/js/hail.bundle.js
 SilverStripe\Control\Director:
   rules:
     'HailCallbackController': 'Firebrand\Hail\Controllers\CallbackController'

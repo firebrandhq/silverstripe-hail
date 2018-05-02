@@ -19,6 +19,9 @@ class PublicTag extends ApiObject
         'Images' => 'Firebrand\Hail\Models\Image',
         'Videos' => 'Firebrand\Hail\Models\Video',
     ];
+    private static $belongs_many_many = [
+        'HailLists' => 'Firebrand\Hail\Lists\HailList',
+    ];
     private static $searchable_fields = [
         'Name',
         'Description'
@@ -37,6 +40,7 @@ class PublicTag extends ApiObject
         $this->makeRecordViewer($fields, "Articles", $this->Articles());
         $this->makeRecordViewer($fields, "Images", $this->Images());
         $this->makeRecordViewer($fields, "Videos", $this->Videos());
+        $fields->removeByName("HailLists");
 
         return $fields;
     }

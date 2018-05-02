@@ -38,8 +38,8 @@ class FetchQueueTask extends BuildTask
             if ($job->ToFetch === "*") {
                 $fetchables = ApiObject::$fetchables;
             } else {
-                if (ApiObject::isFetchable($job->ToFetch)) {
-                    $fetchables = [$job->ToFetch];
+                if (ApiObject::isFetchable(str_replace('-', '\\', $job->ToFetch))) {
+                    $fetchables = [str_replace('-', '\\', $job->ToFetch)];
                 }
             }
             if (count($fetchables) > 0) {

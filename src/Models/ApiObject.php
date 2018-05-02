@@ -186,7 +186,8 @@ class ApiObject extends DataObject
 
         //If this is launched from a queued job, update it to display realtime info on the frontend
         if (count($results) > 0 && $job) {
-            $job->CurrentObject = $org_name . " - " . static::plural_name();
+            $job->CurrentObject = $org_name . " - " . (new static)->plural_name();
+            $job->CurrentDone = 0;
             $job->CurrentTotal = count($results);
             $job->write();
         }

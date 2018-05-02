@@ -1,0 +1,126 @@
+input.notice-good {
+    background-color: green !important;
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+input.notice-bad {
+    background-color: red !important;
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+.ui-state-default .ui-icon.btn-icon-fetchHail {
+    background-image: url(client/dist/images/admin-icon.png);
+    background-position: center;
+}
+
+#hail-fetch-wrapper .dropdown-item {
+    cursor: pointer;
+}
+
+#hail-fetch-wrapper {
+    display: flex;
+}
+
+#hail-fetch-progress {
+    margin-left: 20px;
+}
+
+#hail-fetch-progress .progress-bar {
+    transition: width 0.5s ease;
+}
+
+#hail-fetch-btn-progress {
+    position: relative;
+}
+
+#hail-fetch-btn-progress #hail-fetch-btn-progress-inner {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    background-color: #368b39;
+    top: 0;
+    left: 0;
+}
+
+#hail-fetch-button #hail-fetch-btn-content {
+    position: relative;
+    transition: -webkit-transform 0.3s;
+    transition: transform 0.3s;
+    transition: transform 0.3s, -webkit-transform 0.3s;
+}
+
+#hail-fetch-button:after {
+    display: none !important;
+}/* General styles for all types of buttons */
+.progress-button {
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    outline: none;
+    border: none;
+    background: #1d9650;
+    color: #fff;
+    font-size: 1em;
+    transition: min-width 1s ease, height 1s ease;
+    cursor: pointer;
+    min-width:100px;
+    width: auto;
+    height: 40px;
+}
+
+.progress-button.state-active {
+    cursor: default;
+    min-width: 350px;
+}
+.progress-button.state-active.global-fetch {
+    cursor: default;
+    height: 60px;
+}
+.progress-button[disabled],
+.progress-button[disabled].state-loading,
+.progress-button[disabled].state-active {
+    cursor: default;
+}
+
+.progress-button .content {
+    position: relative;
+    display: block;
+}
+
+.progress-button .progress {
+    background: #148544;
+    display: inline !important;
+}
+
+.progress-button .progress-inner {
+    position: absolute;
+    left: 0;
+    background: #0e7138;
+}
+
+.progress-button[data-horizontal] .progress-inner {
+    top: 0;
+    width: 0;
+    height: 100%;
+    /*-webkit-transition: width 0.3s, opacity 0.3s;*/
+    /*transition: width 0.3s, opacity 0.3s;*/
+}
+
+/* Individual styles */
+/* Choose the effect(s) you want, delete the rest */
+
+/* Fill horizontal */
+/* ====================== */
+
+.progress-button[data-style="fill"][data-horizontal] {
+    overflow: hidden;
+}
+
+.progress-button[data-style="fill"][data-horizontal] .content {
+    z-index: 10;
+    /*-webkit-transition: -webkit-transform 0.3s;*/
+    /*transition: transform 0.3s;*/
+}
+/*# sourceMappingURL=hail.bundle.css.map*/

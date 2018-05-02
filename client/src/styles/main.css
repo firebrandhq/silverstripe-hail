@@ -18,13 +18,39 @@ input.notice-bad {
 #hail-fetch-wrapper .dropdown-item {
     cursor: pointer;
 }
+
 #hail-fetch-wrapper {
-    display:flex;
+    display: flex;
 }
+
 #hail-fetch-progress {
-    margin-left:20px;
+    margin-left: 20px;
 }
+
 #hail-fetch-progress .progress-bar {
     -webkit-transition: width 0.5s ease;
     transition: width 0.5s ease;
+}
+
+#hail-fetch-btn-progress {
+    position: relative;
+}
+
+#hail-fetch-btn-progress #hail-fetch-btn-progress-inner {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    background-color: #368b39;
+    top: 0;
+    left: 0;
+}
+
+#hail-fetch-button #hail-fetch-btn-content {
+    position: relative;
+    -webkit-transition: -webkit-transform 0.3s;
+    transition: transform 0.3s;
+}
+
+#hail-fetch-button:after {
+    display: none !important;
 }

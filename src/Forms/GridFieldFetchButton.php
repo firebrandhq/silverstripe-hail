@@ -4,6 +4,7 @@ namespace Firebrand\Hail\Forms;
 
 use Firebrand\Hail\Jobs\FetchJob;
 use SilverStripe\Forms\GridField\GridField_HTMLProvider;
+use SilverStripe\View\ViewableData;
 
 class GridFieldFetchButton implements GridField_HTMLProvider
 {
@@ -23,28 +24,26 @@ class GridFieldFetchButton implements GridField_HTMLProvider
      */
     public function getHTMLFragments($gridField)
     {
-        //Disable button if there is already a job running, and add a class to the progress bar to trigger the display
-        $job_count = FetchJob::get()->filter(['Status:not' => 'Done'])->Count();
-        $disabled = $job_count > 0 ? "disabled" : "";
-        $running = $job_count > 0 ? "hail-fetch-running" : "";
+        //Disable button if there is already a job running, and add a class to the progress button to trigger the display
+        $jobs = FetchJob::get()->filter(['Status:not' => 'Done']);
+        $current = $jobs->First();
+        $global = $current && $current->ToFetch === "*" ? "global-fetch" : "";
+        $disabled = $jobs->Count() > 0 ? "disabled" : "";
+        $running = $jobs->Count() > 0 ? "hail-fetch-running" : "";
+        $active = $jobs->Count() > 0 ? "state-active" : "";
+        $vd = new ViewableData();
+        $rendered = $vd
+            ->customise([
+                'Disabled' => $disabled,
+                'Running' => $running,
+                'Active' => $active,
+                'Global' => $global,
+            ])
+            ->renderWith('FetchButton')
+            ->getValue();
 
-        $html = '<div id="hail-fetch-wrapper">';
-        $html .= '<div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle ' . $disabled . '" type="button" id="hail-fetch-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Fetch
-                    </button>
-                    <div class="dropdown-menu hail-fetch-items" aria-labelledby="hail-fetch-button">
-                        <a class="dropdown-item" data-to-fetch="*">All</a>
-                        <a class="dropdown-item" data-to-fetch="Firebrand-Hail-Models-Article">Articles</a>
-                        <a class="dropdown-item" data-to-fetch="Firebrand-Hail-Models-Publication">Publications</a>
-                        <a class="dropdown-item" data-to-fetch="Firebrand-Hail-Models-PublicTag">Public tags</a>
-                        <a class="dropdown-item" data-to-fetch="Firebrand-Hail-Models-PrivateTag">Private tags</a>
-                    </div>
-                </div>';
-        $html .= '<div id="hail-fetch-progress" class="' . $running . '"></div> ';
-        $html .= '</div>';
         return [
-            $this->targetFragment => $html,
+            $this->targetFragment => $rendered,
         ];
     }
 }

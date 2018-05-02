@@ -25,9 +25,7 @@ class HailModelAdmin extends ModelAdmin
 
     public function getEditForm($id = null, $fields = null)
     {
-        Requirements::javascript(HAIL_DIR . '/client/dist/js/popper.min.js');
-        Requirements::javascript('vendor/silverstripe/admin/thirdparty/bootstrap/js/dist/dropdown.js');
-        Requirements::javascript(HAIL_DIR . '/client/dist/js/hailadmin.js');
+        Requirements::javascript(HAIL_DIR . '/client/dist/js/hail.bundle.js');
 
         $form = parent::getEditForm($id, $fields);
 

@@ -16,6 +16,9 @@ class PrivateTag extends ApiObject
         'Images' => 'Firebrand\Hail\Models\Image',
         'Videos' => 'Firebrand\Hail\Models\Video',
     ];
+    private static $belongs_many_many = [
+        'HailLists' => 'Firebrand\Hail\Lists\HailList',
+    ];
     private static $db = [
         'Name' => 'Varchar',
         'Description' => 'Varchar',
@@ -40,6 +43,7 @@ class PrivateTag extends ApiObject
         $this->makeRecordViewer($fields, "Publications", $this->Publications());
         $this->makeRecordViewer($fields, "Images", $this->Images());
         $this->makeRecordViewer($fields, "Videos", $this->Videos());
+        $fields->removeByName("HailLists");
 
         return $fields;
     }
