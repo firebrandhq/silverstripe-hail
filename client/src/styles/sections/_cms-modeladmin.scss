@@ -1,0 +1,78 @@
+//Button wrapper
+#hail-fetch-wrapper {
+  display: flex;
+
+  .dropdown-item {
+    cursor: pointer;
+  }
+}
+
+#hail-fetch-button:after {
+  display: none !important;
+}
+
+//Progress Button Styles
+.progress-button {
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  outline: none;
+  border: none;
+  background: $progressButtonPrimary;
+  color: #fff;
+  font-size: 1em;
+  transition: min-width 1s ease, height 1s ease;
+  cursor: pointer;
+  min-width: 100px;
+  width: auto;
+  height: 40px;
+
+  &.state-active {
+    cursor: default;
+    min-width: 350px;
+    &.global-fetch {
+      cursor: default;
+      height: 60px;
+    }
+  }
+
+  &[disabled],
+  &[disabled].state-loading,
+  &[disabled].state-active {
+    cursor: default;
+  }
+
+  .content {
+    position: relative;
+    display: block;
+  }
+
+  .progress {
+    background: $progressButtonFill;
+    display: inline !important;
+  }
+
+  .progress-inner {
+    position: absolute;
+    left: 0;
+    background: $progressButtonFill;
+  }
+
+  &[data-horizontal] .progress-inner {
+    top: 0;
+    width: 0;
+    height: 100%;
+    -webkit-transition: width 0.3s, opacity 0.3s;
+    transition: width 0.3s, opacity 0.3s;
+  }
+
+  &[data-style="fill"][data-horizontal] {
+    overflow: hidden;
+  }
+
+  &[data-style="fill"][data-horizontal] .content {
+    z-index: 10;
+    -webkit-transition: -webkit-transform 0.3s;
+    transition: transform 0.3s;
+  }
+}

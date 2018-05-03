@@ -240,27 +240,14 @@ __webpack_require__(/*! bootstrap/js/src/dropdown */ "./node_modules/bootstrap/j
 
 __webpack_require__(/*! ./hailadmin */ "./client/src/js/hailadmin.js");
 
-__webpack_require__(/*! ../styles/main.css */ "./client/src/styles/main.css");
-
-__webpack_require__(/*! ../styles/progress-button.css */ "./client/src/styles/progress-button.css");
+__webpack_require__(/*! ../styles/main.scss */ "./client/src/styles/main.scss");
 
 /***/ }),
 
-/***/ "./client/src/styles/main.css":
-/*!************************************!*\
-  !*** ./client/src/styles/main.css ***!
-  \************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ "./client/src/styles/progress-button.css":
-/*!***********************************************!*\
-  !*** ./client/src/styles/progress-button.css ***!
-  \***********************************************/
+/***/ "./client/src/styles/main.scss":
+/*!*************************************!*\
+  !*** ./client/src/styles/main.scss ***!
+  \*************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 

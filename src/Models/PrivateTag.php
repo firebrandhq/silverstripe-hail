@@ -16,9 +16,6 @@ class PrivateTag extends ApiObject
         'Images' => 'Firebrand\Hail\Models\Image',
         'Videos' => 'Firebrand\Hail\Models\Video',
     ];
-    private static $belongs_many_many = [
-        'HailLists' => 'Firebrand\Hail\Lists\HailList',
-    ];
     private static $db = [
         'Name' => 'Varchar',
         'Description' => 'Varchar',
@@ -34,6 +31,15 @@ class PrivateTag extends ApiObject
         'Description' => 'Description',
         'Fetched' => 'Fetched'
     ];
+
+    public function getFullName()
+    {
+        if (empty($this->HailOrgName)) {
+            return $this->Name;
+        }
+
+        return $this->HailOrgName . " - " . $this->Name;
+    }
 
     public function getCMSFields()
     {

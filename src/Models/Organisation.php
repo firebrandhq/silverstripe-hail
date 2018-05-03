@@ -12,8 +12,4 @@ class Organisation extends DataObject
         "HailID" => "Varchar",
         "Title" => "Varchar",
     ];
-
-    private static $belongs_many_many = [
-        'HailLists' => 'Firebrand\Hail\Lists\HailList',
-    ];
 }

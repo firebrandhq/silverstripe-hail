@@ -8,15 +8,17 @@ Firebrand\Hail\Api\Client:
   BaseApiUrl: 'https://hail.to/api/v1/'
   AuthorizationUrl: 'https://hail.to/oauth/authorise'
   RefreshRate: 86400
-
+Firebrand\Hail\Pages\HailPage:
+  extensions:
+    - Firebrand\Hail\Extensions\DataObjectExtension
 SilverStripe\SiteConfig\SiteConfig:
   extensions:
     - Firebrand\Hail\Admin\SettingsExtension
 SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - Firebrand\Hail\Extensions\UpdateFormExtension
   extra_requirements_css:
     - vendor/firebrand/silverstripe-hail/client/dist/styles/hail.bundle.css
-#  extra_requirements_javascript:
-#    - vendor/firebrand/silverstripe-hail/client/dist/js/hail.bundle.js
 SilverStripe\Control\Director:
   rules:
     'HailCallbackController': 'Firebrand\Hail\Controllers\CallbackController'

@@ -1,1 +1,6 @@
-<div class="marc-test"> THIS IS A TEST 3</div>
+<div class="marc-test">
+    <% loop $HailList %>
+        $Title <br />
+        <a href="$Top.Link">$Top.Link</a>
+    <% end_loop %>
+</div>

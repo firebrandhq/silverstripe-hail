@@ -16,6 +16,7 @@ class HailModelAdmin extends ModelAdmin
         'Firebrand\Hail\Models\Video',
         'Firebrand\Hail\Models\PublicTag',
         'Firebrand\Hail\Models\PrivateTag',
+        'Firebrand\Hail\Lists\HailList',
     ];
     private static $url_segment = 'hail';
 
