@@ -91,7 +91,9 @@ module.exports = {
                         loader: 'file-loader',
                         options: {
                             name: '[name].[ext]',
-                            outputPath: 'client/dist/images/'
+                            outputPath: './client/dist/',
+                            publicPath: "../images",
+                            useRelativePath: true
                         }
                     }
                 ]

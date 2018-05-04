@@ -27,7 +27,8 @@ class Publication extends ApiObject
     ];
     private static $has_one = [
         'FeaturedArticle' => 'Firebrand\Hail\Models\Article',
-        'HeroImage' => 'Firebrand\Hail\Models\Image'
+        'HeroImage' => 'Firebrand\Hail\Models\Image',
+        'HeroVideo' => 'Firebrand\Hail\Models\Video',
     ];
     private static $belongs_many_many = [
         'PrivateTags' => 'Firebrand\Hail\Models\PrivateTag',
@@ -63,6 +64,18 @@ class Publication extends ApiObject
         } else {
             $fields->removeByName('HeroImageID');
         }
+
+        // Display a thumbnail of the hero image
+        if ($this->HeroVideo()->ID != 0) {
+            $heroField = new LiteralField(
+                "HeroVideo",
+                $this->HeroVideo()->getThumbnailField("Hero Video")
+            );
+            $fields->replaceField('HeroVideoID', $heroField);
+        } else {
+            $fields->removeByName('HeroVideoID');
+        }
+
         if ($this->FeaturedArticleID != 0) {
             $record = $this->FeaturedArticle();
             $html = "<div class='form-group field lookup readonly '><label class='form__field-label'>Featured Article</label><div class='form__field-holder'><p class='form-control-static readonly'><a href='" . singleton('Firebrand\Hail\Admin\HailModelAdmin')->Link(str_replace("\\",
@@ -103,6 +116,7 @@ class Publication extends ApiObject
             $article->importHailData($articleData);
 
             $heroImage = $article->HeroImageID;
+            $heroVideo = $article->HeroVideoID;
 
             $article = $article->ID;
         } else {
@@ -115,5 +129,25 @@ class Publication extends ApiObject
             $this->HeroImageID = $heroImage;
         }
 
+        if (isset($heroVideo) && $heroVideo) {
+            $this->HeroVideoID = $heroVideo;
+        }
+
     }
+
+    public function Link()
+    {
+        return $this->Url;
+    }
+
+    public function getType()
+    {
+        return "publication";
+    }
+
+    public function getPlaceHolderHero()
+    {
+        return '/resources/' . HAIL_DIR . '/client/dist/images/placeholder-hero.png';
+    }
+
 }

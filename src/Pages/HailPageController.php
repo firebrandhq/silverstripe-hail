@@ -5,6 +5,8 @@ namespace Firebrand\Hail\Pages;
 use Firebrand\Hail\Models\Article;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\PaginatedList;
+use SilverStripe\View\Requirements;
 
 class HailPageController extends \PageController
 {
@@ -14,11 +16,18 @@ class HailPageController extends \PageController
     ];
     private static $allowed_actions = [
         'article',
+        'tag' => 'index',
     ];
 
     protected function init()
     {
         parent::init();
+
+        Requirements::css(HAIL_DIR . '/client/dist/styles/hail.bundle.css');
+        Requirements::javascript(HAIL_DIR . '/client/dist/js/hail.bundle.js');
+        if ($this->owner->PaginationStyle === "InfiniteScroll") {
+            Requirements::javascript(HAIL_DIR . '/client/dist/js/infinite-load.js');
+        }
     }
 
     public function article(HTTPRequest $request)
@@ -35,19 +44,12 @@ class HailPageController extends \PageController
             'Article' => $article
         ];
     }
-//    public function Link($action = null)
-//    {
-//        // Construct link with graceful handling of GET parameters
-//        $link = Controller::join_links('teams', $action);
-//
-//        // Allow Versioned and other extension to update $link by reference.
-//        $this->extend('updateLink', $link, $action);
-//
-//        return $link;
-//    }
 
     public function HailList()
     {
+        $params = $this->getRequest()->params();
+        $filter_publications = false;
+
         $list = new ArrayList();
         if ($this->owner->List()->exists()) {
             $hail_list = $this->owner->List();
@@ -90,6 +92,16 @@ class HailPageController extends \PageController
                             $filters['ID:not'] = $inverse_filter;
                         }
 
+                        //In page public tag filter
+                        if ($params['Action'] === "tag" && !empty($params['ID']) && $has_public_tags) {
+                            $filters['PublicTags.HailID'] = $params['ID'];
+                            $filter_publications = true;
+                        }
+                        if($filter_publications) {
+                            //IF we have a page filter, only show articles (publications don't have public tags)
+                            $filters['ClassName'] = 'Firebrand\Hail\Models\Article';
+                        }
+
                         if (count($filters) > 0) {
                             $objects = $objects->filter($filters);
                         }
@@ -99,6 +111,6 @@ class HailPageController extends \PageController
                 }
             }
         }
-        return $list;
+        return PaginatedList::create($list->sort('Created DESC'), $this->getRequest())->setPageLength($this->owner->PaginationPerPage);
     }
 }

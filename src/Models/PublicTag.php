@@ -19,6 +19,9 @@ class PublicTag extends ApiObject
         'Images' => 'Firebrand\Hail\Models\Image',
         'Videos' => 'Firebrand\Hail\Models\Video',
     ];
+    private static $belongs_many_many = [
+        'HailPages' => 'Firebrand\Hail\Pages\HailPage',
+    ];
     private static $searchable_fields = [
         'Name',
         'Description'

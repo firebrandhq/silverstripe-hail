@@ -155,7 +155,7 @@ class Video extends ApiObject
      */
     public function getThumbnailField($label)
     {
-        return "<div class='form-group field lookup readonly '><label class='form__field-label'>$label</label><div class='form__field-holder'>{$this->getThumbnail()}</div></div>";
+        return "<div class='form-group field lookup readonly '><label class='form__field-label'>$label</label><div class='form__field-holder'><div class='hail-video-thumbnail-holder'> {$this->getThumbnail()} </div></div></div>";
     }
 
     public function getRelativeCenterX()

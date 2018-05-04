@@ -3,6 +3,8 @@
 namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
 
 class Article extends ApiObject
@@ -95,7 +97,7 @@ class Article extends ApiObject
 
         return $fields;
     }
-    
+
     protected function importing($data)
     {
         if (!empty($data['body'])) {
@@ -109,11 +111,11 @@ class Article extends ApiObject
         $this->processAttachments($data['attachments']);
 
         //IF we have an image gallery, fetch every images
-        if(count($data['short_gallery']) > 0) {
+        if (count($data['short_gallery']) > 0) {
             $this->fetchImages();
         }
         //IF we have an video gallery, fetch every videos
-        if(count($data['short_video_gallery']) > 0) {
+        if (count($data['short_video_gallery']) > 0) {
             $this->fetchVideos();
         }
     }
@@ -190,5 +192,35 @@ class Article extends ApiObject
             $hailObj->importHailData($hailData);
             $this->VideoGallery()->add($hailObj);
         }
+    }
+
+    public function Link()
+    {
+        $link = Controller::curr()->Link();
+
+        return $link . "article/" . $this->HailID;
+    }
+
+    public function getType()
+    {
+        return "article";
+    }
+
+    public function getPlaceHolderHero()
+    {
+        return '/resources/' . HAIL_DIR . '/client/dist/images/placeholder-hero.png';
+    }
+
+    /**
+     * List of the tag IDs associated to this article seperated by spaces. Suitable to be used as CSS classes.
+     * @return string
+     */
+    public function getTagList()
+    {
+        $string = '';
+        foreach ($this->PublicTags() as $t) {
+            $string .= Convert::raw2url($t->Name) . ' ';
+        }
+        return trim($string);
     }
 }

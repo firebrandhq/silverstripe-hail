@@ -1,0 +1,47 @@
+.hail-preview {
+  margin-bottom: 25px;
+}
+.hail-preview-wrapper {
+  height:100%;
+  width:100%;
+  background-color: #EEE;
+  padding: 10px;
+}
+
+.hail-preview-hero {
+  width: 100%;
+  height: 150px;
+  .hail-preview-image, .hail-preview-hero-placeholder {
+    width: 100%;
+    height: 100%
+  }
+}
+
+.hail-preview-hero-placeholder {
+  background: url('../images/placeholder-hero.jpg') no-repeat;
+  background-size: 100% 100%;
+}
+
+#hail-pagination {
+  align-items: center;
+  justify-content: center;
+}
+
+#hail-filters {
+  //height: 50px !important;
+}
+
+.hail-pagination-button:not(:first-child) {
+  margin-left: 15px;
+}
+
+.ias-spinner {
+  width: 100%;
+  margin: 0 auto;
+  img {
+    width: 100px;
+    height: 100px;
+    background: none !important;
+    border: none !important;
+  }
+}

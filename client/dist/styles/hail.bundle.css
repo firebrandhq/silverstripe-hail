@@ -1,3 +1,56 @@
+.hail-video-youtube {
+  background-color: #000;
+  margin-bottom: 30px;
+  position: relative;
+  padding-top: 56.25%;
+  overflow: hidden;
+  cursor: pointer; }
+
+.hail-video-youtube img {
+  width: 100%;
+  top: -16.84%;
+  left: 0;
+  opacity: 0.7;
+  border: none !important; }
+
+.hail-video-youtube .hail-play-button {
+  width: 90px;
+  height: 60px;
+  background-color: #333;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  z-index: 1;
+  opacity: 0.8;
+  border-radius: 6px; }
+
+.hail-video-youtube .hail-play-button:before {
+  content: "";
+  border-style: solid;
+  border-width: 15px 0 15px 26.0px;
+  border-color: transparent transparent transparent #fff; }
+
+.hail-video-youtube img,
+.hail-video-youtube .hail-play-button {
+  cursor: pointer; }
+
+.hail-video-youtube img,
+.hail-video-youtube iframe,
+.hail-video-youtube .hail-play-button,
+.hail-video-youtube .hail-play-button:before {
+  position: absolute; }
+
+.hail-video-youtube .hail-play-button,
+.hail-video-youtube .hail-play-button:before {
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate3d(-50%, -50%, 0);
+          transform: translate3d(-50%, -50%, 0); }
+
+.hail-video-youtube iframe {
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0; }
+
 input.notice-good {
   background-color: green !important;
   color: white !important;
@@ -15,6 +68,9 @@ input.notice-bad {
 
 #hail-fetch-button:after {
   display: none !important; }
+
+.hail-video-thumbnail-holder {
+  width: 350px; }
 
 .progress-button {
   position: relative;
@@ -60,5 +116,41 @@ input.notice-bad {
     transition: -webkit-transform 0.3s;
     transition: transform 0.3s;
     transition: transform 0.3s, -webkit-transform 0.3s; }
+
+.hail-preview {
+  margin-bottom: 25px; }
+
+.hail-preview-wrapper {
+  height: 100%;
+  width: 100%;
+  background-color: #EEE;
+  padding: 10px; }
+
+.hail-preview-hero {
+  width: 100%;
+  height: 150px; }
+  .hail-preview-hero .hail-preview-image, .hail-preview-hero .hail-preview-hero-placeholder {
+    width: 100%;
+    height: 100%; }
+
+.hail-preview-hero-placeholder {
+  background: url(../images/placeholder-hero.jpg) no-repeat;
+  background-size: 100% 100%; }
+
+#hail-pagination {
+  align-items: center;
+  justify-content: center; }
+
+.hail-pagination-button:not(:first-child) {
+  margin-left: 15px; }
+
+.ias-spinner {
+  width: 100%;
+  margin: 0 auto; }
+  .ias-spinner img {
+    width: 100px;
+    height: 100px;
+    background: none !important;
+    border: none !important; }
 
 /*# sourceMappingURL=hail.bundle.css.map*/
