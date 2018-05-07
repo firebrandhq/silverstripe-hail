@@ -2,10 +2,10 @@ jQuery(function ($) {
     $(document).ready(function () {
         //Infinite Scroll for Hail Page
         var ias = $.ias({
-            container: '#hail-container',
+            container: '#hail-page-previews',
             item: '.hail-preview',
-            pagination: '#hail-pagination',
-            next: '#hail-pagination a.next'
+            pagination: '#hail-page-pagination',
+            next: '#hail-page-pagination a.next'
         });
         // Add a loader image which is displayed during loading
         ias.extension(new IASSpinnerExtension({

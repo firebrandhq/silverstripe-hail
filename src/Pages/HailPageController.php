@@ -4,6 +4,7 @@ namespace Firebrand\Hail\Pages;
 
 use Firebrand\Hail\Models\Article;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\View\Requirements;
@@ -22,8 +23,9 @@ class HailPageController extends \PageController
     protected function init()
     {
         parent::init();
-
-        Requirements::css(HAIL_DIR . '/client/dist/styles/hail.bundle.css');
+        if (Config::inst()->get(get_class(new self), 'UseDefaultCss')) {
+            Requirements::css(HAIL_DIR . '/client/dist/styles/hail.bundle.css');
+        }
         Requirements::javascript(HAIL_DIR . '/client/dist/js/hail.bundle.js');
         if ($this->owner->PaginationStyle === "InfiniteScroll") {
             Requirements::javascript(HAIL_DIR . '/client/dist/js/infinite-load.js');
@@ -37,7 +39,7 @@ class HailPageController extends \PageController
             $article = Article::get()->filter(['HailID' => $params['ID']])->first();
         }
         if (!$params['ID'] || !isset($article) || !$article) {
-            return $this->httpError(404, 'That region could not be found');
+            return $this->httpError(404, 'That article could not be found');
         }
 
         return [
@@ -97,7 +99,7 @@ class HailPageController extends \PageController
                             $filters['PublicTags.HailID'] = $params['ID'];
                             $filter_publications = true;
                         }
-                        if($filter_publications) {
+                        if ($filter_publications) {
                             //IF we have a page filter, only show articles (publications don't have public tags)
                             $filters['ClassName'] = 'Firebrand\Hail\Models\Article';
                         }
@@ -112,5 +114,15 @@ class HailPageController extends \PageController
             }
         }
         return PaginatedList::create($list->sort('Created DESC'), $this->getRequest())->setPageLength($this->owner->PaginationPerPage);
+    }
+
+    public function currentTagFilter()
+    {
+        $params = $this->getRequest()->params();
+        if ($params['Action'] === "tag" && !empty($params['ID'])) {
+            return $params['ID'];
+        }
+
+        return 'none';
     }
 }

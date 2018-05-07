@@ -1,0 +1,63 @@
+#hail-article-header {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.hail-article-header-image {
+  background-size: cover;
+  height: 300px;
+}
+
+.hail-article-header-video {
+  width: 535px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+#hail-article-container,
+#hail-article-image-gallery,
+#hail-article-video-gallery,
+#hail-article-attachments {
+  margin-bottom: 10px;
+}
+
+#hail-article-image-gallery .swipebox img,
+#hail-article-video-gallery .swipebox-video img {
+  margin-bottom: 15px;
+}
+
+.files-icon,
+.photos-icon,
+.videos-icon,
+.attachments-icon {
+  float: left;
+  width: 19px;
+  height: 19px;
+  margin-right: 10px;
+}
+
+.files-icon {
+  background: url('../images/file.png') no-repeat;
+  background-size: 100% 100%;
+}
+
+.photos-icon {
+  background: url('../images/picture-o.png') no-repeat;
+  background-size: 100% 100%;
+}
+
+.videos-icon {
+  background: url('../images/video-camera.png') no-repeat;
+  background-size: 100% 100%;
+}
+
+.attachments-icon {
+  background: url('../images/paperclip.png') no-repeat;
+  background-size: 100% 100%;
+}
+
+.attachments-col {
+  margin-bottom: 10px;
+}

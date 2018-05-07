@@ -4,6 +4,8 @@ namespace Firebrand\Hail\Pages;
 
 use Firebrand\Hail\Lists\HailList;
 use Firebrand\Hail\Models\PublicTag;
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Assets\Image;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
@@ -21,6 +23,7 @@ class HailPage extends \Page
     ];
     private static $has_one = [
         "List" => "Firebrand\Hail\Lists\HailList",
+        "HeroImage" => Image::class,
     ];
     private static $many_many = [
         'FilterTags' => 'Firebrand\Hail\Models\PublicTag',
@@ -42,9 +45,11 @@ class HailPage extends \Page
         $filter_tags = ListboxField::create('FilterTags', 'Filter tags', PublicTag::get())->setDescription('Leave empty to disable filtering');
         $pagination_style = DropdownField::create('PaginationStyle', 'Pagination style', ['Default', 'InfiniteScroll' => 'Infinite scroll']);
         $pagination_per_page = NumericField::create('PaginationPerPage', 'Items displayed per page');
+        $hero_image = UploadField::create('HeroImage', 'Hail Page header image')->setAllowedMaxFileNumber(1);
 
-        $fields->addFieldsToTab('Root.Hail.Tab', [$filter_tags, $pagination_style, $pagination_per_page]);
-        $fields->addFieldsToTab('Root.Hail.Tab', $this->List()->getFieldsForHasOne("List"));
+        $fields->addFieldsToTab('Root.Hail', [$filter_tags, $pagination_style, $pagination_per_page]);
+        $fields->addFieldsToTab('Root.Hail', $this->List()->getFieldsForHasOne("List"));
+        $fields->addFieldsToTab('Root.Main', $hero_image, 'Content');
 
         return $fields;
     }

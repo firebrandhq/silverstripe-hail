@@ -138,13 +138,7 @@ class Video extends ApiObject
             'HailVideo' => $this
         ]);
 
-        switch ($this->Service) {
-            case 'youtube':
-                return $data->renderWith('VideoYoutubeThumbnail');
-                break;
-            default:
-                return $data->renderWith('VideoThumbnail');
-        }
+        return $data->renderWith('VideoThumbnail');
     }
 
     /**

@@ -14,7 +14,7 @@ class GridFieldAttachmentDownloadButton extends GridFieldViewButton
                 'Link' => $record->Url
 
             ]);
-            return $data->renderWith('AttachmentDownloadButton');
+            return $data->renderWith('GridFieldAttachmentDownloadButton');
         }
     }
 }

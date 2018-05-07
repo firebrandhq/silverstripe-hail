@@ -39,7 +39,7 @@ class GridFieldFetchButton implements GridField_HTMLProvider
                 'Active' => $active,
                 'Global' => $global,
             ])
-            ->renderWith('FetchButton')
+            ->renderWith('GridFieldFetchButton')
             ->getValue();
 
         return [

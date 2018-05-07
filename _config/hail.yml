@@ -8,7 +8,9 @@ Firebrand\Hail\Api\Client:
   BaseApiUrl: 'https://hail.to/api/v1/'
   AuthorizationUrl: 'https://hail.to/oauth/authorise'
   RefreshRate: 86400
-Firebrand\Hail\Pages\HailPage:
+Firebrand\Hail\Pages\HailPageController:
+  UseDefaultCss: true
+SilverStripe\ORM\DataObject:
   extensions:
     - Firebrand\Hail\Extensions\DataObjectExtension
 SilverStripe\SiteConfig\SiteConfig:
