@@ -223,4 +223,18 @@ class Article extends ApiObject
         }
         return trim($string);
     }
+
+//    public function getAllImages() {
+//
+//    }
+
+    public function hasImages()
+    {
+        return $this->HeroImage()->ID != 0 || $this->ImageGallery()->count() > 0;
+    }
+
+    public function hasVideos()
+    {
+        return $this->HeroVideo()->ID != 0 || $this->VideoGallery()->count() > 0;
+    }
 }
