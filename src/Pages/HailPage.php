@@ -8,10 +8,12 @@ use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Session;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\RequiredFields;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class HailPage extends \Page
 {

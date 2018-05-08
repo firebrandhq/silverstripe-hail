@@ -29,6 +29,9 @@ class HailModelAdmin extends ModelAdmin
         Requirements::javascript(HAIL_DIR . '/client/dist/js/hail.bundle.js');
 
         $form = parent::getEditForm($id, $fields);
+        //Check if Hail API is down
+        $config = $this->SiteConfig();
+        $hail_down = (!empty($config->HailAPIStatusCurrent) && $config->HailAPIStatusCurrent !== "OK");
 
         $gridFieldName = $this->sanitiseClassName($this->modelClass);
         $gridField = $form->Fields()->fieldByName($gridFieldName)->getConfig();
@@ -40,8 +43,12 @@ class HailModelAdmin extends ModelAdmin
             ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldPrintButton')
             ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldImportButton');
         //Only show Fetch button for fetchable objects
-        if (ApiObject::isFetchable($this->modelClass)) {
+        if (ApiObject::isFetchable($this->modelClass) && !$hail_down) {
             $gridField->addComponent(new GridFieldFetchButton('buttons-before-left'));
+        }
+
+        if ($hail_down) {
+            $form->sessionMessage('The Hail API is down, nothing can be fetched at the moment.');
         }
 
         return $form;
