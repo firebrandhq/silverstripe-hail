@@ -21,7 +21,8 @@ class HailPage extends \Page
         "PaginationPerPage" => "Int",
     ];
     private static $defaults = [
-        'PaginationPerPage' => 12,
+        'PaginationPerPage' => 9,
+        'PaginationStyle' => 'InfiniteScroll',
     ];
     private static $has_one = [
         "List" => "Firebrand\Hail\Lists\HailList",
