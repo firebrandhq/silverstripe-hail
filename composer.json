@@ -1,30 +1,40 @@
 {
-    "name": "firebrand/silverstripe-hail",
-    "description": "Silverstripe 4 plugin to integrate with Hail (https://get.hail.to)",
-    "type": "silverstripe-vendormodule",
-    "keywords": ["silverstripe", "News", "Hail", "Content"],
-    "license": "MIT",
-    "authors": [{
-        "name": "Firebrand Limited",
-        "email": "developers@firebrand.nz"
-    }],
-    "require": {
-        "php": ">=7.1",
-        "silverstripe/cms": "^4.1",
-        "silverstripe/framework": "^4.1",
-        "silverstripe/environmentcheck": "^2.0",
-        "guzzlehttp/guzzle": "^6.3"
-    },
-    "autoload": {
-        "psr-4": {
-            "Firebrand\\Hail\\": "src/"
-        }
-    },
-    "extra": {
-        "expose": [
-            "client/dist"
-        ]
-    },
-    "prefer-stable": true,
-    "minimum-stability": "stable"
+  "name": "firebrand/silverstripe-hail",
+  "description": "Silverstripe 4 plugin to integrate with Hail (https://get.hail.to)",
+  "type": "silverstripe-vendormodule",
+  "keywords": [
+    "silverstripe",
+    "News",
+    "Hail",
+    "Content"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Firebrand Limited",
+      "email": "developers@firebrand.nz"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "silverstripe/cms": "^4.1",
+    "silverstripe/framework": "^4.1",
+    "silverstripe/environmentcheck": "^2.0",
+    "guzzlehttp/guzzle": "^6.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Firebrand\\Hail\\": "src/"
+    }
+  },
+  "extra": {
+    "expose": [
+      "client/dist"
+    ],
+    "branch-alias": {
+      "dev-master": "4.0.x-dev"
+    }
+  },
+  "prefer-stable": true,
+  "minimum-stability": "stable"
 }
