@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="card-body">
-            <a href="$Link/$Title.CSSSafe" class="Link"><h5 class="card-title">$Title</h5></a>
+            <a href="$Link" class="Link"><h5 class="card-title">$Title</h5></a>
             <h6 class="card-subtitle mb-2 text-muted">$DueDate.Format('eeee MMMM d, yyyy')</h6>
         </div>
     </div>
