@@ -28,6 +28,7 @@ class HailPageController extends \PageController
         }
         Requirements::javascript(HAIL_DIR . '/client/dist/js/hail.bundle.js');
         if ($this->owner->PaginationStyle === "InfiniteScroll") {
+            Requirements::javascript(HAIL_DIR . '/client/dist/js/jquery-ias.min.js');
             Requirements::javascript(HAIL_DIR . '/client/dist/js/infinite-load.js');
         }
     }
