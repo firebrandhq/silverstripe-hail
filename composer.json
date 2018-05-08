@@ -32,7 +32,7 @@
       "client/dist"
     ],
     "branch-alias": {
-      "dev-master": "4.0.x-dev"
+      "dev-develop": "4.0.x-dev"
     }
   },
   "prefer-stable": true,
