@@ -3,16 +3,13 @@
 namespace Firebrand\Hail\Admin;
 
 use Firebrand\Hail\Api\Client;
-use Firebrand\Hail\Models\Article;
 use Firebrand\Hail\Models\Organisation;
-use Firebrand\Hail\Models\PrivateTag;
-use Firebrand\Hail\Models\Publication;
-use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
@@ -35,11 +32,6 @@ class SettingsExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields)
     {
-//        PrivateTag::fetchAll();
-//        PublicTag::fetchAll();
-//        Article::fetchAll();
-//        Publication::fetchAll();
-
         parent::updateCMSFields($fields);
         //Create Hail tab
         $fields->insertAfter(TabSet::create('Hail', 'Hail'), 'Root');
@@ -78,6 +70,9 @@ class SettingsExtension extends DataExtension
             $client_secret
         ]);
         if ($hail_api_client->isReadyToAuthorised()) {
+            //Add a reaonly field to display the CallBack URL
+            $callback = ReadonlyField::create('CallBackURL', 'Callback URL', $hail_api_client->getRedirectURL())->setDescription("Please add the following callback URL in Hail before starting the authorization process.");
+            $fields->addFieldToTab('Root.Hail', $callback);
 
             $link = $hail_api_client->isAuthorised() ?
                 'Reauthorise SilverStripe to Access Hail' :

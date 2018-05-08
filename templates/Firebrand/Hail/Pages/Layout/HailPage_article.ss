@@ -8,14 +8,8 @@
     </div>
 </section>
 
-<% if $Article.HasImages %>
-    <% include HailArticleImageGallery %>
-<% end_if %>
+<% include HailArticleImageGallery %>
 
-<% if $Article.HasVideos %>
-    <% include HailArticleVideoGallery %>
-<% end_if %>
+<% include HailArticleVideoGallery %>
 
-<% if $Article.Attachments %>
-    <% include HailArticleAttachments %>
-<% end_if %>
+<% include HailArticleAttachments %>

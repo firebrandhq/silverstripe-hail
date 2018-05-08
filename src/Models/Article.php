@@ -6,6 +6,7 @@ use Firebrand\Hail\Api\Client;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\ArrayList;
 
 class Article extends ApiObject
 {
@@ -21,7 +22,8 @@ class Article extends ApiObject
         'Updated' => 'updated_date',
         'Rating' => 'average_rating',
         'Flagged' => 'flagged',
-        'Date' => 'date'
+        'Date' => 'date',
+        'HailURL' => 'hail_url',
     ];
     private static $table_name = "HailArticle";
     private static $db = [
@@ -37,7 +39,8 @@ class Article extends ApiObject
         'Created' => 'Datetime',
         'Updated' => 'Datetime',
         'Rating' => 'Double',
-        'Flagged' => 'Boolean'
+        'Flagged' => 'Boolean',
+        'HailURL' => 'Varchar'
     ];
     private static $default_sort = "Date DESC";
     private static $has_one = [
@@ -224,17 +227,61 @@ class Article extends ApiObject
         return trim($string);
     }
 
-//    public function getAllImages() {
-//
-//    }
+    public function getAllImages()
+    {
+        $images = new ArrayList();
+        if ($this->hasHeroImage()) {
+            $images->push($this->HeroImage());
+        }
+        if ($this->hasGalleryImages()) {
+            $images->merge($this->ImageGallery());
+        }
+        $images->removeDuplicates('HailID');
+
+        return $images;
+    }
+
+    public function getAllVideos()
+    {
+        $videos = new ArrayList();
+        if ($this->hasHeroVideo()) {
+            $videos->push($this->HeroVideo());
+        }
+        if ($this->hasGalleryVideos()) {
+            $videos->merge($this->VideoGallery());
+        }
+        $videos->removeDuplicates('HailID');
+
+        return $videos;
+    }
+
+    public function hasHeroImage()
+    {
+        return $this->HeroImage()->ID != 0;
+    }
+
+    public function hasHeroVideo()
+    {
+        return $this->HeroVideo()->ID != 0;
+    }
+
+    public function hasGalleryImages()
+    {
+        return $this->ImageGallery()->count() > 0;
+    }
+
+    public function hasGalleryVideos()
+    {
+        return $this->VideoGallery()->count() > 0;
+    }
 
     public function hasImages()
     {
-        return $this->HeroImage()->ID != 0 || $this->ImageGallery()->count() > 0;
+        return $this->hasHeroImage() || $this->hasGalleryImages();
     }
 
     public function hasVideos()
     {
-        return $this->HeroVideo()->ID != 0 || $this->VideoGallery()->count() > 0;
+        return $this->hasHeroVideo() || $this->hasGalleryVideos();
     }
 }

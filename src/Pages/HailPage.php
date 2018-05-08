@@ -3,9 +3,11 @@
 namespace Firebrand\Hail\Pages;
 
 use Firebrand\Hail\Lists\HailList;
+use Firebrand\Hail\Models\Article;
 use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
+use SilverStripe\Control\Controller;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
@@ -72,4 +74,19 @@ class HailPage extends \Page
         }
     }
 
+    public function MetaTags($includeTitle = true)
+    {
+        $tags = parent::MetaTags($includeTitle);
+        $params = Controller::curr()->getRequest()->params();
+        if ($params['Action'] === "article" && !empty($params['ID'])) {
+            $article = Article::get()->filter(['HailID' => $params['ID']])->first();
+            if ($article && $article->HailURL) {
+                $tags .= "<link rel=\"canonical\" href=\"{$article->HailURL}\" />";
+            }
+        }
+
+        $this->extend('MetaTags', $tags);
+
+        return $tags;
+    }
 }
