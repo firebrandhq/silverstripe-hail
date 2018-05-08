@@ -4,7 +4,6 @@ Name: hailconfig
 SilverStripe\Core\Manifest\ModuleManifest:
   project: 'silverstripe-hail'
 Firebrand\Hail\Api\Client:
-  Timeout: 0
   BaseApiUrl: 'https://hail.to/api/v1/'
   AuthorizationUrl: 'https://hail.to/oauth/authorise'
   RefreshRate: 86400

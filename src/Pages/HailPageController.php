@@ -23,7 +23,7 @@ class HailPageController extends \PageController
     protected function init()
     {
         parent::init();
-        if (Config::inst()->get(get_class(new self), 'UseDefaultCss')) {
+        if (Config::inst()->get(self::class, 'UseDefaultCss')) {
             Requirements::css(HAIL_DIR . '/client/dist/styles/hail.bundle.css');
         }
         Requirements::javascript(HAIL_DIR . '/client/dist/js/hail.bundle.js');

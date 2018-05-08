@@ -19,8 +19,6 @@ use SilverStripe\SiteConfig\SiteConfig;
 class SettingsExtension extends DataExtension
 {
     private static $db = [
-        "HailClientID" => "Varchar(255)",
-        "HailClientSecret" => "Varchar(255)",
         "HailAccessToken" => "Varchar(255)",
         "HailAccessTokenExpire" => "Varchar(255)",
         "HailRefreshToken" => "Varchar(255)",
@@ -62,16 +60,12 @@ class SettingsExtension extends DataExtension
             $session->clear('noticeType');
             $session->clear('noticeText');
         }
+
         //Hail settings fields
-        $client_id = TextField::create("HailClientID", "Hail Client ID");
-        $client_secret = TextField::create("HailClientSecret", "Hail Client Secret");
-        $fields->addFieldsToTab('Root.Hail', [
-            $client_id,
-            $client_secret
-        ]);
         if ($hail_api_client->isReadyToAuthorised()) {
             //Add a reaonly field to display the CallBack URL
-            $callback = ReadonlyField::create('CallBackURL', 'Callback URL', $hail_api_client->getRedirectURL())->setDescription("Please add the following callback URL in Hail before starting the authorization process.");
+            $callback = ReadonlyField::create('CallBackURL', 'Callback URL',
+                $hail_api_client->getRedirectURL())->setDescription("Please add the following callback URL in Hail before starting the authorization process.");
             $fields->addFieldToTab('Root.Hail', $callback);
 
             $link = $hail_api_client->isAuthorised() ?
@@ -80,6 +74,11 @@ class SettingsExtension extends DataExtension
 
             $auth = $hail_api_client->getAuthorizationURL();
             $fields->addFieldToTab('Root.Hail', new LiteralField('Go', "<div class='form-group form__field-label'><a class='btn btn-primary' href='$auth'>$link</a></div>"));
+        } else {
+            //Display message if client id or client secret is not configured
+            $client_message = ReadonlyField::create('ClientErrorMessage', 'Configuration error ', "Please add your Hail Client ID and Secret to your .env file, see documentation.")
+                ->addExtraClass("notice-bad");
+            $fields->addFieldToTab('Root.Hail', $client_message);
         }
         if ($hail_api_client->isAuthorised()) {
             //Organisations list

@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -28,10 +29,12 @@ class Client
 
     public function __construct()
     {
+        //Get Client ID and Secret from env file
+        $this->client_id = Environment::getEnv('HAIL_CLIENT_ID');;
+        $this->client_secret = Environment::getEnv('HAIL_CLIENT_SECRET');;
+
         //Get all provider settings from global config
         $config = SiteConfig::current_site_config();
-        $this->client_id = $config->HailClientID;
-        $this->client_secret = $config->HailClientSecret;
         $this->access_token = $config->HailAccessToken;
         $this->access_token_expire = $config->HailAccessTokenExpire;
         $this->refresh_token = $config->HailRefreshToken;
@@ -74,7 +77,7 @@ class Client
 
     public function getApiBaseURL()
     {
-        return Config::inst()->get(get_class(new self), 'BaseApiUrl');
+        return Config::inst()->get(self::class, 'BaseApiUrl');
     }
 
     public function getRedirectURL()
@@ -119,7 +122,7 @@ class Client
 
     public function getAuthorizationURL()
     {
-        $url = Config::inst()->get(get_class(new self), 'AuthorizationUrl');
+        $url = Config::inst()->get(self::class, 'AuthorizationUrl');
         $params = [
             'client_id' => $this->client_id,
             'redirect_uri' => $this->getRedirectURL(),
@@ -322,7 +325,7 @@ class Client
      */
     public static function getRefreshRate()
     {
-        return Config::inst()->get(get_class(new self), 'RefreshRate');
+        return Config::inst()->get(self::class, 'RefreshRate');
     }
 
     /**
