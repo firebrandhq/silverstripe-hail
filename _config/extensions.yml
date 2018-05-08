@@ -1,5 +1,5 @@
 ---
-Name: Hail Extensions
+Name: hail-extensions
 ---
 SilverStripe\ORM\DataObject:
   extensions:

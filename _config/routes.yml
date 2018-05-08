@@ -1,5 +1,5 @@
 ---
-Name: Hail Routes
+Name: hail-routes
 ---
 SilverStripe\Control\Director:
   rules:

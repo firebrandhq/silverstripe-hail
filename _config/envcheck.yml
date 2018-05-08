@@ -1,5 +1,5 @@
 ---
-Name: Hail Environment Checker
+Name: hail-environment-checker
 ---
 SilverStripe\EnvironmentCheck\EnvironmentCheckSuite:
   registered_checks:

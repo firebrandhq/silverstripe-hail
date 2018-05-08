@@ -201,7 +201,7 @@ class Article extends ApiObject
     {
         $link = Controller::curr()->Link();
 
-        return $link . "article/" . $this->HailID;
+        return $link . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
     }
 
     public function getType()

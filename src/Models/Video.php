@@ -239,4 +239,21 @@ class Video extends ApiObject
 
         $this->{$SSName} = $color;
     }
+
+    public function Link()
+    {
+        switch ($this->Service) {
+            case "youtube":
+                $link = "https://www.youtube.com/watch?v=" . $this->ServiceData;
+                break;
+            case "vimeo":
+                $link = "https://vimeo.com/" . $this->ServiceData;
+                break;
+            default:
+                $link = null;
+                break;
+        }
+
+        return $link;
+    }
 }

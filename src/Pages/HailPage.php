@@ -64,6 +64,14 @@ class HailPage extends \Page
         ]);
     }
 
+    public function AbsoluteLink($action = null)
+    {
+        $link = parent::AbsoluteLink($action);
+
+        $this->extend('AbsoluteLink', $link);
+
+        return $link;
+    }
 
     public function onBeforeDelete()
     {

@@ -1,5 +1,5 @@
 ---
-Name: Hail Config
+Name: hail-config
 ---
 SilverStripe\Core\Manifest\ModuleManifest:
   project: 'silverstripe-hail'

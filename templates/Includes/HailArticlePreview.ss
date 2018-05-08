@@ -26,7 +26,7 @@
                     <span class="badge badge-primary">+ $PublicTags.Limit(9999, 2).Count More</span>
                 <% end_if %>
             </div>
-            <a href="$Link/$Title.CSSSafe" class="Link"><h5 class="card-title">$Title</h5></a>
+            <a href="$Link" class="Link"><h5 class="card-title">$Title</h5></a>
             <h6 class="card-subtitle mb-2 text-muted">$Date.Format('eeee MMMM d, yyyy')</h6>
             <div class="card-text">
                 $Lead
