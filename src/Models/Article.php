@@ -204,6 +204,11 @@ class Article extends ApiObject
         return $link . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
     }
 
+    public function getLinkForPage($page)
+    {
+        return $page->Link() . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
+    }
+
     public function getType()
     {
         return "article";
