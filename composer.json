@@ -20,7 +20,8 @@
     "silverstripe/cms": "^4.1",
     "silverstripe/framework": "^4.1",
     "silverstripe/environmentcheck": "^2.0",
-    "guzzlehttp/guzzle": "^6.3"
+    "guzzlehttp/guzzle": "^6.3",
+    "sheadawson/silverstripe-dependentdropdownfield": "^2.0"
   },
   "autoload": {
     "psr-4": {

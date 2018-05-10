@@ -103,7 +103,7 @@ class HailPage extends \Page
         return $tags;
     }
 
-    public function getHailList($per_page = null, $limit = null)
+    public function getHailList($per_page = null, $limit = null, $tags_to_filter = null)
     {
         $request = Controller::curr()->getRequest();
         $params = $request->params();
@@ -156,6 +156,13 @@ class HailPage extends \Page
                             $filters['PublicTags.HailID'] = $params['ID'];
                             $filter_publications = true;
                         }
+
+                        //On demand tag filtering
+                        if ($tags_to_filter && $has_public_tags) {
+                            $filters['PublicTags.HailID'] = $tags_to_filter;
+                            $filter_publications = true;
+                        }
+
                         if ($filter_publications) {
                             //IF we have a page filter, only show articles (publications don't have public tags)
                             $filters['ClassName'] = 'Firebrand\Hail\Models\Article';
@@ -189,8 +196,38 @@ class HailPage extends \Page
         return PaginatedList::create($list->sort('Created DESC'), $request)->setPageLength($per_page);
     }
 
-    public function getFullHailList($limit = null)
+    public function getFullHailList($limit = null, $tags_to_filter = null)
     {
-        return $this->getHailList(0, $limit);
+        return $this->getHailList(0, $limit, $tags_to_filter);
+    }
+
+    public function getAllowedPublicTags()
+    {
+        $return_list = ['*' => 'All'];
+        $hail_list = $this->List();
+        $tags = $hail_list->getPublicTagsList();
+        //Only include allowed Public Tags
+        if (!empty($hail_list->IncludedPublicTagsIDs) && $hail_list->IncludedPublicTagsIDs !== "null") {
+            $allowed_tags = json_decode($hail_list->IncludedPublicTagsIDs);
+            foreach ($tags as $hail_id => $tag_name) {
+                if (in_array($hail_id, $allowed_tags)) {
+                    $return_list[] = [$hail_id => $tag_name];
+                }
+            }
+        } else {
+            $return_list = array_merge($return_list, $tags);
+        }
+
+        //Remove excluded public tags from list
+        if (!empty($hail_list->ExcludedPublicTagsIDs) && $hail_list->ExcludedPublicTagsIDs !== "null") {
+            $excluded_tags = json_decode($hail_list->ExcludedPublicTagsIDs);
+            foreach ($return_list as $hail_id => $tag_name) {
+                if (in_array($hail_id, $excluded_tags)) {
+                    unset($return_list[$hail_id]);
+                }
+            }
+        }
+
+        return $return_list;
     }
 }
