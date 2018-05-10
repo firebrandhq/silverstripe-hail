@@ -248,19 +248,23 @@ class Client
         return $organisations;
     }
 
-    public function getAvailablePrivateTags($as_simple_array = false)
+    public function getAvailablePrivateTags($organisations = null, $as_simple_array = false)
     {
-        $orgs_ids = json_decode($this->orgs_ids);
+        $orgs_ids = $organisations ? array_keys($organisations) : json_decode($this->orgs_ids);
         if (!$orgs_ids) {
             //No organisations configured
-            $hail_api_client->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
+            $this->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
             return false;
         }
         $tag_list = [];
         foreach ($orgs_ids as $org_id) {
             //Get Org Name
-            $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
-            $org_name = $org ? $org->Title : "";
+            if ($organisations) {
+                $org_name = isset($organisations[$org_id]) ? $organisations[$org_id] : '';
+            } else {
+                $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
+                $org_name = $org ? $org->Title : "";
+            }
 
             $results = $this->get('organisations/' . $org_id . '/private-tags');
             //If simple array is true, we send back an array with [id] => [name] instead of the full list
@@ -282,19 +286,23 @@ class Client
         return $tag_list;
     }
 
-    public function getAvailablePublicTags($as_simple_array = false)
+    public function getAvailablePublicTags($organisations = null, $as_simple_array = false)
     {
-        $orgs_ids = json_decode($this->orgs_ids);
+        $orgs_ids = $organisations ? array_keys($organisations) : json_decode($this->orgs_ids);
         if (!$orgs_ids) {
             //No organisations configured
-            $hail_api_client->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
+            $this->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
             return false;
         }
         $tag_list = [];
         foreach ($orgs_ids as $org_id) {
             //Get Org Name
-            $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
-            $org_name = $org ? $org->Title : "";
+            if ($organisations) {
+                $org_name = isset($organisations[$org_id]) ? $organisations[$org_id] : '';
+            } else {
+                $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
+                $org_name = $org ? $org->Title : "";
+            }
 
             $results = $this->get('organisations/' . $org_id . '/tags');
             //If simple array is true, we send back an array with [id] => [name] instead of the full list

@@ -3,6 +3,7 @@
 namespace Firebrand\Hail\Admin;
 
 use Firebrand\Hail\Api\Client;
+use Firebrand\Hail\Forms\DependentListboxField;
 use Firebrand\Hail\Models\Organisation;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
@@ -85,24 +86,41 @@ class SettingsExtension extends DataExtension
         if ($hail_api_client->isAuthorised()) {
             //Organisations list
             $organisations = $hail_api_client->getAvailableOrganisations(true);
-            $org_selector = ListboxField::create("HailOrgsIDs", "Hail organisations", $organisations)
-                ->setDescription("Please refresh this page after saving to access tag exclusion lists");
+            $org_selector = ListboxField::create("HailOrgsIDs", "Hail organisations", $organisations);
             $fields->addFieldToTab('Root.Hail', $org_selector);
 
-            //Only show exclude tag lists if organisations are setup
-            if (!empty($this->getOwner()->HailOrgsIDs)) {
-                //Private Tags List
-                $private_tags = $hail_api_client->getAvailablePrivateTags(true);
-                $private_tag_selector = ListboxField::create("HailExcludePrivateTagsIDs", "Globally excluded private tags", $private_tags)
-                    ->setDescription("Articles and publications with those private tags will never be fetched");
-                $fields->addFieldToTab('Root.Hail', $private_tag_selector);
 
-                //Public Tags list
-                $public_tags = $hail_api_client->getAvailablePublicTags(true);
-                $public_tag_selector = ListboxField::create("HailExcludePublicTagsIDs", "Globally excluded public tags", $public_tags)
-                    ->setDescription("Articles and publications with those public tags will never be fetched");
-                $fields->addFieldToTab('Root.Hail', $public_tag_selector);
-            }
+            //Private Tags List
+            $private_tags = function ($val) use ($hail_api_client, $organisations) {
+                if (is_array($val)) {
+                    $val = array_filter($organisations, function ($item) use ($val) {
+                        return in_array($item, $val);
+                    }, ARRAY_FILTER_USE_KEY);
+                }
+
+                return $hail_api_client->getAvailablePrivateTags($val, true);
+            };
+            $private_tag_selector = DependentListboxField::create("HailExcludePrivateTagsIDs", "Globally excluded private tags", $private_tags)
+                ->setDescription("Articles and publications with those private tags will never be fetched")
+                ->setDepends($org_selector);
+            $fields->addFieldToTab('Root.Hail', $private_tag_selector);
+
+
+            //Public Tags list
+            $public_tags = function ($val) use ($hail_api_client, $organisations) {
+                if (is_array($val)) {
+                    $val = array_filter($organisations, function ($item) use ($val) {
+                        return in_array($item, $val);
+                    }, ARRAY_FILTER_USE_KEY);
+                }
+
+                return $hail_api_client->getAvailablePublicTags($val, true);
+            };
+
+            $public_tag_selector = DependentListboxField::create("HailExcludePublicTagsIDs", "Globally excluded public tags", $public_tags)
+                ->setDescription("Articles and publications with those public tags will never be fetched")
+                ->setDepends($org_selector);
+            $fields->addFieldToTab('Root.Hail', $public_tag_selector);
         }
 
     }
