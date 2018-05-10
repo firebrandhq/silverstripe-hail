@@ -103,7 +103,7 @@ class HailPage extends \Page
         return $tags;
     }
 
-    public function getHailList($per_page = null)
+    public function getHailList($per_page = null, $limit = null)
     {
         $request = Controller::curr()->getRequest();
         $params = $request->params();
@@ -181,12 +181,16 @@ class HailPage extends \Page
                 $item->PageLink = $item->Link();
             }
         });
+        //Limit the request if necessary
+        if (is_numeric($limit)) {
+            $list = $list->limit($limit);
+        }
 
         return PaginatedList::create($list->sort('Created DESC'), $request)->setPageLength($per_page);
     }
 
-    public function getFullHailList()
+    public function getFullHailList($limit = null)
     {
-        return $this->getHailList(0);
+        return $this->getHailList(0, $limit);
     }
 }
