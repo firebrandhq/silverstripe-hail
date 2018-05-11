@@ -4,8 +4,10 @@ namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Forms\GridFieldForReadonly;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\ManyManyList;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class ApiObject extends DataObject

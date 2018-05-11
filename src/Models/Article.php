@@ -7,6 +7,7 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\Connect\MySQLSchemaManager;
 
 class Article extends ApiObject
 {
@@ -63,6 +64,15 @@ class Article extends ApiObject
         'Author' => 'Author',
         'Lead' => 'Lead',
         'Date' => 'Date'
+    ];
+    private static $indexes = [
+        'SearchFields' => [
+            'type' => 'fulltext',
+            'columns' => ['Author', 'Title', 'Lead', 'Content'],
+        ]
+    ];
+    private static $create_table_options = [
+        MySQLSchemaManager::ID => 'ENGINE=MyISAM'
     ];
 
     public function getCMSFields()

@@ -13,6 +13,7 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\Connect\MySQLSchemaManager;
 use SilverStripe\ORM\PaginatedList;
 
 class HailPage extends \Page
@@ -32,6 +33,9 @@ class HailPage extends \Page
     ];
     private static $many_many = [
         'FilterTags' => 'Firebrand\Hail\Models\PublicTag',
+    ];
+    private static $owns = [
+        'HeroImage'
     ];
     private static $icon = "vendor/firebrand/silverstripe-hail/client/dist/images/admin-icon.png";
     private static $type_map = [

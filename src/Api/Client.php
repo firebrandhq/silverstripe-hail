@@ -16,6 +16,20 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 
+/**
+ * API client for the Hail Api. It uses Guzzle HTTP CLient to communicate with
+ * with Hail.
+ * *
+ * An Client ID and a Client Secret must be provided in your .env file for
+ * HailAPI
+ *
+ * Errors are shown in the CMS via session variables and logged to file
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ */
 class Client
 {
     private $client_id;
@@ -33,13 +47,63 @@ class Client
         $this->client_id = Environment::getEnv('HAIL_CLIENT_ID');;
         $this->client_secret = Environment::getEnv('HAIL_CLIENT_SECRET');;
 
-        //Get all provider settings from global config
+        //Get api settings from site config
         $config = SiteConfig::current_site_config();
         $this->access_token = $config->HailAccessToken;
         $this->access_token_expire = $config->HailAccessTokenExpire;
         $this->refresh_token = $config->HailRefreshToken;
         $this->user_id = $config->HailUserID;
         $this->orgs_ids = $config->HailOrgsIDs;
+    }
+
+    /**
+     * Send a GET request to the Hail API for a specific URI and returns
+     * the results. Extra parameters can be passed with the $body variable.
+     *
+     * @param string $uri Resource to get
+     * @param array $params Form params of the request to send to the Hail API.
+     *
+     * @return array Reply from Hail
+     */
+    public function get($uri, $params = null)
+    {
+        $options = [];
+        $http = $this->getHTTPClient();
+        $options['headers'] = [
+            "Authorization" => "Bearer " . $this->getAccessToken()
+        ];
+
+        //Pass the body if needed
+        if ($params) {
+            $options['form_params'] = $params;
+        }
+
+        // Request
+        try {
+            $response = $http->request('GET', $uri, $options);
+            $responseBody = $response->getBody();
+            $responseArr = json_decode($responseBody, true);
+        } catch (\Exception  $exception) {
+            $this->handleException($exception);
+            //Send empty array so the app doesnt crash
+            $responseArr = [];
+        }
+
+        return $responseArr;
+    }
+
+    /**
+     * Get one Hail object from the API
+     *
+     * @param mixed $hail_object Object to retrieve
+     *
+     * @return array Reply from Hail
+     */
+    public function getOne($hail_object)
+    {
+        $uri = $hail_object::$object_endpoint . '/' . $hail_object->HailID;
+
+        return $this->get($uri);
     }
 
     public function fetchAccessToken($redirect_code)
@@ -141,38 +205,6 @@ class Client
         $config->write();
     }
 
-    public function get($uri, $body = null)
-    {
-        $options = [];
-        $http = $this->getHTTPClient();
-        $options['headers'] = [
-            "Authorization" => "Bearer " . $this->getAccessToken()
-        ];
-
-        //Pass the body if needed
-        if ($body) {
-            $options['form_params'] = $body;
-        }
-
-        // Request 
-        try {
-            $response = $http->request('GET', $uri, $options);
-            $responseBody = $response->getBody();
-            $responseArr = json_decode($responseBody, true);
-        } catch (\Exception  $exception) {
-            $this->handleException($exception);
-            //Send empty array so the app doesnt crash
-            $responseArr = [];
-        }
-
-        return $responseArr;
-    }
-
-    public function getOne($hail_object)
-    {
-        $uri = $hail_object::$object_endpoint . '/' . $hail_object->HailID;
-        return $this->get($uri);
-    }
 
     public function getAccessToken()
     {
