@@ -6,6 +6,7 @@ use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Forms\GridFieldForReadonly;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -42,6 +43,31 @@ class ApiObject extends DataObject
         'Firebrand\Hail\Models\PublicTag',
         'Firebrand\Hail\Models\PrivateTag'
     ];
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        //Add an update button to fetchable objects
+        if (ApiObject::isFetchable($this->getClassName())) {
+            $fetch_one = LiteralField::create('FetchOneButton',
+                '<div class="form-group">
+                    <div class="form__field-holder">
+                        <button class="btn btn-primary hail-fetch-one" 
+                                data-tofetch="' . str_replace('\\', '-', $this->getClassName()) . '" 
+                                data-hailid="' . $this->HailID . '"
+                        >
+                            Update this ' . strtolower($this->singular_name()) . '
+                        </button>
+                        <div class="hail-fetch-loading hide"></div>
+                    </div>
+                </div>');
+
+            $fields->addFieldToTab('Root.Main', $fetch_one, 'HailID');
+        }
+
+        return $fields;
+    }
 
     /**
      * Determines if the object is outdated

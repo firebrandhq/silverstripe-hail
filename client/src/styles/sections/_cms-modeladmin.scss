@@ -12,7 +12,18 @@
 }
 
 .hail-video-thumbnail-holder {
-  width:350px;
+  width: 350px;
+}
+
+.hail-fetch-loading {
+  background: url(../images/flappy-bird3.gif) no-repeat center center;
+  width: 30px;
+  height: 30px;
+  background-size: 100% 100%;
+}
+
+.hail-fetch-one, .hail-fetch-loading {
+  float: left;
 }
 
 //Progress Button Styles
@@ -80,3 +91,4 @@
     transition: transform 0.3s;
   }
 }
+

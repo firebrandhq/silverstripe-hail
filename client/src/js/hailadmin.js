@@ -139,5 +139,32 @@ jQuery(function ($) {
         if ($('#hail-fetch-wrapper').hasClass('hail-fetch-running')) {
             initHailProgress();
         }
+
+        //Fetch One Ajax
+        $('.cms-container').on('click', '.hail-fetch-one', function (e) {
+            let button = $(this);
+            button.addClass('disabled');
+            //Show loading gif
+            $('.hail-fetch-loading').removeClass('hide');
+            //Class to fetch
+            let className = button.data('tofetch');
+            //Hail ID to fetch
+            let hailID = button.data('hailid');
+            $.ajax({
+                url: '/hail/fetchOne/' + className + '/' + hailID,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (response) {
+                    //Reload the page to display the new object
+                    if (confirm('Update successful ! Please confirm to reload the page and display the updated data: ')) {
+                        window.location.reload();
+                    }
+                },
+                complete: function () {
+                    $('.hail-fetch-loading').addClass('hide');
+                    button.removeClass('disabled');
+                }
+            });
+        });
     });
 });

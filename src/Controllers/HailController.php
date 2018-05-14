@@ -6,6 +6,7 @@ use Firebrand\Hail\Jobs\FetchJob;
 use Firebrand\Hail\Models\ApiObject;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 
@@ -13,11 +14,13 @@ class HailController extends Controller
 {
     private static $allowed_actions = [
         'fetch',
+        'fetchOneSync',
         'progress',
     ];
 
     private static $url_handlers = [
         'fetch/$Class/$Before' => 'fetch',
+        'fetchOne/$Class/$HailID' => 'fetchOneSync',
         'progress' => 'progress'
     ];
 
@@ -79,6 +82,36 @@ class HailController extends Controller
             'Status' => 'Done'
         ]);
 
+    }
+
+    public function fetchOneSync(HTTPRequest $request)
+    {
+        $params = $request->params();
+
+        if (empty($params['Class']) || empty($params['HailID'])) {
+            return $this->makeJsonReponse(400, [
+                'message' => 'Invalid request.'
+            ]);
+        }
+        $class_name = str_replace("-", "\\", $params['Class']);
+        if (!class_exists($class_name)) {
+            return $this->makeJsonReponse(400, [
+                'message' => 'Invalid request.'
+            ]);
+        }
+        $object = DataObject::get($class_name)->filter(['HailID' => $params['HailID']])->first();
+        if (!$object) {
+            return $this->makeJsonReponse(404, [
+                'message' => 'Object does not exist.'
+            ]);
+        }
+
+        //Refresh from Hail API
+        $object->refresh();
+
+        return $this->makeJsonReponse(200, [
+            'message' => 'Success'
+        ]);
     }
 
     public function makeJsonReponse($status_code, $body)
