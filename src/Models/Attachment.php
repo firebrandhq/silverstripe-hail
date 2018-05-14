@@ -32,4 +32,14 @@ class Attachment extends ApiObject
         'MimeType',
         'FileSize',
     ];
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        // Show relations, SilverStripe can't do Read Only Gridfield by default yet
+        $this->makeRecordViewer($fields, "Articles", $this->Articles());
+
+        return $fields;
+    }
 }

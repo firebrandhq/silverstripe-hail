@@ -2,8 +2,10 @@
 
 namespace Firebrand\Hail\Admin;
 
+use Firebrand\Hail\Forms\GridFieldAttachmentDownloadButton;
 use Firebrand\Hail\Forms\GridFieldFetchButton;
 use Firebrand\Hail\Models\ApiObject;
+use Firebrand\Hail\Models\Attachment;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\View\Requirements;
 
@@ -12,11 +14,11 @@ class HailModelAdmin extends ModelAdmin
     private static $managed_models = [
         'Firebrand\Hail\Models\Article',
         'Firebrand\Hail\Models\Publication',
+        'Firebrand\Hail\Models\Attachment',
         'Firebrand\Hail\Models\Image',
         'Firebrand\Hail\Models\Video',
         'Firebrand\Hail\Models\PublicTag',
         'Firebrand\Hail\Models\PrivateTag',
-        'Firebrand\Hail\Lists\HailList',
     ];
     private static $url_segment = 'hail';
 
@@ -45,6 +47,10 @@ class HailModelAdmin extends ModelAdmin
         //Only show Fetch button for fetchable objects
         if (ApiObject::isFetchable($this->modelClass) && !$hail_down) {
             $gridField->addComponent(new GridFieldFetchButton('buttons-before-left'));
+        }
+
+        if($this->modelClass === Attachment::class) {
+            $gridField->addComponent(new GridFieldAttachmentDownloadButton());
         }
 
         if ($hail_down) {

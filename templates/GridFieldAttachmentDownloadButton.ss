@@ -1,1 +1,1 @@
-<a class="action action-detail view-link" href="$Link">Download</a>
+<a class="action action-detail btn--icon-large font-icon-link" href="$Link" title="Download attachment"></a>
