@@ -5,8 +5,6 @@ namespace Firebrand\Hail\Pages;
 use Firebrand\Hail\Models\Article;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\PaginatedList;
 use SilverStripe\View\Requirements;
 
 class HailPageController extends \PageController
@@ -19,13 +17,19 @@ class HailPageController extends \PageController
     protected function init()
     {
         parent::init();
+
         if (Config::inst()->get(self::class, 'UseDefaultCss')) {
-            Requirements::css(HAIL_DIR . '/client/dist/styles/hail.bundle.css');
+            Requirements::css('firebrand/silverstripe-hail: thirdparty/bootstrap/styles/bootstrap.min.css');
+            Requirements::css('firebrand/silverstripe-hail: client/dist/styles/hail.bundle.css');
         }
-        Requirements::javascript(HAIL_DIR . '/client/dist/js/hail.bundle.js');
+        //Include jQuery and Bootstrap, refer to the readme to block those requirements and replace with your own
+        Requirements::javascript('firebrand/silverstripe-hail: thirdparty/jquery/js/jquery.min.js');
+        Requirements::javascript('firebrand/silverstripe-hail: thirdparty/bootstrap/js/bootstrap.bundle.min.js');
+        //Hail logic
+        Requirements::javascript('firebrand/silverstripe-hail: client/dist/js/hail.bundle.js');
         if ($this->owner->PaginationStyle === "InfiniteScroll") {
-            Requirements::javascript(HAIL_DIR . '/client/dist/js/jquery-ias.min.js');
-            Requirements::javascript(HAIL_DIR . '/client/dist/js/infinite-load.js');
+            Requirements::javascript('firebrand/silverstripe-hail: client/dist/js/jquery-ias.min.js');
+            Requirements::javascript('firebrand/silverstripe-hail: client/dist/js/infinite-load.js');
         }
     }
 

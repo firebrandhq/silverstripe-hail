@@ -30,6 +30,12 @@ class HailController extends Controller
 
     public function fetch(HTTPRequest $request)
     {
+        if (!Security::getCurrentUser()) {
+            return $this->makeJsonReponse(401, [
+                'message' => 'Unauthorized.'
+            ])->setStatusDescription('Unauthorized.');
+        }
+
         $params = $request->params();
 
         //Check there is no running jobs
@@ -49,7 +55,6 @@ class HailController extends Controller
         }
 
         if (
-        $member = Security::getCurrentUser() &&
             isset($params['Class']) &&
             (
                 $params['Class'] === "*" ||
@@ -73,6 +78,12 @@ class HailController extends Controller
 
     public function progress(HTTPRequest $request)
     {
+        if (!Security::getCurrentUser()) {
+            return $this->makeJsonReponse(401, [
+                'message' => 'Unauthorized.'
+            ])->setStatusDescription('Unauthorized.');
+        }
+
         $latest_job = FetchJob::get()->sort('Created DESC')->first();
 
         if ($latest_job) {
@@ -90,6 +101,12 @@ class HailController extends Controller
 
     public function fetchOneSync(HTTPRequest $request)
     {
+        if (!Security::getCurrentUser()) {
+            return $this->makeJsonReponse(401, [
+                'message' => 'Unauthorized.'
+            ])->setStatusDescription('Unauthorized.');
+        }
+
         $params = $request->params();
 
         if (empty($params['Class']) || empty($params['HailID'])) {
@@ -120,13 +137,19 @@ class HailController extends Controller
 
     public function articles(HTTPRequest $request)
     {
+        if (!Security::getCurrentUser()) {
+            return $this->makeJsonReponse(401, [
+                'message' => 'Unauthorized.'
+            ])->setStatusDescription('Unauthorized.');
+        }
+
         $pages = HailPage::get();
         $articles = [['text' => 'Select an article']];
         foreach ($pages as $page) {
             $list = $page->getFullHailList();
             foreach ($list as $item) {
                 $link = $item->getLinkForPage($page);
-                if($item->getType() === 'article') {
+                if ($item->getType() === 'article') {
                     $link = Director::absoluteURL($link);
                 }
                 $create_at = isset($item->Date) ? $item->Date : $item->DueDate;

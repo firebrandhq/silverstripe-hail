@@ -59,8 +59,8 @@ window.tinymce.PluginManager.add('sshail', function (editor) {
     return {
         getMetadata: function () {
             return {
-                name: "Hail Plugin",
-                url: "http://exampleplugindocsurl.com"
+                name: "Hail Plugin for SilverStripe 4",
+                url: "https://github.com/firebrandhq/silverstripe-hail"
             };
         }
     };

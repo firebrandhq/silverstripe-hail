@@ -34,8 +34,6 @@ class SettingsExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         parent::updateCMSFields($fields);
-        //Create Hail tab
-        $fields->insertAfter(TabSet::create('Hail', 'Hail'), 'Root');
 
         $hail_api_client = new Client();
         $request = Injector::inst()->get(HTTPRequest::class);
