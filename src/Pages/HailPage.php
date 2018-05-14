@@ -156,7 +156,7 @@ class HailPage extends \Page
                         }
 
                         //In page public tag filter
-                        if ($params['Action'] === "tag" && !empty($params['ID']) && $has_public_tags) {
+                        if (isset($params['Action']) && $params['Action'] === "tag" && !empty($params['ID']) && $has_public_tags) {
                             $filters['PublicTags.HailID'] = $params['ID'];
                             $filter_publications = true;
                         }

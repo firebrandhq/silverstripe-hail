@@ -8,7 +8,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const extractCSS = new ExtractTextPlugin({filename: 'client/dist/styles/hail.bundle.css'});
 
-module.exports = {
+module.exports = [{
     entry: [
         './client/src/js/index.js',
     ],
@@ -103,4 +103,32 @@ module.exports = {
     plugins: [
         extractCSS
     ]
-};
+}, {
+    entry: [
+        './client/src/js/tinymce/hail-plugin.js',
+    ],
+    output: {
+        filename: 'client/dist/js/tinymce/hail-plugin.js',
+        path: path.resolve(__dirname, './')
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                "env",
+                                "stage-2"
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+];

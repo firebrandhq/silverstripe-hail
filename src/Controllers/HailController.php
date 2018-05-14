@@ -4,7 +4,9 @@ namespace Firebrand\Hail\Controllers;
 
 use Firebrand\Hail\Jobs\FetchJob;
 use Firebrand\Hail\Models\ApiObject;
+use Firebrand\Hail\Pages\HailPage;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
@@ -16,12 +18,14 @@ class HailController extends Controller
         'fetch',
         'fetchOneSync',
         'progress',
+        'articles'
     ];
 
     private static $url_handlers = [
         'fetch/$Class/$Before' => 'fetch',
         'fetchOne/$Class/$HailID' => 'fetchOneSync',
-        'progress' => 'progress'
+        'progress' => 'progress',
+        'articles' => 'articles',
     ];
 
     public function fetch(HTTPRequest $request)
@@ -114,9 +118,33 @@ class HailController extends Controller
         ]);
     }
 
+    public function articles(HTTPRequest $request)
+    {
+        $pages = HailPage::get();
+        $articles = [['text' => 'Select an article']];
+        foreach ($pages as $page) {
+            $list = $page->getFullHailList();
+            foreach ($list as $item) {
+                $link = $item->getLinkForPage($page);
+                if($item->getType() === 'article') {
+                    $link = Director::absoluteURL($link);
+                }
+                $create_at = isset($item->Date) ? $item->Date : $item->DueDate;
+                $date = new \DateTime($create_at);
+                $name = $date->format('d/m/Y') . ' - ' . $page->Title . ' - ' . $item->Title;
+                $articles[] = [
+                    'text' => $name,
+                    'value' => $link
+                ];
+            }
+        }
+
+        return $this->makeJsonReponse(200, $articles);
+    }
+
     public function makeJsonReponse($status_code, $body)
     {
-        $this->getResponse()->setBody(json_encode($body));
+        $this->getResponse()->setBody(json_encode($body, JSON_UNESCAPED_SLASHES));
         $this->getResponse()->setStatusCode($status_code);
         $this->getResponse()->addHeader("Content-type", "application/json");
 

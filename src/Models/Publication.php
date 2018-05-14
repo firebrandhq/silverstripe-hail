@@ -140,6 +140,11 @@ class Publication extends ApiObject
         return $this->Url;
     }
 
+    public function getLinkForPage($page)
+    {
+        return $this->Link();
+    }
+
     public function getType()
     {
         return "publication";
