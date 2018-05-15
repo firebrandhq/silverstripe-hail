@@ -6,11 +6,14 @@ use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Models\ApiObject;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class FetchRecurringTask extends BuildTask
 {
+    use Configurable;
+
     /**
      * @inheritdoc
      */

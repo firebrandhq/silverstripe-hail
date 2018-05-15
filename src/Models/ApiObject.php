@@ -4,6 +4,7 @@ namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Forms\GridFieldForReadonly;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\Forms\LiteralField;
@@ -114,8 +115,9 @@ class ApiObject extends DataObject
             } catch (\Exception $ex) {
                 return $this;
             }
-
-            $this->importHailData($data);
+            if (count($data) > 0) {
+                $this->importHailData($data);
+            }
         }
 
         return $this;
@@ -125,8 +127,9 @@ class ApiObject extends DataObject
      * Imports JSON data retrieve from the hail API. Return true if the value
      * should be saved to the database. False if it has been excluded.
      *
-     * @param StdClass $data JSON data from Hail
+     * @param array $data JSON data from Hail
      * @return boolean
+     * @throws
      */
     protected function importHailData($data)
     {
@@ -141,7 +144,12 @@ class ApiObject extends DataObject
         );
 
         foreach ($dataMap as $ssKey => $hailKey) {
-            $this->{$ssKey} = (isset($data[$hailKey]) && !empty($data[$hailKey])) ? $data[$hailKey] : '';
+            $value = (isset($data[$hailKey]) && !empty($data[$hailKey])) ? $data[$hailKey] : '';
+            //Remove all NON UTF8 if Emoji support is disabled
+            if (!Config::inst()->get(Client::class, 'EnableEmojiSupport')) {
+                $value = preg_replace('/[^(\x20-\x7F)]*/', '', $value);
+            }
+            $this->{$ssKey} = $value;
         }
         $this->Fetched = date("Y-m-d H:i:s");
 

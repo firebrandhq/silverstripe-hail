@@ -8,12 +8,15 @@ use Firebrand\Hail\Pages\HailPage;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class HailController extends Controller
 {
+    use Configurable;
+
     private static $allowed_actions = [
         'fetch',
         'fetchOneSync',

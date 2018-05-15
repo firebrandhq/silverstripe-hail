@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObject;
@@ -32,6 +33,8 @@ use SilverStripe\SiteConfig\SiteConfig;
  */
 class Client
 {
+    use Configurable;
+
     private $client_id;
     private $client_secret;
     private $access_token;
