@@ -4,6 +4,7 @@ namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Forms\GridFieldForReadonly;
+use Firebrand\Hail\Jobs\FetchJob;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
@@ -12,12 +13,46 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\SiteConfig\SiteConfig;
 
+/**
+ * Abstract representation of an Hail Api object.
+ *
+ * Will never be used directly apart from the static methods
+ *
+ * @package silverstripe-hail
+ * @author Maxime Rainville, Firebrand
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ */
 class ApiObject extends DataObject
 {
+    /**
+     * List of all the subclasses of Hail ApiObject that can be fetched from Hail
+     * @var array
+     */
+    public static $fetchables = [
+        'Firebrand\Hail\Models\Article',
+        'Firebrand\Hail\Models\Publication',
+        'Firebrand\Hail\Models\PublicTag',
+        'Firebrand\Hail\Models\PrivateTag'
+    ];
+    /**
+     * Hail API endpoint name for this object
+     * @var string
+     */
     public static $object_endpoint;
+    /**
+     * Map the fields returned by the Hail API with the SilverStripe DB Fields
+     * @var array
+     */
     protected static $api_map;
+    /**
+     * Hail Organisation endpoint
+     * @var string
+     */
+    private static $organisations_endpoint = "organisations";
     private static $table_name = "HailApiObject";
-    private static $api_access = true;
+    private static $api_access = false;
     private static $indexes = [
         'HailID' => true
     ];
@@ -33,16 +68,6 @@ class ApiObject extends DataObject
     ];
     private static $has_one = [
         'Organisation' => 'Firebrand\Hail\Models\Organisation'
-    ];
-    private static $organisations_endpoint = "organisations";
-    /**
-     * List of all the subclasses of Hail ApiObject that can be fetched from Hail.     *
-     */
-    public static $fetchables = [
-        'Firebrand\Hail\Models\Article',
-        'Firebrand\Hail\Models\Publication',
-        'Firebrand\Hail\Models\PublicTag',
-        'Firebrand\Hail\Models\PrivateTag'
     ];
 
     public function getCMSFields()
@@ -93,18 +118,18 @@ class ApiObject extends DataObject
     /**
      * Determines if the object is fetchable
      *
-     * @param string $classname
+     * @param string $class_name
      * @return boolean
      */
-    public static function isFetchable($classname)
+    public static function isFetchable($class_name)
     {
-        return in_array($classname, self::$fetchables);
+        return in_array($class_name, self::$fetchables);
     }
 
     /**
      * Retrieves the latest version of this object from the Hail API
      *
-     * @return HailApiObject
+     * @return ApiObject
      */
     public function refresh()
     {
@@ -124,8 +149,9 @@ class ApiObject extends DataObject
     }
 
     /**
-     * Imports JSON data retrieve from the hail API. Return true if the value
-     * should be saved to the database. False if it has been excluded.
+     * Process the json data from Hail API and writes to SS db
+     *
+     * Return true if the value should be saved to the database. False if it has been excluded.
      *
      * @param array $data JSON data from Hail
      * @return boolean
@@ -163,9 +189,21 @@ class ApiObject extends DataObject
     }
 
     /**
-     * Determine if this object is to be exlucded based on the provided data (private tags).
+     * Is called by {@link importHailData()} to allow children classes to perform additional data assignment
      *
-     * @param StdClass $data JSON data from Hail
+     * @param array $data JSON data from Hail
+     * @return void
+     */
+    protected function importing($data)
+    {
+    }
+
+    /**
+     * Determine if this object is to be excluded based on the provided data (public and private tags).
+     *
+     * Can be extended using updateExcluded() to allow further customization of the exclusion list
+     *
+     * @param array $data JSON data from Hail
      * @return boolean
      */
     protected function excluded($data)
@@ -194,22 +232,24 @@ class ApiObject extends DataObject
                 }
             }
         }
-        $results = $this->extend('updateExcluded', $isExcluded, $data);
+
+        $this->extend('updateExcluded', $isExcluded, $data);
 
         return $isExcluded;
     }
 
-    /**
-     * Is called by {@link importHailData()} to allow children classes to perform additional data assignement
-     *
-     * @param StdClass $data JSON data from Hail
-     * @return void
-     */
-    protected function importing($data)
-    {
-    }
 
-    public static function fetchForOrg($hail_api_client, $org_id, $job = null, $fetchSince = null, $throw_errors = false)
+    /**
+     * Fetch from Hail API for a specified Organisation
+     *
+     * @param Client $hail_api_client Hail Api Client to use for the fetch
+     * @param string $org_id Hail ID of the organisation to fetch from
+     * @param FetchJob|null $job If job is passed, the progress of the fetch will be updated in it
+     * @param string $request_params Additional request params to send to the Hail API
+     * @param boolean $throw_errors Enables error throwing
+     * @throws
+     */
+    public static function fetchForOrg($hail_api_client, $org_id, $job = null, $request_params = null, $throw_errors = false)
     {
         //Get Org Name
         $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
@@ -217,7 +257,7 @@ class ApiObject extends DataObject
 
         //Get Objects
         $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
-        $results = $hail_api_client->get($url, $fetchSince, $throw_errors);
+        $results = $hail_api_client->get($url, $request_params, $throw_errors);
         $hailIdList = [];
 
         //If this is launched from a queued job, update it to display realtime info on the frontend
@@ -261,6 +301,11 @@ class ApiObject extends DataObject
         }
     }
 
+    /**
+     * Fetch from Hail API for all configured organisations
+     *
+     * @throws
+     */
     public static function fetchAll()
     {
         //Hail Api Client
@@ -270,7 +315,8 @@ class ApiObject extends DataObject
         $orgs_ids = json_decode($config->HailOrgsIDs);
         if (!$orgs_ids) {
             //No organisations configured
-            $hail_api_client->handleException("You need at least 1 Hail Organisation configured to be able to fetch");
+            $hail_api_client->handleException(new \Exception("You need at least 1 Hail Organisation configured to be able to fetch"));
+
             return false;
         }
         //Fetch objects for all configured Hail organisations
@@ -279,43 +325,52 @@ class ApiObject extends DataObject
         }
     }
 
+    /**
+     * View permission
+     */
     public function canView($member = false)
     {
-        // Always allow users to view HailApiObject.
-        // This needs to be true to allow HailApiObject to be return via the
-        // SilverStripe Restful web service
         return true;
     }
 
-    // We don't want smelly users to start deleting HailApiObjects
-    // This is only allow to happen programmaticaly
-    function canDelete($member = false)
-    {
-        return false;
-    }
-
-    // We don't want smelly users to start creating HailApiObjects
-    // This is only allow to happen programmaticaly
-    function canCreate($member = false, $context = [])
-    {
-        return false;
-    }
-
-    // We don't want smelly users to start creating HailApiObjects
-    // This is only allow to happen programmaticaly
-    function canEdit($member = false)
+    /**
+     * Delete permission
+     *
+     * Always false, all Hail objects are readonly
+     */
+    public function canDelete($member = false)
     {
         return false;
     }
 
     /**
-     * Helper function to help children class add GridFieldView to display
-     * their relations to other HailApiObject
+     * Create permission
+     *
+     * Always false, all Hail objects are readonly
+     */
+    public function canCreate($member = false, $context = [])
+    {
+        return false;
+    }
+
+    /**
+     * Edit permission
+     *
+     * Always false, all Hail objects are readonly
+     */
+    public function canEdit($member = false)
+    {
+        return false;
+    }
+
+    /**
+     * Helper function to add a ReadOnly gridfield for a relation
      *
      * @param FieldList $fields
-     * @param string $name Name that should be given to the GridFieldView
+     * @param string $name Name that should be given to the GridField
      * @param ManyManyList $relation Relation to display
-     * @return void
+     * @param string $viewComponent Full class name of the view Component to add (button)
+     *
      */
     protected function makeRecordViewer($fields, $name, $relation, $viewComponent = 'Firebrand\Hail\Forms\GridFieldViewButton')
     {
@@ -332,7 +387,11 @@ class ApiObject extends DataObject
         $fields->addFieldToTab('Root.' . $tab_name, $grid);
     }
 
-    // Go through the list of tags and assign them to this object.
+    /**
+     * Go through the list of public tags and assign them to this object.
+     *
+     * @param array $data JSON data from Hail
+     */
     protected function processPublicTags($data)
     {
         $tagIdList = [];
@@ -362,7 +421,11 @@ class ApiObject extends DataObject
 
     }
 
-    // Go through the list of tags and assign them to this object.
+    /**
+     * Go through the list of private tags and assign them to this object.
+     *
+     * @param array $data JSON data from Hail
+     */
     protected function processPrivateTags($data)
     {
         $tagIdList = [];
@@ -389,7 +452,11 @@ class ApiObject extends DataObject
         }
     }
 
-    // Match the hero image if there's one
+    /**
+     * Match the hero image if there's one and assign it to this object
+     *
+     * @param array $heroImgData JSON data from Hail
+     */
     protected function processHeroImage($heroImgData)
     {
         if ($heroImgData) {
@@ -410,7 +477,11 @@ class ApiObject extends DataObject
         $this->HeroImageID = $hero;
     }
 
-    // Match the hero video if there's one
+    /**
+     * Match the hero video if there's one and assign it to this object
+     *
+     * @param array $heroVidData JSON data from Hail
+     */
     protected function processHeroVideo($heroVidData)
     {
         if ($heroVidData) {
@@ -431,7 +502,11 @@ class ApiObject extends DataObject
         $this->HeroVideoID = $hero;
     }
 
-    // Go through the attachments and assign them to this object.
+    /**
+     * Go through the attachments and assign them to this object.
+     *
+     * @param array $data JSON data from Hail
+     */
     protected function processAttachments($data)
     {
         $idList = [];

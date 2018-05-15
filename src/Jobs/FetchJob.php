@@ -4,6 +4,14 @@ namespace Firebrand\Hail\Jobs;
 
 use SilverStripe\ORM\DataObject;
 
+/**
+ * DataObject storing all Fetch jobs and their progress when running
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ */
 class FetchJob extends DataObject
 {
     private static $table_name = "HailFetchJob";

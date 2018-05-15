@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Marc
- * Date: 10/05/2018
- * Time: 14:58
- */
 
 namespace Firebrand\Hail\Forms;
-
 
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Convert;
@@ -16,6 +9,19 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\ORM\Map;
 use SilverStripe\View\Requirements;
 
+/**
+ * ListBoxDependentField is a field that will refresh its source depending on another field's value
+ *
+ * It is an adaptation of the DependentDropdown module to work with Listbox
+ * Was also modified to work with ListBox as the depending field
+ *
+ * Heavily inspired by https://github.com/sheadawson/silverstripe-dependentdropdownfield
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ */
 class DependentListboxField extends ListboxField
 {
     /**
@@ -41,13 +47,12 @@ class DependentListboxField extends ListboxField
     protected $sourceCallback;
 
     /**
-     * DependentDropdownField constructor.
+     * DependentListboxField constructor.
      * @param string $name
      * @param string $title
      * @param \Closure $source
      * @param string $value
-     * @param $form
-     * @param string $emptyString
+     * @param $size
      */
     public function __construct($name, $title = null, \Closure $source, $value = '', $size = null)
     {
@@ -159,7 +164,7 @@ class DependentListboxField extends ListboxField
     public function Field($properties = [])
     {
         Requirements::javascript(
-            'firebrand/silverstripe-hail:client/dist/js/dependentlistboxfield.js'
+            'firebrand/silverstripe-hail: client/dist/js/dependentlistboxfield.js'
         );
 
         $this->setAttribute('data-link', $this->Link('load'));

@@ -17,6 +17,14 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 
+/**
+ * Hail Settings Extension
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ */
 class SettingsExtension extends DataExtension
 {
     private static $db = [

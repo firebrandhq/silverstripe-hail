@@ -18,12 +18,10 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
- * API client for the Hail Api. It uses Guzzle HTTP Client to communicate with
- * with Hail.
- * *
- * An Client ID and a Client Secret must be provided in your .env file for
- * HailAPI
+ * API client for the Hail Api
  *
+ * It uses Guzzle HTTP Client to communicate with Hail
+ * An Client ID and a Client Secret must be provided in your .env file for HailAPI
  * Errors are shown in the CMS via session variables and logged to file
  *
  * @package silverstripe-hail

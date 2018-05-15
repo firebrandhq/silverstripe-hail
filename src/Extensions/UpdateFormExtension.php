@@ -5,10 +5,25 @@ namespace Firebrand\Hail\Extensions;
 use SilverStripe\Core\Extension;
 use SilverStripe\Forms\Form;
 
+/**
+ * UpdateForm Extension that adds Has One inline fields into the current DataObject
+ *
+ * Allows the DataObjectExtension to pick them up as "changed" and write them to DB
+ * @see {@link Firebrand\Hail\DataObjectExtension}
+ *
+ * Forked from https://github.com/stevie-mayhew/hasoneedit and modified for our module
+ *
+ * @package silverstripe-hail
+ * @author Simon Welsh, simon@simon.geek.nz
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ */
 class UpdateFormExtension extends Extension
 {
     /**
      * @param Form $form
+     * @throws
      */
     public function updateEditForm(Form $form)
     {

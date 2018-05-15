@@ -9,6 +9,16 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 
+/**
+ * HailList stores a configuration to retrieve a list of hail objects
+ *
+ * Is linked to HailPages but could be used in other pages
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ */
 class HailList extends DataObject
 {
     private static $table_name = "HailList";
@@ -56,6 +66,15 @@ class HailList extends DataObject
         return $fields;
     }
 
+    /**
+     * Get the CMS fields for this object to display in a Page when there is a has one relation between the page and this object
+     * Allows you to display the Has One fields inline instead of in a gridfield
+     * Writing to the database is handled by {@link Firebrand\Hail\DataObjectExtension}
+     * Fields names have to follow the [RELATION][SEPARATOR][FIELDNAME] syntax
+     *
+     * @param string $relation_name Name of the Has One relation
+     * @return array Array of FormFields
+     */
     public function getFieldsForHasOne($relation_name)
     {
         $pri_tags = $this->getPrivateTagsList();
@@ -71,6 +90,11 @@ class HailList extends DataObject
         ];
     }
 
+    /**
+     * Get currently configured Hail Organisations
+     *
+     * @return array
+     */
     public function getOrganisations()
     {
         $config = SiteConfig::current_site_config();
@@ -80,6 +104,11 @@ class HailList extends DataObject
         return $organisations->sort('Title')->map('HailID', 'Title')->toArray();
     }
 
+    /**
+     * Get currently available Hail Private Tags
+     *
+     * @return array
+     */
     public function getPrivateTagsList()
     {
         $config = SiteConfig::current_site_config();
@@ -89,6 +118,11 @@ class HailList extends DataObject
         return $pri_tags->sort(['HailOrgName ASC', 'Name ASC'])->map('HailID', 'FullName')->toArray();
     }
 
+    /**
+     * Get currently available Hail Public Tags
+     *
+     * @return array
+     */
     public function getPublicTagsList()
     {
         $config = SiteConfig::current_site_config();

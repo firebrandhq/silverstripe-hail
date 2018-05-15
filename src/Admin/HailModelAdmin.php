@@ -9,6 +9,14 @@ use Firebrand\Hail\Models\Attachment;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\View\Requirements;
 
+/**
+ * Hail Model Admin
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ */
 class HailModelAdmin extends ModelAdmin
 {
     private static $managed_models = [

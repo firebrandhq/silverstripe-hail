@@ -8,6 +8,16 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Security\Permission;
 
+/**
+ * Hail Callback Controller
+ *
+ * Used by the Hail authorization process
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ */
 class CallbackController extends Controller
 {
     private static $allowed_actions = [

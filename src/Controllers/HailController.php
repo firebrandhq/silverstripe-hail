@@ -15,10 +15,9 @@ use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
- * Hail Controller (Pageless)
+ * Hail Controller (pageless)
  *
  * Used by the front end to request the hail module via ajax
- *
  * All endpoints are only accessible to logged in users
  *
  * @package silverstripe-hail

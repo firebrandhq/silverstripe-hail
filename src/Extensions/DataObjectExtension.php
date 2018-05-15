@@ -4,6 +4,20 @@ namespace Firebrand\Hail\Extensions;
 
 use SilverStripe\ORM\DataExtension;
 
+/**
+ * DataObject Extension that handles inline Has One fields
+ *
+ * If you add CMS Fields in a DataObject following this syntax: [RELATION][SEPARATOR][FIELDNAME]  (Author___Title for example)
+ * This extension will handle writing to the has one relation instead of the current DataObject
+ *
+ * Forked from https://github.com/stevie-mayhew/hasoneedit and modified for our module
+ *
+ * @package silverstripe-hail
+ * @author Simon Welsh, simon@simon.geek.nz
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ */
 class DataObjectExtension extends DataExtension
 {
     /**
