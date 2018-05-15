@@ -42,10 +42,23 @@ class HailPageController extends \PageController
         if (!$params['ID'] || !isset($article) || !$article) {
             return $this->httpError(404, 'That article could not be found');
         }
-
-        return [
-            'Article' => $article
+        $data = [
+            'Article' => $article,
+            'Related' => null
         ];
+
+        //If Related Articles are enabled on the page (from the CMS)
+        if ($this->owner->EnableRelated === "Yes") {
+            //Try to find 3 related articles
+            if ($article->PublicTags()) {
+                $related = Article::get()->filter(['PublicTags.ID' => $article->PublicTags()->map('ID', 'ID')->toArray()])->sort('Date DESC')->limit(3);
+                if ($related->Count() > 0) {
+                    $data['Related'] = $related;
+                }
+            }
+        }
+
+        return $data;
     }
 
     public function currentTagFilter()

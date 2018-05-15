@@ -13,7 +13,6 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\Connect\MySQLSchemaManager;
 use SilverStripe\ORM\PaginatedList;
 
 class HailPage extends \Page
@@ -22,6 +21,7 @@ class HailPage extends \Page
     private static $db = [
         "PaginationStyle" => "Enum(array('Default','InfiniteScroll'))",
         "PaginationPerPage" => "Int",
+        "EnableRelated" => "Enum(array('Yes', 'No'))",
     ];
     private static $defaults = [
         'PaginationPerPage' => 9,
@@ -56,11 +56,12 @@ class HailPage extends \Page
             $this->write();
         }
         $filter_tags = ListboxField::create('FilterTags', 'Filter tags', PublicTag::get())->setDescription('Leave empty to disable filtering');
-        $pagination_style = DropdownField::create('PaginationStyle', 'Pagination style', ['Default', 'InfiniteScroll' => 'Infinite scroll']);
+        $pagination_style = DropdownField::create('PaginationStyle', 'Pagination style', ['Default' => 'Default', 'InfiniteScroll' => 'Infinite scroll']);
+        $enable_related = DropdownField::create('EnableRelated', 'Display Related Articles section', ['Yes' => 'Yes', 'No' => 'No']);
         $pagination_per_page = NumericField::create('PaginationPerPage', 'Items displayed per page');
         $hero_image = UploadField::create('HeroImage', 'Hail Page header image')->setAllowedMaxFileNumber(1);
 
-        $fields->addFieldsToTab('Root.Hail', [$filter_tags, $pagination_style, $pagination_per_page]);
+        $fields->addFieldsToTab('Root.Hail', [$filter_tags, $pagination_style, $pagination_per_page, $enable_related]);
         $fields->addFieldsToTab('Root.Hail', $this->List()->getFieldsForHasOne("List"));
         $fields->addFieldsToTab('Root.Main', $hero_image, 'Content');
 

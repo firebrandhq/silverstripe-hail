@@ -45,6 +45,12 @@
   height: 19px;
   margin-right: 10px;
 }
+.news-icon {
+  float: left;
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+}
 
 .files-icon {
   background: url('../images/file.png') no-repeat;
@@ -63,6 +69,10 @@
 
 .attachments-icon {
   background: url('../images/paperclip.png') no-repeat;
+  background-size: 100% 100%;
+}
+.news-icon {
+  background: url('../images/newspaper.png') no-repeat;
   background-size: 100% 100%;
 }
 

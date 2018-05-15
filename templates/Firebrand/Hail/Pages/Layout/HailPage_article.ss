@@ -18,3 +18,5 @@
 <% include HailArticleVideoGallery %>
 
 <% include HailArticleAttachments %>
+
+<% include HailArticleRelated %>
