@@ -18,7 +18,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
- * API client for the Hail Api. It uses Guzzle HTTP CLient to communicate with
+ * API client for the Hail Api. It uses Guzzle HTTP Client to communicate with
  * with Hail.
  * *
  * An Client ID and a Client Secret must be provided in your .env file for
@@ -28,7 +28,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  *
  * @package silverstripe-hail
  * @author Marc Espiard, Firebrand
- * @version 1.0
+ * @version 2.0
  *
  */
 class Client
@@ -65,8 +65,9 @@ class Client
      *
      * @param string $uri Resource to get
      * @param array $params Query params of the request to send to the Hail API.
+     * @param boolean $throw_errors IF false, will not throw errors on HTTP Exception but will add a session message instead
      *
-     * @return array Reply from Hail
+     * @return array Reply from Hail API
      * @throws
      */
     public function get($uri, $params = null, $throw_errors = false)
@@ -88,7 +89,7 @@ class Client
             $responseBody = $response->getBody();
             $responseArr = json_decode($responseBody, true);
         } catch (\Exception  $exception) {
-            if($throw_errors === true) {
+            if ($throw_errors === true) {
                 throw $exception;
             } else {
                 $this->handleException($exception);
@@ -115,6 +116,13 @@ class Client
         return $this->get($uri);
     }
 
+    /**
+     * Fetch OAuth Access token from the HAil API
+     *
+     * @param string $redirect_code
+     *
+     * @throws
+     */
     public function fetchAccessToken($redirect_code)
     {
         $http = $this->getHTTPClient();
@@ -143,21 +151,42 @@ class Client
         }
     }
 
+    /**
+     * Create a new Guzzle HTTP Client
+     *
+     * return HTTPClient
+     */
     public function getHTTPClient()
     {
         return new HTTPClient(["base_uri" => $this->getApiBaseURL()]);
     }
 
+    /**
+     * Get Hail API base URL from yml config
+     *
+     * return string
+     */
     public function getApiBaseURL()
     {
         return Config::inst()->get(self::class, 'BaseApiUrl');
     }
 
+    /**
+     * Get Redirect URL Hail OAuth uses after authorization
+     *
+     * return string
+     */
     public function getRedirectURL()
     {
         return Director::absoluteURL('HailCallbackController', true);
     }
 
+    /**
+     * Set Hail API OAuth access token expiry time in current SiteConfig
+     *
+     * @param string $access_token_expire
+     * @throws
+     */
     public function setAccessTokenExpire($access_token_expire)
     {
         //Store expiry date as unix timestamp (now + expires in)
@@ -168,6 +197,11 @@ class Client
         $config->write();
     }
 
+    /**
+     * Set Hail API OAuth refresh token in current SiteConfig
+     * @param string $refresh_token
+     * @throws
+     */
     public function setRefreshToken($refresh_token)
     {
         $config = SiteConfig::current_site_config();
@@ -176,6 +210,12 @@ class Client
         $config->write();
     }
 
+    /**
+     * Silently handle Hail API HTTP Exception to avoid CMS crashes
+     * Stores error message in a session variable for CMS display
+     *
+     * @param \Exception $exception
+     */
     public function handleException($exception)
     {
         //Log the error
@@ -193,6 +233,11 @@ class Client
         $request->getSession()->set('noticeText', $message);
     }
 
+    /**
+     * Build Hail API Authorization URL
+     *
+     * @return string
+     */
     public function getAuthorizationURL()
     {
         $url = Config::inst()->get(self::class, 'AuthorizationUrl');
@@ -202,9 +247,15 @@ class Client
             'response_type' => "code",
             'scope' => $this->scopes,
         ];
+
         return $url . "?" . http_build_query($params);
     }
 
+    /**
+     * Get Hail User ID from the API and set it in the current SiteConfig
+     *
+     * @throws
+     */
     public function setUserID()
     {
         $response = $this->get("me");
@@ -214,7 +265,12 @@ class Client
         $config->write();
     }
 
-
+    /**
+     * Get current Hail API OAuth Access token
+     * Will refresh the token from the API if it has expired
+     *
+     * @return string
+     */
     public function getAccessToken()
     {
         //Check if AccessToken needs to be refreshed
@@ -228,6 +284,11 @@ class Client
         return $this->access_token;
     }
 
+    /**
+     * Set Hail API OAuth token in the current SiteConfig
+     *
+     * @throws
+     */
     public function setAccessToken($access_token)
     {
         $this->access_token = $access_token;
@@ -236,6 +297,11 @@ class Client
         $config->write();
     }
 
+    /**
+     * Refresh Hail API OAuth Access token from the API
+     *
+     * @throws
+     */
     public function refreshAccessToken()
     {
         $http = $this->getHTTPClient();
@@ -264,16 +330,34 @@ class Client
         }
     }
 
+    /**
+     * Check if the Hail module is Authorized with the Hail API
+     *
+     * @return boolean
+     */
     public function isAuthorised()
     {
         return $this->access_token_expire && $this->access_token && $this->refresh_token;
     }
 
+    /**
+     * Check if the Hail module is ready to be authorized with the Hail API
+     *
+     * @return boolean
+     */
     public function isReadyToAuthorised()
     {
         return $this->client_id && $this->client_secret;
     }
 
+    /**
+     * Get all available Hail Organisation the configured client has access to
+     *
+     * @param boolean $as_simple_array Return a simple associative array (ID => Tile )instead of the full objects
+     *
+     * @return array
+     * @throws
+     */
     public function getAvailableOrganisations($as_simple_array = false)
     {
         $organisations = $this->get('users/' . $this->user_id . '/organisations');
@@ -286,15 +370,26 @@ class Client
             $organisations = $temp;
         }
         asort($organisations);
+
         return $organisations;
     }
 
+    /**
+     * Get all available Private Tags from the Hail API
+     * Will get all tags from all configured organisations unless specified otherwise
+     *
+     * @param array|null $organisations Pass an array of organisations (HailID => Organisation Name) to get the tag for, if null will get all configured organisation
+     * @param boolean $as_simple_array Return a simple associative array (ID => Tile )instead of the full objects
+     *
+     * @return array|boolean
+     * @throws
+     */
     public function getAvailablePrivateTags($organisations = null, $as_simple_array = false)
     {
         $orgs_ids = $organisations ? array_keys($organisations) : json_decode($this->orgs_ids);
         if (!$orgs_ids) {
             //No organisations configured
-            $this->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
+            $this->handleException(new \Exception("You need at least 1 Hail Organisation configured to be able to fetch private tags"));
             return false;
         }
         $tag_list = [];
@@ -322,17 +417,27 @@ class Client
                 $tag_list = array_merge($results, $tag_list);
             }
         }
-
         asort($tag_list);
+
         return $tag_list;
     }
 
+    /**
+     * Get all available Public Tags from the Hail API
+     * Will get all tags from all configured organisations unless specified otherwise
+     *
+     * @param array|null $organisations Pass an array of organisations (HailID => Organisation Name) to get the tag for, if null will get all configured organisation
+     * @param boolean $as_simple_array Return a simple associative array (ID => Tile )instead of the full objects
+     *
+     * @return array|boolean
+     * @throws
+     */
     public function getAvailablePublicTags($organisations = null, $as_simple_array = false)
     {
         $orgs_ids = $organisations ? array_keys($organisations) : json_decode($this->orgs_ids);
         if (!$orgs_ids) {
             //No organisations configured
-            $this->handleException("You need at least 1 Hail Organisation configured to be able to fetch private tags");
+            $this->handleException(new \Exception("You need at least 1 Hail Organisation configured to be able to fetch public tags"));
             return false;
         }
         $tag_list = [];
@@ -360,14 +465,14 @@ class Client
                 $tag_list = array_merge($results, $tag_list);
             }
         }
-
         asort($tag_list);
+
         return $tag_list;
     }
 
     /**
      * Get the refresh rate in seconds for Hail Objects. Hail Object that have
-     * not been retrieve for longer than the refresh rate, should be fetch
+     * not been retrieve for longer than the refresh rate, should be fetched
      * again.
      *
      * @return int
@@ -381,7 +486,9 @@ class Client
      * Retrieve a list of images for a given article.
      *
      * @param string $id ID of the article in Hail
+     *
      * @return array
+     * @throws
      */
     public function getImagesByArticles($id)
     {
@@ -393,7 +500,9 @@ class Client
      * Retrieve a list of videos for a given article.
      *
      * @param string $id ID of the article in Hail
+     *
      * @return array
+     * @throws
      */
     public function getVideosByArticles($id)
     {

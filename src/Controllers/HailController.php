@@ -8,11 +8,24 @@ use Firebrand\Hail\Pages\HailPage;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 
+/**
+ * Hail Controller (Pageless)
+ *
+ * Used by the front end to request the hail module via ajax
+ *
+ * All endpoints are only accessible to logged in users
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ */
 class HailController extends Controller
 {
     use Configurable;
@@ -31,6 +44,24 @@ class HailController extends Controller
         'articles' => 'articles',
     ];
 
+    /**
+     * Add a Fetch job to the queue
+     * A cron job will then start fetching and report on progress
+     * The class(es) of object to fetch are specified in the URL,
+     * e.g.:
+     *  - * for all fetchable classes
+     *  - Firebrand-Hail-Models-Article for all articles
+     *  - Firebrand-Hail-Models-Publication for all publications
+     *  - Firebrand-Hail-Models-PublicTag for all public tags
+     *  - Firebrand-Hail-Models-PrivateTag for all private tags
+     *
+     * Example: /hail/fetch/* will start a job to fetch every type of Hail objects
+     *
+     * @param HTTPRequest $request Current request
+     *
+     * @return HTTPResponse JSON response
+     * @throws
+     */
     public function fetch(HTTPRequest $request)
     {
         if (!Security::getCurrentUser()) {
@@ -79,6 +110,14 @@ class HailController extends Controller
         ])->setStatusDescription('Invalid fetch request.');
     }
 
+    /**
+     * Get the progress on the current fetch job running
+     *
+     * @param HTTPRequest $request Current request
+     *
+     * @return HTTPResponse JSON response
+     * @throws
+     */
     public function progress(HTTPRequest $request)
     {
         if (!Security::getCurrentUser()) {
@@ -102,6 +141,18 @@ class HailController extends Controller
 
     }
 
+    /**
+     * Fetch one specific Hail object synchronously and update its database record
+     *
+     * The object to fetch is specified in the URL
+     * e.g.: /hail/fetchOne/[CLASS]/[HAILID]
+     * Example: /hail/fetchOne/Firebrand-Hail-Models-Article/l1KjRUP will fetch and update the article with HailID=l1KjRUP
+     *
+     * @param HTTPRequest $request Current request
+     *
+     * @return HTTPResponse JSON response
+     * @throws
+     */
     public function fetchOneSync(HTTPRequest $request)
     {
         if (!Security::getCurrentUser()) {
@@ -138,6 +189,16 @@ class HailController extends Controller
         ]);
     }
 
+    /**
+     * Retrieve a list of articles from the database
+     *
+     * Only used by the Hail TinyMCE plugin to add article links to any HTML content
+     *
+     * @param HTTPRequest $request Current request
+     *
+     * @return HTTPResponse JSON response
+     * @throws
+     */
     public function articles(HTTPRequest $request)
     {
         if (!Security::getCurrentUser()) {
@@ -168,6 +229,14 @@ class HailController extends Controller
         return $this->makeJsonReponse(200, $articles);
     }
 
+    /**
+     * Make the JSON response
+     *
+     * @param int $status_code HTTP status code to return
+     * @param array|null $body JSON body of the request
+     *
+     * @return HTTPResponse JSON response
+     */
     public function makeJsonReponse($status_code, $body)
     {
         $this->getResponse()->setBody(json_encode($body, JSON_UNESCAPED_SLASHES));
