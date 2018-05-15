@@ -201,7 +201,7 @@ class ApiObject extends DataObject
     {
     }
 
-    public static function fetchForOrg($hail_api_client, $org_id, $job = null)
+    public static function fetchForOrg($hail_api_client, $org_id, $job = null, $fetchSince = null, $throw_errors = false)
     {
         //Get Org Name
         $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
@@ -209,7 +209,7 @@ class ApiObject extends DataObject
 
         //Get Objects
         $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
-        $results = $hail_api_client->get($url);
+        $results = $hail_api_client->get($url, $fetchSince, $throw_errors);
         $hailIdList = [];
 
         //If this is launched from a queued job, update it to display realtime info on the frontend

@@ -29,6 +29,7 @@ class SettingsExtension extends DataExtension
         "HailExcludePublicTagsIDs" => "Text",
         "HailAPIStatusCurrent" => "Varchar",
         "HailAPIStatusLastChecked" => "Datetime",
+        "HailLastFetched" => "Datetime",
     ];
 
     public function updateCMSFields(FieldList $fields)

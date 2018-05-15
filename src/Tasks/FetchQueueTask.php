@@ -11,20 +11,23 @@ use SilverStripe\SiteConfig\SiteConfig;
 class FetchQueueTask extends BuildTask
 {
     /**
-     * @inheritdocs
+     * @inheritdoc
      */
     private static $segment = "hail-fetch-queue";
 
     /**
-     * @inheritdocs
+     * @inheritdoc
      */
     protected $title = "Hail Fetch Queue Task";
 
     /**
-     * @inheritdocs
+     * @inheritdoc
      */
     protected $description = 'Check if there is any Hail Fetch Job in queue and process them';
 
+    /**
+     * @inheritdoc
+     */
     public function run($request)
     {
         $jobs = FetchJob::get()->filter(['Status' => 'Starting'])->sort('Created ASC');

@@ -9,3 +9,6 @@ Firebrand\Hail\Api\Client:
   RefreshRate: 86400
 Firebrand\Hail\Pages\HailPageController:
   UseDefaultCss: true
+Firebrand\Hail\Tasks\FetchRecurringTask:
+#  Fetching errors will be send to the following email list (comma separated)
+  Emails: 'marc@firebrand.nz'

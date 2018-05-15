@@ -61,11 +61,12 @@ class Client
      * the results. Extra parameters can be passed with the $body variable.
      *
      * @param string $uri Resource to get
-     * @param array $params Form params of the request to send to the Hail API.
+     * @param array $params Query params of the request to send to the Hail API.
      *
      * @return array Reply from Hail
+     * @throws
      */
-    public function get($uri, $params = null)
+    public function get($uri, $params = null, $throw_errors = false)
     {
         $options = [];
         $http = $this->getHTTPClient();
@@ -75,7 +76,7 @@ class Client
 
         //Pass the body if needed
         if ($params) {
-            $options['form_params'] = $params;
+            $options['query'] = $params;
         }
 
         // Request
@@ -84,9 +85,13 @@ class Client
             $responseBody = $response->getBody();
             $responseArr = json_decode($responseBody, true);
         } catch (\Exception  $exception) {
-            $this->handleException($exception);
-            //Send empty array so the app doesnt crash
-            $responseArr = [];
+            if($throw_errors === true) {
+                throw $exception;
+            } else {
+                $this->handleException($exception);
+                //Send empty array so the app doesn't crash
+                $responseArr = [];
+            }
         }
 
         return $responseArr;
@@ -98,6 +103,7 @@ class Client
      * @param mixed $hail_object Object to retrieve
      *
      * @return array Reply from Hail
+     * @throws
      */
     public function getOne($hail_object)
     {
