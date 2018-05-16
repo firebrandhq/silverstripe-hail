@@ -2,9 +2,33 @@
 
 namespace Firebrand\Hail\Models;
 
+use SilverStripe\ORM\ManyManyList;
+
+/**
+ * Hail Public Tags DataObject
+ *
+ * @package silverstripe-hail
+ * @author Maxime Rainville, Firebrand
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ * @property string $Name
+ * @property string $Description
+ *
+ * @method ManyManyList Articles()
+ * @method ManyManyList Images()
+ * @method ManyManyList Videos()
+ * @method ManyManyList HailPages()
+ */
 class PublicTag extends ApiObject
 {
+    /**
+     * @inheritdoc
+     */
     public static $object_endpoint = "tags";
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'Name' => 'name',
         'Description' => 'description',
@@ -34,6 +58,23 @@ class PublicTag extends ApiObject
         'Fetched' => 'Fetched'
     ];
 
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $this->makeRecordViewer($fields, "Articles", $this->Articles());
+        $this->makeRecordViewer($fields, "Images", $this->Images());
+        $this->makeRecordViewer($fields, "Videos", $this->Videos());
+        $fields->removeByName("HailPages");
+
+        return $fields;
+    }
+
+    /**
+     * Get Full name of the tag (Organisation prepended to tag name if exists)
+     *
+     * @return string
+     */
     public function getFullName()
     {
         if (empty($this->HailOrgName)) {
@@ -43,22 +84,5 @@ class PublicTag extends ApiObject
         return $this->HailOrgName . " - " . $this->Name;
     }
 
-    public function getCMSFields()
-    {
-        $fields = parent::getCMSFields();
 
-        $this->makeRecordViewer($fields, "Articles", $this->Articles());
-        $this->makeRecordViewer($fields, "Images", $this->Images());
-        $this->makeRecordViewer($fields, "Videos", $this->Videos());
-        $fields->removeByName("HailLists");
-
-        return $fields;
-    }
-
-    public function importHailData($data)
-    {
-        $this->Name = $data['name'];
-        $this->Description = $data['description'];
-        return parent::importHailData($data);
-    }
 }

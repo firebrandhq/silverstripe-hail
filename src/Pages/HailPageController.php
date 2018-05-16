@@ -4,9 +4,22 @@ namespace Firebrand\Hail\Pages;
 
 use Firebrand\Hail\Models\Article;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse_Exception;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\View\Requirements;
 
+
+/**
+ * HailPage Controller
+ *
+ * Allowed actions:
+ * - article: display a full article
+ * - tag: display the HailList filtered by a specific public tag
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ */
 class HailPageController extends \PageController
 {
     private static $allowed_actions = [
@@ -17,7 +30,7 @@ class HailPageController extends \PageController
     protected function init()
     {
         parent::init();
-
+        //You can disable the default styles from the config, see readme
         if (Config::inst()->get(self::class, 'UseDefaultCss')) {
             Requirements::css('firebrand/silverstripe-hail: thirdparty/bootstrap/styles/bootstrap.min.css');
             Requirements::css('firebrand/silverstripe-hail: client/dist/styles/hail.bundle.css');
@@ -33,6 +46,14 @@ class HailPageController extends \PageController
         }
     }
 
+    /**
+     * Render a Hail Article
+     *
+     * @param HTTPRequest $request
+     *
+     * @return array
+     * @throws HTTPResponse_Exception
+     */
     public function article(HTTPRequest $request)
     {
         $params = $request->params();
@@ -61,6 +82,11 @@ class HailPageController extends \PageController
         return $data;
     }
 
+    /**
+     * Helper to get current tag filtering in templates
+     *
+     * @return string
+     */
     public function currentTagFilter()
     {
         $params = $this->getRequest()->params();

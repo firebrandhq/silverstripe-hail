@@ -2,9 +2,34 @@
 
 namespace Firebrand\Hail\Models;
 
+use SilverStripe\ORM\ManyManyList;
+
+/**
+ * Hail Attachment DataObject
+ *
+ * @package silverstripe-hail
+ * @author Maxime Rainville, Firebrand
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ * @property string $UploadedName
+ * @property string $UploadedExtension
+ * @property string $MimeType
+ * @property string $FileSize
+ * @property string $Url
+ * @property string $Name
+ *
+ * @method ManyManyList Articles()
+ */
 class Attachment extends ApiObject
 {
+    /**
+     * @inheritdoc
+     */
     public static $object_endpoint = "attachments";
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'UploadedName' => 'uploaded_name',
         'UploadedExtension' => 'uploaded_extension',

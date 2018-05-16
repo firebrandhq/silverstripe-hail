@@ -11,7 +11,6 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\ReadonlyField;
-use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
@@ -22,7 +21,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  *
  * @package silverstripe-hail
  * @author Marc Espiard, Firebrand
- * @version 2.0
+ * @version 1.0
  *
  */
 class SettingsExtension extends DataExtension

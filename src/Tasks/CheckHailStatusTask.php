@@ -6,23 +6,31 @@ use SilverStripe\Dev\BuildTask;
 use SilverStripe\EnvironmentCheck\EnvironmentCheckSuite;
 use SilverStripe\SiteConfig\SiteConfig;
 
+/**
+ * Task to Check the status of the Hail API using Silverstripe Environment Check module
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ */
 class CheckHailStatusTask extends BuildTask
 {
     /**
-     * @inheritdocs
+     * @inheritdoc
      */
     private static $segment = "hail-check-status";
-
     /**
-     * @inheritdocs
+     * @inheritdoc
      */
     protected $title = "Hail Check Status Task";
-
     /**
-     * @inheritdocs
+     * @inheritdoc
      */
     protected $description = 'Check if the Hail API is accessible';
 
+    /**
+     * @inheritdoc
+     */
     public function run($request)
     {
         $results = EnvironmentCheckSuite::inst('check')->run();

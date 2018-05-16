@@ -3,16 +3,51 @@
 namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
+use Firebrand\Hail\Pages\HailPage;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\Connect\MySQLSchemaManager;
+use SilverStripe\ORM\ManyManyList;
 
+/**
+ * Hail Article DataObject
+ *
+ * @package silverstripe-hail
+ * @author Maxime Rainville, Firebrand
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ * @property string $Title
+ * @property string $Author
+ * @property string $Lead
+ * @property string $Content
+ * @property string $Location
+ * @property string $Status Article status in Hail
+ * @property string $Updated Date and time of last update in Hail
+ * @property double $Rating
+ * @property boolean $Flagged
+ * @property string $Date Publication date and time in Hail
+ * @property string $HailURL
+ *
+ * @method Image HeroImage()
+ * @method Video HeroVideo()
+ * @method ManyManyList PublicTags()
+ * @method ManyManyList PrivateTags()
+ * @method ManyManyList Attachments()
+ * @method ManyManyList ImageGallery()
+ * @method ManyManyList VideoGallery()
+ */
 class Article extends ApiObject
 {
+    /**
+     * @inheritdoc
+     */
     public static $object_endpoint = "articles";
-    private static $api_access = true;
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'Title' => 'title',
         'Author' => 'author',
@@ -37,7 +72,6 @@ class Article extends ApiObject
         'Location' => 'Varchar',
         'Status' => 'Varchar',
 
-        'Created' => 'Datetime',
         'Updated' => 'Datetime',
         'Rating' => 'Double',
         'Flagged' => 'Boolean',
@@ -111,6 +145,9 @@ class Article extends ApiObject
         return $fields;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function importing($data)
     {
         if (!empty($data['body'])) {
@@ -137,6 +174,7 @@ class Article extends ApiObject
      * Fetch the image gallery of this article from the Hail API
      *
      * @return void
+     * @throws
      */
     public function fetchImages()
     {
@@ -175,6 +213,7 @@ class Article extends ApiObject
      * Fetch the video gallery of this article from the Hail API
      *
      * @return void
+     * @throws
      */
     public function fetchVideos()
     {
@@ -207,6 +246,11 @@ class Article extends ApiObject
         }
     }
 
+    /**
+     * Return the Article link for the current HailPageController
+     *
+     * @return string
+     */
     public function Link()
     {
         $link = Controller::curr()->Link();
@@ -214,23 +258,42 @@ class Article extends ApiObject
         return $link . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
     }
 
+    /**
+     * Return the Article link for specified HailPage
+     *
+     * @param HailPage $page
+     * @return string
+     */
     public function getLinkForPage($page)
     {
         return $page->Link() . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
     }
 
+    /**
+     * Helper to return the object type
+     *
+     * @return string
+     */
     public function getType()
     {
         return "article";
     }
 
+    /**
+     * Return the placeholder HeroImage link
+     *
+     * @return string
+     */
     public function getPlaceHolderHero()
     {
         return '/resources/' . HAIL_DIR . '/client/dist/images/placeholder-hero.png';
     }
 
     /**
-     * List of the tag IDs associated to this article seperated by spaces. Suitable to be used as CSS classes.
+     * List of this Article's public tag names separated by spaces.
+     *
+     * Suitable to be used as CSS classes.
+     *
      * @return string
      */
     public function getTagList()
@@ -242,6 +305,13 @@ class Article extends ApiObject
         return trim($string);
     }
 
+    /**
+     * List of this Article's images
+     *
+     * Includes the Hero Image
+     *
+     * @return ArrayList
+     */
     public function getAllImages()
     {
         $images = new ArrayList();
@@ -256,6 +326,13 @@ class Article extends ApiObject
         return $images;
     }
 
+    /**
+     * List of this Article's videos
+     *
+     * Includes the Hero Video
+     *
+     * @return ArrayList
+     */
     public function getAllVideos()
     {
         $videos = new ArrayList();
@@ -270,31 +347,61 @@ class Article extends ApiObject
         return $videos;
     }
 
+    /**
+     * Checks if Article has a HeroImage
+     *
+     * @return boolean
+     */
     public function hasHeroImage()
     {
         return $this->HeroImage()->ID != 0;
     }
 
+    /**
+     * Checks if Article has a HeroVideo
+     *
+     * @return boolean
+     */
     public function hasHeroVideo()
     {
         return $this->HeroVideo()->ID != 0;
     }
 
+    /**
+     * Checks if Article has an Image Gallery
+     *
+     * @return boolean
+     */
     public function hasGalleryImages()
     {
         return $this->ImageGallery()->count() > 0;
     }
 
+    /**
+     * Checks if Article has a Video Gallery
+     *
+     * @return boolean
+     */
     public function hasGalleryVideos()
     {
         return $this->VideoGallery()->count() > 0;
     }
 
+    /**
+     * Checks if Article has any Images attached (Hero and / or Gallery)
+     *
+     * @return boolean
+     */
     public function hasImages()
     {
         return $this->hasHeroImage() || $this->hasGalleryImages();
     }
 
+    /**
+     * Checks if Article has any Videos attached (Hero and / or Gallery)
+     *
+     * @return boolean
+     */
     public function hasVideos()
     {
         return $this->hasHeroVideo() || $this->hasGalleryVideos();

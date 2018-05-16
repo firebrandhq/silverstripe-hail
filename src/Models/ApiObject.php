@@ -23,6 +23,12 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @author Marc Espiard, Firebrand
  * @version 2.0
  *
+ * @property string $HailID
+ * @property string $HailOrgID Hail ID of this object's organisation
+ * @property string $HailOrgName Name of this object's organisation
+ * @property string $Fetched Date and Time of the last time the object was fetched
+ *
+ * @method Organisation Organisation()
  */
 class ApiObject extends DataObject
 {

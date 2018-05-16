@@ -13,8 +13,27 @@ use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\ManyManyList;
 use SilverStripe\ORM\PaginatedList;
 
+
+/**
+ * Hail Page
+ *
+ * Holds the article / publication preview list
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ * @property string $PaginationStyle Can be Default or InfiniteScroll
+ * @property string $PaginationPerPage Defaults to 9 per page
+ * @property string $EnableRelated Defaults to Yes
+ *
+ * @method HailList List()
+ * @method Image HeroImage()
+ * @method ManyManyList FilterTags()
+ */
 class HailPage extends \Page
 {
     private static $table_name = "HailPage";
@@ -38,6 +57,11 @@ class HailPage extends \Page
         'HeroImage'
     ];
     private static $icon = "vendor/firebrand/silverstripe-hail/client/dist/images/admin-icon.png";
+    /**
+     * Maps the types of items we can display and their classes
+     *
+     * @var array
+     */
     private static $type_map = [
         "Articles" => "Firebrand\Hail\Models\Article",
         "Publications" => "Firebrand\Hail\Models\Publication",
@@ -76,15 +100,6 @@ class HailPage extends \Page
         ]);
     }
 
-    public function AbsoluteLink($action = null)
-    {
-        $link = parent::AbsoluteLink($action);
-
-        $this->extend('AbsoluteLink', $link);
-
-        return $link;
-    }
-
     public function onBeforeDelete()
     {
         parent::onBeforeDelete();
@@ -94,6 +109,21 @@ class HailPage extends \Page
         }
     }
 
+    public function AbsoluteLink($action = null)
+    {
+        $link = parent::AbsoluteLink($action);
+
+        $this->extend('AbsoluteLink', $link);
+
+        return $link;
+    }
+
+    /**
+     * Add a canonical link meta tag back to the Hail Article when we are displaying a full article
+     *
+     * @param boolean $includeTitle Show default <title>-tag, set to false for custom templating
+     * @return string The XHTML metatags
+     */
     public function MetaTags($includeTitle = true)
     {
         $tags = parent::MetaTags($includeTitle);
@@ -101,6 +131,7 @@ class HailPage extends \Page
         if ($params['Action'] === "article" && !empty($params['ID'])) {
             $article = Article::get()->filter(['HailID' => $params['ID']])->first();
             if ($article && $article->HailURL) {
+                //
                 $tags .= "<link rel=\"canonical\" href=\"{$article->HailURL}\" />";
             }
         }
@@ -108,6 +139,14 @@ class HailPage extends \Page
         return $tags;
     }
 
+    /**
+     * Get a Paginated List of items (Articles and Publications) associated with that HailPage
+     *
+     * @param int|null $per_page
+     * @param int|null $limit
+     * @param string|null $tags_to_filter
+     * @return PaginatedList
+     */
     public function getHailList($per_page = null, $limit = null, $tags_to_filter = null)
     {
         $request = Controller::curr()->getRequest();
@@ -201,11 +240,25 @@ class HailPage extends \Page
         return PaginatedList::create($list->sort('Created DESC'), $request)->setPageLength($per_page);
     }
 
+    /**
+     * Get a full List of items (Articles and Publications) associated with that HailPage
+     *
+     * Pagination is disabled using 0 as page size
+     *
+     * @param int|null $limit
+     * @param string|null $tags_to_filter
+     * @return PaginatedList
+     */
     public function getFullHailList($limit = null, $tags_to_filter = null)
     {
         return $this->getHailList(0, $limit, $tags_to_filter);
     }
 
+    /**
+     * Get the PublicTags that are allowed / configured on this Hail Page
+     *
+     * @return array
+     */
     public function getAllowedPublicTags()
     {
         $return_list = ['*' => 'All'];

@@ -3,11 +3,53 @@
 namespace Firebrand\Hail\Models;
 
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\ORM\ManyManyList;
 use SilverStripe\View\ArrayData;
 
+/**
+ * Hail Image DataObject
+ *
+ * Images are hosted on CloudFront
+ *
+ * @package silverstripe-hail
+ * @author Maxime Rainville, Firebrand
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ * @property string $Caption
+ * @property string $People
+ * @property string $Location
+ * @property string $Date
+ * @property string $Photographer
+ * @property string $Status
+ * @property string $Url150Square
+ * @property string $Url500
+ * @property string $Url500Square
+ * @property string $Url1000
+ * @property string $Url1000Square
+ * @property string $Url2000
+ * @property string $Urloriginal
+ * @property double $Rating
+ * @property boolean $Flagged
+ * @property int $FaceCentreX X axis for the Image focus point
+ * @property int $FaceCentreY Y axis for the Image focus point
+ * @property int $OriginalWidth
+ * @property int $OriginalHeight
+ *
+ * @method ManyManyList Articles()
+ * @method ManyManyList PublicTags()
+ * @method ManyManyList PrivateTags()
+ */
 class Image extends ApiObject
 {
+    /**
+     * @inheritdoc
+     */
     public static $object_endpoint = "images";
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'Caption' => 'caption',
         'People' => 'people',
@@ -47,7 +89,6 @@ class Image extends ApiObject
         'Url2000' => 'Varchar',
         'Urloriginal' => 'Varchar',
 
-        'Created' => 'Date',
         'Rating' => 'Double',
         'Flagged' => 'Boolean',
 
@@ -70,7 +111,8 @@ class Image extends ApiObject
         'Fetched' => 'Fetched'
     ];
 
-    public function getCMSFields( ) {
+    public function getCMSFields()
+    {
         $fields = parent::getCMSFields();
 
         // Display relations
@@ -95,63 +137,14 @@ class Image extends ApiObject
             "Thumbnail",
             $this->getThumbnailField("Thumbnail")
         );
-        $fields->addFieldToTab('Root.Main',$heroField);
+        $fields->addFieldToTab('Root.Main', $heroField);
 
         return $fields;
     }
 
     /**
-     * Renders out a thumbnail of this Hail Image.
-     *
-     * * @return HTMLText
+     * @inheritdoc
      */
-    public function getThumbnail()
-    {
-        $data = new ArrayData([
-            'HailImage' => $this
-        ]);
-
-        return $data->renderWith('ImageThumbnail');
-    }
-
-    /**
-     * Returns the CMS Field HTML for the thumbnail
-     *
-     * @param string $label
-     * @return HTMLText
-     */
-    public function getThumbnailField($label)
-    {
-        return "<div class='form-group field lookup readonly '><label class='form__field-label'>$label</label><div class='form__field-holder'>{$this->getThumbnail()}</div></div>";
-    }
-
-    public function getRelativeCenterX()
-    {
-        $pos = 50;
-        if ($this->FaceCentreX > 0 && $this->OriginalWidth > 0) {
-            $pos = $this->FaceCentreX / $this->OriginalWidth * 100;
-            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
-        }
-
-        return $pos;
-    }
-
-    public function getRelativeCenterY()
-    {
-        $pos = 50;
-        if ($this->FaceCentreY > 0 && $this->OriginalHeight > 0) {
-            $pos = $this->FaceCentreY / $this->OriginalHeight * 100;
-            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
-        }
-
-        return $pos;
-    }
-
-    public function getUrl()
-    {
-        return $this->Urloriginal;
-    }
-
     protected function importing($data)
     {
         $this->processPublicTags($data['tags']);
@@ -164,5 +157,73 @@ class Image extends ApiObject
             $this->FaceCentreX = !isset($data['focal_point']['x']) || empty($data['focal_point']['x']) ? -1 : $data['focal_point']['x'];
             $this->FaceCentreY = !isset($data['focal_point']['y']) || empty($data['focal_point']['y']) ? -1 : $data['focal_point']['y'];
         }
+    }
+
+    /**
+     * Renders the thumbnail of this Image
+     *
+     * @return DBHTMLText
+     */
+    public function getThumbnail()
+    {
+        $data = new ArrayData([
+            'HailImage' => $this
+        ]);
+
+        return $data->renderWith('ImageThumbnail');
+    }
+
+    /**
+     * Returns the thumbnail HTML for the CMS Field
+     *
+     * @param string $label
+     *
+     * @return string
+     */
+    public function getThumbnailField($label)
+    {
+        return "<div class='form-group field lookup readonly '><label class='form__field-label'>$label</label><div class='form__field-holder'>{$this->getThumbnail()}</div></div>";
+    }
+
+    /**
+     * Get the X axis for the relative center of this image
+     *
+     * @return int
+     */
+    public function getRelativeCenterX()
+    {
+        $pos = 50;
+        if ($this->FaceCentreX > 0 && $this->OriginalWidth > 0) {
+            $pos = $this->FaceCentreX / $this->OriginalWidth * 100;
+            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
+        }
+
+        return $pos;
+    }
+
+    /**
+     * Get the Y axis for the relative center of this image
+     *
+     * @return int
+     */
+    public function getRelativeCenterY()
+    {
+        $pos = 50;
+        if ($this->FaceCentreY > 0 && $this->OriginalHeight > 0) {
+            $pos = $this->FaceCentreY / $this->OriginalHeight * 100;
+            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
+        }
+
+        return $pos;
+    }
+
+    /**
+     * Get the original URL of this Image
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->Urloriginal;
     }
 }

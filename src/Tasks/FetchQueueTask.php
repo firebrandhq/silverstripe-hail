@@ -8,6 +8,15 @@ use Firebrand\Hail\Models\ApiObject;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\SiteConfig\SiteConfig;
 
+/**
+ * Task to fetch the jobs currently in queue
+ *
+ * @link {FetchJob}
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ */
 class FetchQueueTask extends BuildTask
 {
     /**

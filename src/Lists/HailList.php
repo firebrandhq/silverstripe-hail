@@ -7,6 +7,7 @@ use Firebrand\Hail\Models\PrivateTag;
 use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\HasManyList;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
@@ -18,6 +19,16 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @author Marc Espiard, Firebrand
  * @version 1.0
  *
+ * @property string Type
+ * @property string OrganisationsIDs
+ * @property string IncludedPublicTagsIDs
+ * @property int IncludedPrivateTagsIDs
+ * @property int ExcludedPublicTagsIDs
+ * @property int ExcludedPrivateTagsIDs
+ *
+ * @method HasManyList HailPages() List of {
+@link HailPage
+}
  */
 class HailList extends DataObject
 {

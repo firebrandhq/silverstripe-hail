@@ -57,7 +57,7 @@ class HailModelAdmin extends ModelAdmin
             $gridField->addComponent(new GridFieldFetchButton('buttons-before-left'));
         }
 
-        if($this->modelClass === Attachment::class) {
+        if ($this->modelClass === Attachment::class) {
             $gridField->addComponent(new GridFieldAttachmentDownloadButton());
         }
 

@@ -2,14 +2,37 @@
 
 namespace Firebrand\Hail\Models;
 
+use SilverStripe\ORM\ManyManyList;
+
+/**
+ * Hail Private Tags DataObject
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ *
+ * @property string $Name
+ * @property string $Description
+ *
+ * @method ManyManyList Articles()
+ * @method ManyManyList Publications()
+ * @method ManyManyList Images()
+ * @method ManyManyList Videos()
+ */
 class PrivateTag extends ApiObject
 {
+    /**
+     * @inheritdoc
+     */
     public static $object_endpoint = "private-tags";
-    private static $table_name = "HailPrivateTag";
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'Name' => 'name',
         'Description' => 'description',
     ];
+    private static $table_name = "HailPrivateTag";
     private static $many_many = [
         'Articles' => 'Firebrand\Hail\Models\Article',
         'Publications' => 'Firebrand\Hail\Models\Publication',
@@ -32,15 +55,6 @@ class PrivateTag extends ApiObject
         'Fetched' => 'Fetched'
     ];
 
-    public function getFullName()
-    {
-        if (empty($this->HailOrgName)) {
-            return $this->Name;
-        }
-
-        return $this->HailOrgName . " - " . $this->Name;
-    }
-
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
@@ -49,15 +63,21 @@ class PrivateTag extends ApiObject
         $this->makeRecordViewer($fields, "Publications", $this->Publications());
         $this->makeRecordViewer($fields, "Images", $this->Images());
         $this->makeRecordViewer($fields, "Videos", $this->Videos());
-        $fields->removeByName("HailLists");
 
         return $fields;
     }
 
-    public function importHailData($data)
+    /**
+     * Get Full name of the tag (Organisation prepended to tag name if exists)
+     *
+     * @return string
+     */
+    public function getFullName()
     {
-        $this->Name = $data['name'];
-        $this->Description = $data['description'];
-        return parent::importHailData($data);
+        if (empty($this->HailOrgName)) {
+            return $this->Name;
+        }
+
+        return $this->HailOrgName . " - " . $this->Name;
     }
 }

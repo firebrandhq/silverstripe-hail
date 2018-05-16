@@ -3,11 +3,58 @@
 namespace Firebrand\Hail\Models;
 
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\ORM\ManyManyList;
 use SilverStripe\View\ArrayData;
 
+
+/**
+ * Hail Image DataObject
+ *
+ * Videos can be from Youtube or Vimeo
+ *
+ * @package silverstripe-hail
+ * @author Maxime Rainville, Firebrand
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ * @property string $Caption
+ * @property string $Description
+ * @property string $Date
+ * @property string $Videographer
+ * @property string $Status
+ * @property string $Service
+ * @property string $ServiceData
+ * @property double Rating
+ * @property string $Url150Square
+ * @property string $Url500
+ * @property string $Url500Square
+ * @property string $Url1000
+ * @property string $Url1000Square
+ * @property string $Url2000
+ * @property string $Urloriginal
+ * @property Int $FaceCentreX
+ * @property Int $FaceCentreY
+ * @property Int $OriginalWidth
+ * @property Int $OriginalHeight
+ *
+ * @method Color Background()
+ * @method Color Primary()
+ * @method Color Secondary()
+ * @method Color Detail()
+ * @method ManyManyList PublicTags()
+ * @method ManyManyList PrivateTags()
+ * @method ManyManyList Articles()
+ */
 class Video extends ApiObject
 {
+    /**
+     * @inheritdoc
+     */
     public static $object_endpoint = "videos";
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'Caption' => 'caption',
         'Description' => 'description',
@@ -38,7 +85,6 @@ class Video extends ApiObject
         'Url2000' => 'Varchar',
         'Urloriginal' => 'Varchar',
 
-        'Created' => 'Date',
         'Rating' => 'Double',
 
         'FaceCentreX' => 'Int',
@@ -128,71 +174,8 @@ class Video extends ApiObject
     }
 
     /**
-     * Renders out a thumbnail of this Hail Image.
-     *
-     * * @return HTMLText
+     * @inheritdoc
      */
-    public function getThumbnail()
-    {
-        $data = new ArrayData([
-            'HailVideo' => $this
-        ]);
-
-        return $data->renderWith('VideoThumbnail');
-    }
-
-    /**
-     * Returns the CMS Field HTML for the thumbnail
-     *
-     * @param string $label
-     * @return HTMLText
-     */
-    public function getThumbnailField($label)
-    {
-        return "<div class='form-group field lookup readonly '><label class='form__field-label'>$label</label><div class='form__field-holder'><div class='hail-video-thumbnail-holder'> {$this->getThumbnail()} </div></div></div>";
-    }
-
-    public function getRelativeCenterX()
-    {
-        $pos = 50;
-        if ($this->FaceCentreX > 0 && $this->OriginalWidth > 0) {
-            $pos = $this->FaceCentreX / $this->OriginalWidth * 100;
-            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
-        }
-
-        return $pos;
-    }
-
-    public function getRelativeCenterY()
-    {
-        $pos = 50;
-        if ($this->FaceCentreY > 0 && $this->OriginalHeight > 0) {
-            $pos = $this->FaceCentreY / $this->OriginalHeight * 100;
-            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
-        }
-
-        return $pos;
-    }
-
-    public function getUrl()
-    {
-        return $this->Urloriginal;
-    }
-
-    public function getLink()
-    {
-        switch ($this->Service) {
-            case 'youtube':
-                return '//www.youtube.com/watch?v=' . $this->ServiceData;
-                break;
-            case 'vimeo':
-                return '//vimeo.com/' . $this->ServiceData;
-                break;
-            default:
-                return $this->ServiceData;
-        }
-    }
-
     protected function importing($data)
     {
         $this->processPublicTags($data['tags']);
@@ -226,6 +209,12 @@ class Video extends ApiObject
         $this->importingColor('Details', $preview['colour_palette']['detail']);
     }
 
+    /**
+     * Process the colors
+     *
+     * @param $SSName
+     * @param $data
+     */
     protected function importingColor($SSName, $data)
     {
         $color = $this->{$SSName};
@@ -233,27 +222,100 @@ class Video extends ApiObject
             $color = new Color();
         }
         $this->Fetched = date("Y-m-d H:i:s");
-        $this->OrganisationID = $this->OrganisationID;
+        $color->OrganisationID = $this->OrganisationID;
         $color->HailOrgID = $this->HailOrgID;
         $color->HailOrgName = $this->HailOrgName;
 
         $this->{$SSName} = $color;
     }
 
-    public function Link()
+    /**
+     * Renders the thumbnail of this Video
+     *
+     * @return DBHTMLText
+     */
+    public function getThumbnail()
     {
-        switch ($this->Service) {
-            case "youtube":
-                $link = "https://www.youtube.com/watch?v=" . $this->ServiceData;
-                break;
-            case "vimeo":
-                $link = "https://vimeo.com/" . $this->ServiceData;
-                break;
-            default:
-                $link = null;
-                break;
+        $data = new ArrayData([
+            'HailVideo' => $this
+        ]);
+
+        return $data->renderWith('VideoThumbnail');
+    }
+
+    /**
+     * Returns the thumbnail HTML for the CMS Field
+     *
+     * @param string $label
+     *
+     * @return string
+     */
+    public function getThumbnailField($label)
+    {
+        return "<div class='form-group field lookup readonly '><label class='form__field-label'>$label</label><div class='form__field-holder'><div class='hail-video-thumbnail-holder'> {$this->getThumbnail()} </div></div></div>";
+    }
+
+
+    /**
+     * Get the X axis for the relative center of this video's still image
+     *
+     * @return int
+     */
+    public function getRelativeCenterX()
+    {
+        $pos = 50;
+        if ($this->FaceCentreX > 0 && $this->OriginalWidth > 0) {
+            $pos = $this->FaceCentreX / $this->OriginalWidth * 100;
+            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
         }
 
-        return $link;
+        return $pos;
+    }
+
+    /**
+     * Get the Y axis for the relative center of this video's still image
+     *
+     * @return int
+     */
+    public function getRelativeCenterY()
+    {
+        $pos = 50;
+        if ($this->FaceCentreY > 0 && $this->OriginalHeight > 0) {
+            $pos = $this->FaceCentreY / $this->OriginalHeight * 100;
+            $pos = ($pos > 100 || $pos < 0) ? 50 : $pos;
+        }
+
+        return $pos;
+    }
+
+    /**
+     * Get the original URL of this video's still image
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->Urloriginal;
+    }
+
+    /**
+     * Get the original URL of this video
+     *
+     * Can be from Youtube or Vimeo
+     *
+     * @return string
+     */
+    public function getLink()
+    {
+        switch ($this->Service) {
+            case 'youtube':
+                return '//www.youtube.com/watch?v=' . $this->ServiceData;
+                break;
+            case 'vimeo':
+                return '//vimeo.com/' . $this->ServiceData;
+                break;
+            default:
+                return $this->ServiceData;
+        }
     }
 }

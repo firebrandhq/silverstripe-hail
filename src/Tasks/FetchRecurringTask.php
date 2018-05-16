@@ -10,6 +10,14 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\SiteConfig\SiteConfig;
 
+
+/**
+ * Task to fetch all fetchable objects from the Hail API since last fetch
+ *
+ * @package silverstripe-hail
+ * @author Marc Espiard, Firebrand
+ * @version 1.0
+ */
 class FetchRecurringTask extends BuildTask
 {
     use Configurable;

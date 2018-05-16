@@ -3,10 +3,38 @@
 namespace Firebrand\Hail\Models;
 
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\ORM\ManyManyList;
 
+/**
+ * Hail Publication DataObject
+ *
+ * @package silverstripe-hail
+ * @author Maxime Rainville, Firebrand
+ * @author Marc Espiard, Firebrand
+ * @version 2.0
+ *
+ * @property string $Title
+ * @property string $Editorial
+ * @property string $DueDate Create date in hail
+ * @property string $Status Publication status in Hail
+ * @property string $Updated Date and time of last update in Hail
+ * @property string $Style
+ * @property string $Url
+ *
+ * @method Article FeaturedArticle()
+ * @method Image HeroImage()
+ * @method Video HeroVideo()
+ * @method ManyManyList PrivateTags()
+ */
 class Publication extends ApiObject
 {
+    /**
+     * @inheritdoc
+     */
     public static $object_endpoint = "publications";
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'Title' => 'title',
         'Editorial' => 'editorial',
@@ -22,7 +50,6 @@ class Publication extends ApiObject
         'DueDate' => 'Datetime',
         'Status' => 'Varchar',
         'Style' => 'Varchar',
-        'Created' => 'Datetime',
         'Url' => 'Varchar',
     ];
     private static $has_one = [
@@ -93,6 +120,9 @@ class Publication extends ApiObject
         return $fields;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function importing($data)
     {
         if (isset($data['style'])) {
@@ -105,7 +135,11 @@ class Publication extends ApiObject
         $this->processFeaturedArticle($featured);
     }
 
-    // Match the featured article if there's one
+    /**
+     * Attach the featured article to this publication if there is one
+     *
+     * @param array $articleData
+     */
     private function processFeaturedArticle($articleData)
     {
         if ($articleData) {
@@ -135,21 +169,39 @@ class Publication extends ApiObject
 
     }
 
+    /**
+     * Return a full URL for this publication
+     *
+     * @return string
+     */
     public function Link()
     {
         return $this->Url;
     }
 
+    /**
+     * @link Link()
+     */
     public function getLinkForPage($page)
     {
         return $this->Link();
     }
 
+    /**
+     * Helper to return the object type
+     *
+     * @return string
+     */
     public function getType()
     {
         return "publication";
     }
 
+    /**
+     * Return the placeholder HeroImage link
+     *
+     * @return string
+     */
     public function getPlaceHolderHero()
     {
         return '/resources/' . HAIL_DIR . '/client/dist/images/placeholder-hero.png';
