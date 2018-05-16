@@ -6,4 +6,4 @@
 /package.json export-ignore
 /package-lock.json export-ignore
 /client/src/** export-ignore
-/docs/**
+/docs/** export-ignore
