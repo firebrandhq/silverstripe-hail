@@ -110,7 +110,7 @@ The following yml configuration options are available for overwrite:
 
 *Default configuration:*
  
-```
+```yml
 Firebrand\Hail\Api\Client:
   BaseApiUrl: 'https://hail.to/api/v1/'
   AuthorizationUrl: 'https://hail.to/oauth/authorise'
@@ -123,7 +123,7 @@ Firebrand\Hail\Api\Client:
 
 *Default configuration:*
  
-```
+```yml
 Firebrand\Hail\Pages\HailPageController:
   UseDefaultCss: true
 ```
@@ -133,7 +133,7 @@ Firebrand\Hail\Pages\HailPageController:
 
 *Default configuration:*
  
-```
+```yml
 Firebrand\Hail\Tasks\FetchRecurringTask:
   Emails: 'developers@firebrand.nz'
 ```
@@ -146,7 +146,7 @@ utf8mb4 is backward compatible with utf8 so it should work with any existing or 
 
 To enable Emojis support please add the following to your SilverStripe yml config and perform a dev/build.
 
-```
+```yml
 Firebrand\Hail\Api\Client:
   EnableEmojiSupport: true
 ```
