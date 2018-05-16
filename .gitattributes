@@ -1,8 +1,8 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
-/webpack.common.js
-/webpack.dev.js
-/webpack.prod.js
-/package.json
-/package-lock.json
-/client/src
+/webpack.common.js export-ignore
+/webpack.dev.js export-ignore
+/webpack.prod.js export-ignore
+/package.json export-ignore
+/package-lock.json export-ignore
+/client/src export-ignore
