@@ -5,4 +5,4 @@
 /webpack.prod.js export-ignore
 /package.json export-ignore
 /package-lock.json export-ignore
-/client/src export-ignore
+/client/src/** export-ignore
