@@ -54,7 +54,7 @@ sudo ./vendor/bin/sake installsake
 
 You can adapt the frequency of the hail-fetch-recurring job to your needs, it will always fetch up until previous fetch
 
-##### Authorize Silverstripe to fetch from Hail:
+#### Authorize Silverstripe to fetch from Hail:
 
 1. Go to hail.to and signin, then go to your Developer Settings (https://hail.to/app/user/applications) and create a new application (Add new button)
 2. Add you Hail Client ID and Client Secret to your .env file:
@@ -120,9 +120,9 @@ Firebrand\Hail\Tasks\FetchRecurringTask:
 
 ## Emojis Support
 
-**IMPORTANT:** Enabling Emojis Support will change the charset and collation of your SilverStripe database to utf8mb4 and utf8mb4_general_ci
+**IMPORTANT:** Enabling Emojis Support will change the charset and collation of your SilverStripe database to **utf8mb4** and **utf8mb4_general_ci** respectively.
 
-utf8mb4 is backward compatble with utf8 so it should work with any existing or new database, we still chose to disable the feature to avoid imposing this change.
+utf8mb4 is backward compatible with utf8 so it should work with any existing or new database, we still chose to disable the feature to avoid imposing this change.
 
 To enable Emojis support please add the following to your SilverStripe yml config and perform a dev/build.
 
