@@ -26,9 +26,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @property int ExcludedPublicTagsIDs
  * @property int ExcludedPrivateTagsIDs
  *
- * @method HasManyList HailPages() List of {
-@link HailPage
-}
+ * @method HasManyList HailPages()
  */
 class HailList extends DataObject
 {
