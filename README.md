@@ -2,20 +2,23 @@
 
 # Hail.to Integration for SilverStripe 4 
 
+Silverstripe 4 module to integrate with Hail (https://get.hail.to)
+
 If you need this module for SilverStripe 3 please refer to [this branch](https://github.com/firebrandhq/silverstripe-hail/tree/2.x).
 
-## New Features
+## Features
 
+* Display Hail content inside your SilverStripe website
 * Ready to use with Bootstrap 4.1 styles and templates
-* Video header
+* Video and Image header for articles and publications
 * Hail Page
 * TinyMCE plugin
-* More configurable
+* Configurable
 * Simplified code base
-* Emoji support as an option
-* OpenGraph integration, see firebrandhq/silverstripe-hail-opengraph
-* Silverstripe Elemental integration, see firebrandhq/silverstripe-hail-elemental
-* ...
+* Emojis support as an option
+* OpenGraph integration, [see OpenGraph Support section](#opengraph-support)
+* Silverstripe Elemental integration, [see SilverStripe Elemental Support section](#silverstripe-elemental-support)
+* And more...
 
 ## Requirements
 
@@ -152,3 +155,30 @@ To enable Emojis support please add the following to your SilverStripe yml confi
 Firebrand\Hail\Api\Client:
   EnableEmojiSupport: true
 ```
+
+## OpenGraph Support
+
+You can add OpenGraph Support for the Hail content inside your SilverStripe website by adding an optional module:
+
+[See Hail OpenGraph module for installation instructions](https://github.com/firebrandhq/silverstripe-hail-opengraph/)
+
+## SilverStripe Elemental Support
+
+We offer a pre built SilverStripe Elemental block (Hail Carousel) for you to use:
+
+[See Hail Elemental module for installation instructions](https://github.com/firebrandhq/silverstripe-hail-elemental/)
+
+
+## Contributing
+
+[See CONTRIBUTING.md](https://github.com/firebrandhq/silverstripe-hail/blob/master/CONTRIBUTING.md)
+
+## Versioning
+
+This library follows [Semver](http://semver.org). According to Semver, you will be able to upgrade to any minor or patch version of this library without any breaking changes to the public API. Semver also requires that we clearly define the public API for this library.
+
+All methods, with `public` visibility, are part of the public API. All other methods are not part of the public API. Where possible, we'll try to keep `protected` methods backwards-compatible in minor/patch versions, but if you're overriding methods then please test your work before upgrading.
+
+## Reporting Issues
+
+Please [create an issue](https://github.com/firebrandhq/silverstripe-hail/issues) for any bugs you've found, or features you're missing.  
