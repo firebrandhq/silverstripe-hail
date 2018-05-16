@@ -19,12 +19,12 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @author Marc Espiard, Firebrand
  * @version 1.0
  *
- * @property string Type
- * @property string OrganisationsIDs
- * @property string IncludedPublicTagsIDs
- * @property int IncludedPrivateTagsIDs
- * @property int ExcludedPublicTagsIDs
- * @property int ExcludedPrivateTagsIDs
+ * @property string $Type
+ * @property string $OrganisationsIDs
+ * @property string $IncludedPublicTagsIDs
+ * @property int $IncludedPrivateTagsIDs
+ * @property int $ExcludedPublicTagsIDs
+ * @property int $ExcludedPrivateTagsIDs
  *
  * @method HasManyList HailPages()
  */

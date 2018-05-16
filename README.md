@@ -38,7 +38,7 @@ Please perform a fresh install if you are upgrading from previous versions by re
 **Run the following command:**
 
 ```sh
-composer require firebrand/silverstripe-hail "^4"
+composer require firebrandhq/silverstripe-hail "^4"
 ```
 
 **(Optional) Enable Emojis Support (has to be done before doing the dev/build):**
@@ -152,7 +152,7 @@ Hail Page configuration:
 
 ![Hail Page config](docs/images/screen-1.PNG "Hail Page Config")
 
-Once configured and published you Hail Page should ook like this (Using default styles and templates):
+Once configured and published your Hail Page should look like this (using default styles and templates):
 
 ![Hail Page](docs/images/screen-2.PNG "Hail Page")
 

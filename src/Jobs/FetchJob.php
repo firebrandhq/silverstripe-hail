@@ -11,13 +11,13 @@ use SilverStripe\ORM\DataObject;
  * @author Marc Espiard, Firebrand
  * @version 1.0
  *
- * @property string Status
- * @property string ToFetch
- * @property string CurrentObject
- * @property int CurrentDone
- * @property int CurrentTotal
- * @property int GlobalDone
- * @property int GlobalTotal
+ * @property string $Status
+ * @property string $ToFetch
+ * @property string $CurrentObject
+ * @property int $CurrentDone
+ * @property int $CurrentTotal
+ * @property int $GlobalDone
+ * @property int $GlobalTotal
  */
 class FetchJob extends DataObject
 {
