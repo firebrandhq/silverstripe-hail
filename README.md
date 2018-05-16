@@ -21,7 +21,7 @@ If you need this module for SilverStripe 3 please refer to [this branch](https:/
 * [guzzlehttp/guzzle ^6.3](https://github.com/guzzle/guzzle)
 * [silverstripe/environmentcheck ^2.0](https://github.com/silverstripe/silverstripe-environmentcheck)
 * Access to create cronjob (optional)
-* jQuery and Bootstrap 4+ (included), [see ]
+* jQuery and Bootstrap 4+ (included), [see jQuery and Boostrap requirements](#jquery-and-bootstrap-requirements)
 
 ## Upgrade from older versions
 
