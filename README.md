@@ -185,7 +185,7 @@ We offer a pre built SilverStripe Elemental block (Hail Carousel) for you to use
 
 ## Contributing
 
-[See CONTRIBUTING.md](https://github.com/firebrandhq/silverstripe-hail/blob/master/CONTRIBUTING.md)
+[See CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Versioning
 
