@@ -1,5 +1,5 @@
 	{
-    "name": "firebrandhq/silverstripe-hail",
+    "name": "firebrand/silverstripe-hail",
     "description": "Silverstripe plugin to integrate with Hail (https://get.hail.to)",
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "News", "Hail", "Content"],
