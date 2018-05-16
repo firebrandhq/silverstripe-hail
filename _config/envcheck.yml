@@ -1,0 +1,11 @@
+---
+Name: hail-environment-checker
+---
+SilverStripe\EnvironmentCheck\EnvironmentCheckSuite:
+  registered_checks:
+    hail:
+      definition: 'ExternalURLCheck("https://hail.to/api/v1/plans/")'
+      title: 'hail_status'
+  registered_suites:
+    check:
+      - hail

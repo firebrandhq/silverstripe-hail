@@ -1,29 +1,44 @@
-	{
-    "name": "firebrand/silverstripe-hail",
-    "description": "Silverstripe plugin to integrate with Hail (https://get.hail.to)",
-    "type": "silverstripe-module",
-    "keywords": ["silverstripe", "News", "Hail", "Content"],
-    "license": "MIT",
-    "authors": [{
-        "name": "Firebrand Limited",
-        "email": "developers@firebrand.nz"
-    }],
-    "require": {
-        "silverstripe/framework": "^3.1",
-        "silverstripe/cms": "^3.1",
-        "firebrandhq/searchable-dataobjects": "dev-master",
-        "silverstripe-australia/gridfieldextensions": "~1.4",
-    	"undefinedoffset/sortablegridfield": "0.6 - 1",
-    	"colymba/gridfield-bulk-editing-tools": "dev-master",
-		"nategood/httpful": "dev-master",
-		"silverstripe/restfulserver": "1.*",
-		"league/oauth2-client": "0.*",
-		"silverstripe/queuedjobs": "^2.8"
-    },
-    "extra": {
-	   "installer-name": "hail"
-    },
-    "suggest": {
-        "maknz/slack": "Get error notifications from Hail sent to Slack"
+{
+  "name": "firebrandhq/silverstripe-hail",
+  "description": "Silverstripe 4 plugin to integrate with Hail (https://get.hail.to)",
+  "type": "silverstripe-vendormodule",
+  "keywords": [
+    "silverstripe",
+    "News",
+    "Hail",
+    "Content"
+  ],
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Firebrand Limited",
+      "email": "developers@firebrand.nz"
     }
+  ],
+  "require": {
+    "silverstripe/cms": "^4.1",
+    "silverstripe/framework": "^4.1",
+    "silverstripe/environmentcheck": "^2.0",
+    "guzzlehttp/guzzle": "^6.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Firebrand\\Hail\\": "src/"
+    }
+  },
+  "extra": {
+    "expose": [
+      "client/dist",
+      "thirdparty"
+    ],
+    "branch-alias": {
+      "dev-master": "4.0.x-dev"
+    }
+  },
+  "prefer-stable": true,
+  "minimum-stability": "stable",
+  "suggest": {
+    "firebrandhq/silverstripe-hail-elemental": "Add Hail Carousel Element type to Elemental",
+    "firebrandhq/silverstripe-hail-opengraph": "Add OpenGraph tags to Hail Pages and Hail Articles"
+  }
 }

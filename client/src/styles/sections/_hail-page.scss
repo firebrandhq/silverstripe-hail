@@ -1,0 +1,59 @@
+#hail-page-header {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  div {
+    height: 300px;
+  }
+}
+
+.hail-preview {
+  margin-bottom: 25px;
+}
+
+.hail-preview-image {
+  -moz-transition: all 0.3s;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.hail-preview-image:hover {
+  -moz-transform: scale(1.1);
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+#hail-page-filters {
+  margin-bottom: 10px;
+  margin-left: -0.25rem;
+  a {
+    margin-bottom: 10px;
+  }
+}
+
+.hail-preview .card-body {
+  position: relative;
+  .card-tags {
+    position: absolute;
+    top: -14px;
+    span {
+      padding: 3px 6px;
+      text-transform: uppercase;
+      line-height: normal;
+      font-weight: 400;
+    }
+  }
+
+}
+
+.ias-spinner {
+  width: 100%;
+  margin: 0 auto;
+  img {
+    width: 100px;
+    height: 100px;
+    background: none !important;
+    border: none !important;
+  }
+}

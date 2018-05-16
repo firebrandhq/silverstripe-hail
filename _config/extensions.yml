@@ -1,0 +1,17 @@
+---
+Name: hail-extensions
+---
+SilverStripe\ORM\DataObject:
+  extensions:
+    - Firebrand\Hail\Extensions\DataObjectExtension
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - Firebrand\Hail\Admin\SettingsExtension
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - Firebrand\Hail\Extensions\UpdateFormExtension
+  extra_requirements_css:
+    - vendor/firebrand/silverstripe-hail/client/dist/styles/hail.bundle.css
+SilverStripe\ORM\FieldType\DBString:
+  extensions:
+    - Firebrand\Hail\Extensions\DBStringExtension

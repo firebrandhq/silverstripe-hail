@@ -1,0 +1,108 @@
+//Button wrapper
+#hail-fetch-wrapper {
+  display: flex;
+
+  .dropdown-item {
+    cursor: pointer;
+  }
+}
+
+#hail-fetch-button:after {
+  display: none !important;
+}
+
+.hail-video-thumbnail-holder {
+  width: 350px;
+}
+
+.hail-fetch-loading {
+  background: url(../images/flappy-bird3.gif) no-repeat center center;
+  width: 30px;
+  height: 30px;
+  background-size: 100% 100%;
+}
+
+.hail-fetch-one, .hail-fetch-loading {
+  float: left;
+}
+
+//Tiny MCE Hail Icon
+.mce-ico.mce-i-hail {
+  background: url('../images/admin-icon.png');
+  background-size: 100% 100%;
+}
+
+//Hail icon to be used eve  rywhere
+.hail-icon {
+  background: url('../images/admin-icon.png');
+  background-size: 100% 100%;
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+//Progress Button Styles
+.progress-button {
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  outline: none;
+  border: none;
+  background: $progressButtonPrimary;
+  color: #fff;
+  font-size: 1em;
+  transition: min-width 1s ease, height 1s ease;
+  cursor: pointer;
+  min-width: 100px;
+  width: auto;
+  height: 40px;
+
+  &.state-active {
+    cursor: default;
+    min-width: 350px;
+    &.global-fetch {
+      cursor: default;
+      height: 60px;
+    }
+  }
+
+  &[disabled],
+  &[disabled].state-loading,
+  &[disabled].state-active {
+    cursor: default;
+  }
+
+  .content {
+    position: relative;
+    display: block;
+  }
+
+  .progress {
+    background: $progressButtonFill;
+    display: inline !important;
+  }
+
+  .progress-inner {
+    position: absolute;
+    left: 0;
+    background: $progressButtonFill;
+  }
+
+  &[data-horizontal] .progress-inner {
+    top: 0;
+    width: 0;
+    height: 100%;
+    -webkit-transition: width 0.3s, opacity 0.3s;
+    transition: width 0.3s, opacity 0.3s;
+  }
+
+  &[data-style="fill"][data-horizontal] {
+    overflow: hidden;
+  }
+
+  &[data-style="fill"][data-horizontal] .content {
+    z-index: 10;
+    -webkit-transition: -webkit-transform 0.3s;
+    transition: transform 0.3s;
+  }
+}
+

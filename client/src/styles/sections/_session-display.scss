@@ -1,0 +1,12 @@
+input, p {
+  &.notice-good {
+    background-color: green !important;
+    color: white !important;
+    font-weight: 700 !important;
+  }
+  &.notice-bad {
+    background-color: red !important;
+    color: white !important;
+    font-weight: 700 !important;
+  }
+}

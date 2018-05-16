@@ -1,18 +1,16 @@
-# Tag 1.0.9
+# Changelog
 
-## Monday July 4th
-* Added some logic to Hail Holder so the Title of HailHarticle action matches the title of the Article.
+All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
-# Tag 1.0.8
+## [4.x-dev]
 
-## Monday May 23rd
-* Corrected typo in GridFieldHailFetchButton message.
-* Corrected typos in the README.
-* Change to the change log to focus on tags rather than dates.
+* SilverStripe ^4.1 support
 
-# Tag 1.0.7
+## [2.x-dev]
 
-## Thursday April 21th
-* Make specify a HailHolder in the SiteConfig optional.
-* Added Change Log
-* Add the extra installer-name attribute to composer to get the plugin folder rename to hail when installing.
+* SilverStripe ^3.1 version
+* Multi organisation Support
+
+## [1.x-dev]
+
+* Initial version

@@ -1,0 +1,7 @@
+---
+Name: hail-routes
+---
+SilverStripe\Control\Director:
+  rules:
+    'HailCallbackController': 'Firebrand\Hail\Controllers\CallbackController'
+    'hail': 'Firebrand\Hail\Controllers\HailController'

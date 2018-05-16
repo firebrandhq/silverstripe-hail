@@ -1,76 +1,199 @@
-# SilverStripe Hail Integration
+![Hail.to](docs/images/hail-logo.png "hail.to")
+
+# Hail.to Integration for SilverStripe 4 
+
+Silverstripe 4 module to integrate with Hail (https://get.hail.to)
+
+If you need this module for SilverStripe 3 please refer to [this branch](https://github.com/firebrandhq/silverstripe-hail/tree/2.x).
+
+## Features
+
+* Display Hail content inside your SilverStripe website
+* Ready to use with Bootstrap 4.1 styles and templates
+* Video and Image header for articles and publications
+* Hail Page
+* TinyMCE plugin
+* Configurable
+* Simplified code base
+* Emojis support as an option
+* SEO friendly
+* OpenGraph integration, [see OpenGraph Support section](#opengraph-support)
+* Silverstripe Elemental integration, [see SilverStripe Elemental Support section](#silverstripe-elemental-support)
+* And more...
 
 ## Requirements
 
-* SilverStripe 3.1
-* [silverstripe/queuedjobs 2.8](https://github.com/silverstripe-australia/silverstripe-queuedjobs)
-* [firebrandhq/searchable-dataobjects](https://github.com/firebrandhq/silverstripe-searchable-dataobjects)
-* [silverstripe-australia/gridfieldextensions](https://github.com/silverstripe-australia/silverstripe-gridfieldextensions)
-* [undefinedoffset/sortablegridfield](https://github.com/UndefinedOffset/SortableGridField)
-* [colymba/gridfield-bulk-editing-tools](https://github.com/colymba/GridFieldBulkEditingTools)
-* [nategood/httpful](https://github.com/nategood/httpful)
-* [silverstripe/restfulserver](https://github.com/silverstripe/silverstripe-restfulserver)
-* [league/oauth2-client](https://github.com/silverstripe/silverstripe-restfulserver)
-* Access to create cronjob
+* [SilverStripe ^4.1](https://www.silverstripe.org/download)
+* [guzzlehttp/guzzle ^6.3](https://github.com/guzzle/guzzle)
+* [silverstripe/environmentcheck ^2.0](https://github.com/silverstripe/silverstripe-environmentcheck)
+* Access to create cronjob (optional)
+* jQuery and Bootstrap 4+ (included), [see jQuery and Boostrap requirements](#jquery-and-bootstrap-requirements)
+
+## Upgrade from older versions
+
+This module has been re written for SilverStripe 4 and includes breaking changes compared to previous version.
+Please perform a fresh install if you are upgrading from previous versions by removing and re installing the module.
 
 ## Installation
-Run the following command:
+
+**Run the following command:**
 
 ```sh
-composer require firebrandhq/silverstripe-hail "1.*"
+composer require firebrandhq/silverstripe-hail "^4"
 ```
 
-## Configuring access to Hail
-* Log in to the back end of Silverstripe and go to _Settings > Hail_.
-* In a separate browser tab, log in to your Hail Account and go to _Account > Manage Developer Settings_.
-  * Add a new application
-  * Report the _client_id_ and _client_secret_ into the SilverStripe settings and save.
-* In the Hail Application Developer settings, you must register which URLs will be used to callback SilverStripe.
-  * In Hail, click the _Add new_ button in the _URI_ section of your Application's _developer settings_ page
-  * In SilverStripe, copy _Redirect URL_ (e.g.: http://example.com/HailCallbackController) and paste that value in Hail.
-* You'll want to repeat the previous step for all the environments those API credentials will be used.
-* In the SilverStripe Hail Settings page, you should now be able to click the _Authorise SilverSrtipe to access Hail_ link.
-  * This will redirect you to Hail, where you can authorise SilverStripe to access Hail. Just follow the steps.
-* After authorising Hail, you can select an Organisation from which the content will be fetch in the SilverStripe Hail Settings.
+**(Optional) Enable Emojis Support (has to be done before doing the dev/build):**
 
-### Defining a default HailHolder
-Hail Holder pages are used to display your Hail Content. You can define multiple Hail Holders for your site and personalise them to display different content.
+[See Emojis Support configuration](#emojis-support)
 
-However, your Hail Content doesn't belong to any specific pages in SilverStripe. So in some context, SilverStripe won't know under which Hail Holder the articles need to be displayed. E.g: If a Hail Page is return in search results.
+**Perform a dev/build (from sake or from a browser)**
 
-In the Hail Settings page of your SilverStripe site, you can choose a default HailHolder used to display Hail Harticle.
+**Install Silverstripe Sake:** 
 
-## Configuring Cronjob to fetch Hail Content
-Fetching HailContent can be quite a long process if you have a lots of article. To simplify this process, several background task have been created. However, they require a few appropriate cronjobs to be defined.
-
-The following instructions assumed your site is running in Apache on an Ubuntu/Debian system, but it should be similar on most other \*nix system.
-
-To edit your crontab use the following command:
-```
-sudo crontab -u www-data -e
+```sh
+cd your-webroot/
+sudo ./vendor/bin/sake installsake
 ```
 
-This will configure your cronjob to run under the web server user. This has the benefit of avoiding potential file conflicts.
+**Add the following lines (adapt them to your environment) to your crontab:**
 
-### Periodic automatic full fetch
-A specific dev task (HailFetchTask) has been created to fetch all your Hail content. You can access this task in your browser (e.g.: http://example.com/dev/tasks/HailFetchTask) however this request is likely to timeout. In most cases, you will want to schedule a regular cronjob to refresh your content.
-
-Add the following entry to your crontab:
-```
-0 23 * * * /usr/bin/nice -n 19  /usr/bin/php /var/www/SS_lphs/framework/cli-script.php dev/tasks/HailFetchTask > /dev/null 2>&1
+```sh
+* * * * * /your-webroot/sake dev/tasks/hail-fetch-queue
+*/5 * * * * /your-webroot/sake dev/tasks/hail-check-status
+0 * * * * /your-webroot/sake dev/tasks/hail-fetch-recurring
 ```
 
-This will fetch all your Hail Content every day at 11PM. If you're running multiple SilverStripe sites with the Hail plugin on your server, try scheduling your cronjobs at slightly different time to avoid having all the jobs running simultaneously.
+You can adapt the frequency of the hail-fetch-recurring job to your needs, it will always fetch up until previous fetch
 
-### Manual fetch
-CMS users can trigger an immediate fetch if they so desire. This will schedule a background job using the [silverstripe/queuedjobs](https://github.com/silverstripe-australia/silverstripe-queuedjobs) plugin.
+#### Authorize Silverstripe to fetch from Hail:
 
-This plug-in also require a few cronjobs to run. Add the following entries to your crontab.
+1. Go to hail.to and signin, then go to your Developer Settings (https://hail.to/app/user/applications) and create a new application (Add new button)
+2. Add the generated Hail Client ID and Client Secret to your .env file:
 
+    ```
+    HAIL_CLIENT_ID=[CLIENTID]
+    HAIL_CLIENT_SECRET=[CLIENTSECRET]
+    ```
+3. Go to SilverStripe admin settings page (/admin/settings/), then on the Hail tab
+4. Copy the Callback URL
+5. Back to the Hail Developer Settings, Click "Add new" in the redirect URI section and paste the Callback URL
+6. You are now ready to authorize your Hail application, go back to the SilverStripe Admin settings and click the "Authorise SilverStripe to Access Hail" button.
+7. After the authorization process is complete, you will be able to select the Hail Organisation(s) you want to fetch content from in the Admin Settings of SilverStripe.
+8. (Optional) You can globally exclude content with specific Public or Private tags in the Admin Settings of SilverStripe
+9. Save your Admin Settings
+
+You can now either wait for your cron job to fetch the content or force a full fetch from the Hail menu in SilverStripe CMS using the Fetch button (top left in the page).
+
+## jQuery and Bootstrap requirements
+
+We include jQuery 3.3.1 and Bootstrap 4.1 (javascript and css) in our Hail Page and Hail Articles by default.
+
+If you need to include your own jQuery and/or Bootstrap (If you compiled Bootstrap from source or want to include those globally for example), simply block our requirement(s) by adding one or all the following to your PageController init() function:
+
+```php
+protected function init()
+{
+    parent::init();
+    // You can include any CSS or JS required by your project here.
+    // See: https://docs.silverstripe.org/en/developer_guides/templates/requirements/
+    
+    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/bootstrap/styles/bootstrap.min.css');
+    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/jquery/js/jquery.min.js');
+    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/bootstrap/js/bootstrap.bundle.min.js');
+}
 ```
-* * * * * /usr/bin/nice -n 19  php /var/www/SS_lphs/framework/cli-script.php dev/tasks/ProcessJobQueueTask > /dev/null 2>&1
-* * * * * /usr/bin/nice -n 19  php /var/www/SS_lphs/framework/cli-script.php dev/tasks/ProcessJobQueueTask "queue=2" > /dev/null 2>&1
-*/5 * * * * /usr/bin/nice -n 19  php /var/www/SS_lphs/framework/cli-script.php dev/tasks/ProcessJobQueueTask "queue=3" > /dev/null 2>&1
+
+
+## Configuration
+
+The following yml configuration options are available for overwrite:
+
+**Hail API Client configuration:**
+- BaseApiUrl: Base URL of the Hail API
+- AuthorizationUrl: Full URL of the Hail authorization
+- RefreshRate: Time after which a Hail Object is considered outdated
+- EnableEmojiSupport: See [Emojis Support configuration](#emojis-support)
+
+*Default configuration:*
+ 
+```yml
+Firebrand\Hail\Api\Client:
+  BaseApiUrl: 'https://hail.to/api/v1/'
+  AuthorizationUrl: 'https://hail.to/oauth/authorise'
+  RefreshRate: 86400
+  EnableEmojiSupport: false
 ```
 
-[View SilverStripe Queue Jobs - Installing and configuring](https://github.com/silverstripe-australia/silverstripe-queuedjobs/wiki/Installing-and-configuring) for more details
+**Hail Page Controller configuration:**
+- UseDefaultCss: true / false Enables the default styles on Hail Pages and articles (Using Bootstrap 4.1)
+
+*Default configuration:*
+ 
+```yml
+Firebrand\Hail\Pages\HailPageController:
+  UseDefaultCss: true
+```
+
+**Hail Recurring Fetch Task configuration:**
+- Emails: Fetching errors will be sent to the following email list (comma separated), put to false if you want to disable the emails
+
+*Default configuration:*
+ 
+```yml
+Firebrand\Hail\Tasks\FetchRecurringTask:
+  Emails: 'developers@firebrand.nz'
+```
+
+## Usage
+
+Once everything is configured and your Hail content is fetched you can create a Hail Page in the SilverStripe CMS to display the content on your website.
+The configuration of the Hail Page should be self explanatory, see screenshots below: 
+
+Hail Page configuration:
+
+![Hail Page config](docs/images/screen-1.PNG "Hail Page Config")
+
+Once configured and published your Hail Page should look like this (using default styles and templates):
+
+![Hail Page](docs/images/screen-2.PNG "Hail Page")
+
+
+## Emojis Support
+
+**IMPORTANT:** Enabling Emojis Support will change the charset and collation of your SilverStripe database to **utf8mb4** and **utf8mb4_general_ci** respectively.
+
+utf8mb4 is backward compatible with utf8 so it should work with any existing or new database, we still chose to disable the feature to avoid imposing this change.
+
+To enable Emojis support please add the following to your SilverStripe yml config and perform a dev/build.
+
+```yml
+Firebrand\Hail\Api\Client:
+  EnableEmojiSupport: true
+```
+
+## OpenGraph Support
+
+You can add OpenGraph Support for the Hail content inside your SilverStripe website by adding an optional module:
+
+[See Hail OpenGraph module for installation instructions](https://github.com/firebrandhq/silverstripe-hail-opengraph/)
+
+## SilverStripe Elemental Support
+
+We offer a pre built SilverStripe Elemental block (Hail Carousel) for you to use:
+
+[See Hail Elemental module for installation instructions](https://github.com/firebrandhq/silverstripe-hail-elemental/)
+
+
+## Contributing
+
+[See CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Versioning
+
+This library follows [Semver](http://semver.org). According to Semver, you will be able to upgrade to any minor or patch version of this library without any breaking changes to the public API. Semver also requires that we clearly define the public API for this library.
+
+All methods, with `public` visibility, are part of the public API. All other methods are not part of the public API. Where possible, we'll try to keep `protected` methods backwards-compatible in minor/patch versions, but if you're overriding methods then please test your work before upgrading.
+
+## Reporting Issues
+
+Please [create an issue](https://github.com/firebrandhq/silverstripe-hail/issues) for any bugs you've found, or features you're missing.  
