@@ -1,4 +1,4 @@
-![Hail.to](https://get.hail.to/img/logo-tag.png "hail.to")
+![Hail.to](http://d2u4q3iydaupsp.cloudfront.net/DNNXD3MEHs9wpHy4EU4H3DrQsDLUwehZuKd9lnKl0Sl4eyQG7nkN3uHnzp0VxsyESluvGMZ3ToChh28AGbNWuMMsBac88G3ujrZz1xdrzSKAgfqczlzksYagE2wiEEVO "hail.to")
 
 # Hail.to Integration for SilverStripe 4 
 
