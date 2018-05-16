@@ -51,7 +51,7 @@ You can adapt the frequency of the hail-fetch-recurring job to your needs, it wi
 
 1. Go to hail.to and signin, then go to your Developer Settings (https://hail.to/app/user/applications) and create a new application (Add new button)
 2. Add you Hail Client ID and Client Secret to your .env file:
-    ```dotenv
+    ```
     HAIL_CLIENT_ID=[CLIENTID]
     HAIL_CLIENT_SECRET=[CLIENTSECRET]
     ```
