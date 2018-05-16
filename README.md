@@ -1,4 +1,6 @@
-# Hail.to Integration for SilverStripe 4
+![Hail.to](https://get.hail.to/img/logo-tag.png "hail.to")
+
+# Hail.to Integration for SilverStripe 4 
 
 If you need this module for SilverStripe 3 please refer to [this branch](https://github.com/firebrandhq/silverstripe-hail/tree/2.x).
 
@@ -62,7 +64,7 @@ You can adapt the frequency of the hail-fetch-recurring job to your needs, it wi
 #### Authorize Silverstripe to fetch from Hail:
 
 1. Go to hail.to and signin, then go to your Developer Settings (https://hail.to/app/user/applications) and create a new application (Add new button)
-2. Add you Hail Client ID and Client Secret to your .env file:
+2. Add the generated Hail Client ID and Client Secret to your .env file:
 
     ```
     HAIL_CLIENT_ID=[CLIENTID]
@@ -71,18 +73,18 @@ You can adapt the frequency of the hail-fetch-recurring job to your needs, it wi
 3. Go to SilverStripe admin settings page (/admin/settings/), then on the Hail tab
 4. Copy the Callback URL
 5. Back to the Hail Developer Settings, Click "Add new" in the redirect URI section and paste the Callback URL
-6. You are now ready to authorize your Hail application, go back to the SilverStripe Admin settings and click the "Authorise Silverstripe to Access Hail" button.
-7. After the authorization process is complete, you will be able to select the Hail Organisation(s) you want to fetch content from in the Admin Settings of silverstripe.
-8. (Optional) You can globally exclude content with specific Public or Private tags in the Admin Settings of Silverstripe
+6. You are now ready to authorize your Hail application, go back to the SilverStripe Admin settings and click the "Authorise SilverStripe to Access Hail" button.
+7. After the authorization process is complete, you will be able to select the Hail Organisation(s) you want to fetch content from in the Admin Settings of SilverStripe.
+8. (Optional) You can globally exclude content with specific Public or Private tags in the Admin Settings of SilverStripe
 9. Save your Admin Settings
 
-You can now either wait for your cron job to fetch the content or force a full fetch from the Hail menu in SilverSripe CMS using the Fetch button (top left in the page).
+You can now either wait for your cron job to fetch the content or force a full fetch from the Hail menu in SilverStripe CMS using the Fetch button (top left in the page).
 
 ## jQuery and Bootstrap requirements
 
 We include jQuery 3.3.1 and Bootstrap 4.1 (javascript and css) in our Hail Page and Hail Articles by default.
 
-If you need to include your own jQuery and/or Bootstrap (If you compiled Bootstrap from source for example), simply block our requirement(s) by adding one or all the following to your PageController init() function:
+If you need to include your own jQuery and/or Bootstrap (If you compiled Bootstrap from source or want to include those globally for example), simply block our requirement(s) by adding one or all the following to your PageController init() function:
 
 ```php
 protected function init()
