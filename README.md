@@ -1,6 +1,6 @@
 # Hail.to Integration for SilverStripe 4
 
-If you need this module for SilverStripe 3 please refer to this branch.
+If you need this module for SilverStripe 3 please refer to [this branch](https://github.com/firebrandhq/silverstripe-hail/tree/2.x).
 
 ## New Features
 
@@ -17,9 +17,9 @@ If you need this module for SilverStripe 3 please refer to this branch.
 
 ## Requirements
 
-* SilverStripe ^4.1
-* guzzlehttp/guzzle ^6.3
-* sheadawson/silverstripe-dependentdropdownfield ^2.0
+* [SilverStripe ^4.1](https://www.silverstripe.org/download)
+* [guzzlehttp/guzzle ^6.3](https://github.com/guzzle/guzzle)
+* [silverstripe/environmentcheck ^2.0](https://github.com/silverstripe/silverstripe-environmentcheck)
 * Access to create cronjob (optional)
 
 ## Installation
