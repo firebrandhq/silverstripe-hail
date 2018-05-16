@@ -143,6 +143,20 @@ Firebrand\Hail\Tasks\FetchRecurringTask:
   Emails: 'developers@firebrand.nz'
 ```
 
+## Usage
+
+Once everything is configured and your Hail content is fetched you can create a Hail Page in the SilverStripe CMS to display the content on your website.
+The configuration of the Hail Page should be self explanatory, see screenshots below: 
+
+Hail Page configuration:
+
+![Hail Page config](docs/images/screen-1.PNG "Hail Page Config")
+
+Once configured and published you Hail Page should ook like this (Using default styles and templates):
+
+![Hail Page](docs/images/screen-2.PNG "Hail Page")
+
+
 ## Emojis Support
 
 **IMPORTANT:** Enabling Emojis Support will change the charset and collation of your SilverStripe database to **utf8mb4** and **utf8mb4_general_ci** respectively.

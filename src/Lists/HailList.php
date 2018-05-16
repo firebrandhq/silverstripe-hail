@@ -54,7 +54,7 @@ class HailList extends DataObject
 
         $fields->removeByName('HailPages');
 
-        $types = ListboxField::create('Type', 'Type included', ["Articles" => "Articles", "Publications" => "Publications"]);
+        $types = ListboxField::create('Type', 'Types included', ["Articles" => "Articles", "Publications" => "Publications"]);
         $fields->addFieldToTab('Root.Main', $types);
 
         $org_lists = ListboxField::create("OrganisationsIDs", "Organisations included", $this->getOrganisations());
@@ -92,7 +92,7 @@ class HailList extends DataObject
         $pub_tags = $this->getPublicTagsList();
         $organisations = $this->getOrganisations();
         return [
-            ListboxField::create($relation_name . '___Type', 'Type included', ["Articles" => "Articles", "Publications" => "Publications"]),
+            ListboxField::create($relation_name . '___Type', 'Types included', ["Articles" => "Articles", "Publications" => "Publications"]),
             ListboxField::create($relation_name . "___OrganisationsIDs", "Organisations included", $organisations),
             ListboxField::create($relation_name . "___IncludedPublicTagsIDs", "Public Tags included", $pub_tags)->setDescription("Leave empty to include all tags"),
             ListboxField::create($relation_name . "___ExcludedPublicTagsIDs", "Public Tags excluded", $pub_tags),
