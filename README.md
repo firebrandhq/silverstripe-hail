@@ -16,6 +16,7 @@ If you need this module for SilverStripe 3 please refer to [this branch](https:/
 * Configurable
 * Simplified code base
 * Emojis support as an option
+* SEO friendly
 * OpenGraph integration, [see OpenGraph Support section](#opengraph-support)
 * Silverstripe Elemental integration, [see SilverStripe Elemental Support section](#silverstripe-elemental-support)
 * And more...

@@ -16,7 +16,6 @@
     }
   ],
   "require": {
-    "php": ">=7.1",
     "silverstripe/cms": "^4.1",
     "silverstripe/framework": "^4.1",
     "silverstripe/environmentcheck": "^2.0",
