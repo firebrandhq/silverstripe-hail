@@ -23,6 +23,11 @@ If you need this module for SilverStripe 3 please refer to [this branch](https:/
 * Access to create cronjob (optional)
 * jQuery and Bootstrap 4+ (included), [see ]
 
+## Upgrade from older versions
+
+This module has been re written for SilverStripe 4 and includes breaking changes compared to previous version.
+Please perform a fresh install if you are upgrading from previous versions by removing and re installing the module.
+
 ## Installation
 
 **Run the following command:**
@@ -73,14 +78,29 @@ You can adapt the frequency of the hail-fetch-recurring job to your needs, it wi
 
 You can now either wait for your cron job to fetch the content or force a full fetch from the Hail menu in SilverSripe CMS using the Fetch button (top left in the page).
 
-## Upgrade from older versions
+## jQuery and Bootstrap requirements
 
-This module has been re written for SilverStripe 4 and includes breaking changes compared to previous version.
-Please perform a fresh install if you are upgrading from previous versions by removing and re installing the module.
+We include jQuery 3.3.1 and Bootstrap 4.1 (javascript and css) in our Hail Page and Hail Articles by default.
+
+If you need to include your own jQuery and/or Bootstrap (If you compiled Bootstrap from source for example), simply block our requirement(s) by adding one or all the following to your PageController init() function:
+
+```php
+protected function init()
+{
+    parent::init();
+    // You can include any CSS or JS required by your project here.
+    // See: https://docs.silverstripe.org/en/developer_guides/templates/requirements/
+    
+    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/bootstrap/styles/bootstrap.min.css');
+    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/jquery/js/jquery.min.js');
+    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/bootstrap/js/bootstrap.bundle.min.js');
+}
+```
+
 
 ## Configuration
 
-The following yml configuration option are available for overwrite:
+The following yml configuration options are available for overwrite:
 
 **Hail API Client configuration:**
 - BaseApiUrl: Base URL of the Hail API
