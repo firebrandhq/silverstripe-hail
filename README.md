@@ -4,7 +4,7 @@ If you need this module for SilverStripe 3 please refer to [this branch](https:/
 
 ## New Features
 
-* Ready to use with default styling and templates
+* Ready to use with Bootstrap 4.1 styles and templates
 * Video header
 * Hail Page
 * TinyMCE plugin
@@ -21,23 +21,30 @@ If you need this module for SilverStripe 3 please refer to [this branch](https:/
 * [guzzlehttp/guzzle ^6.3](https://github.com/guzzle/guzzle)
 * [silverstripe/environmentcheck ^2.0](https://github.com/silverstripe/silverstripe-environmentcheck)
 * Access to create cronjob (optional)
+* jQuery and Bootstrap 4+ (included), [see ]
 
 ## Installation
 
-Run the following command:
+**Run the following command:**
 
 ```sh
 composer require firebrand/silverstripe-hail "^4"
 ```
 
-Install Silverstripe Sake: 
+**(Optional) Enable Emojis Support (has to be done before doing the dev/build):**
+
+[See Emojis Support configuration](#emojis-support)
+
+**Perform a dev/build (from sake or from a browser)**
+
+**Install Silverstripe Sake:** 
 
 ```sh
 cd your-webroot/
 sudo ./vendor/bin/sake installsake
 ```
 
-Add the following lines (adapt them to your environment) to your crontab:
+**Add the following lines (adapt them to your environment) to your crontab:**
 
 ```sh
 * * * * * /your-webroot/sake dev/tasks/hail-fetch-queue
@@ -60,9 +67,11 @@ You can adapt the frequency of the hail-fetch-recurring job to your needs, it wi
 4. Copy the Callback URL
 5. Back to the Hail Developer Settings, Click "Add new" in the redirect URI section and paste the Callback URL
 6. You are now ready to authorize your Hail application, go back to the SilverStripe Admin settings and click the "Authorise Silverstripe to Access Hail" button.
-7. After the authorization process is complete, you will be able to select the Hail Organisation you want to fetch content from in the Admin Settings of silverstripe.
+7. After the authorization process is complete, you will be able to select the Hail Organisation(s) you want to fetch content from in the Admin Settings of silverstripe.
 8. (Optional) You can globally exclude content with specific Public or Private tags in the Admin Settings of Silverstripe
-9. Save your Admin Settings once you have selected a Hail Organisation
+9. Save your Admin Settings
+
+You can now either wait for your cron job to fetch the content or force a full fetch from the Hail menu in SilverSripe CMS using the Fetch button (top left in the page).
 
 ## Upgrade from older versions
 
@@ -71,3 +80,53 @@ Please perform a fresh install if you are upgrading from previous versions by re
 
 ## Configuration
 
+The following yml configuration option are available for overwrite:
+
+**Hail API Client configuration:**
+- BaseApiUrl: Base URL of the Hail API
+- AuthorizationUrl: Full URL of the Hail authorization
+- RefreshRate: Time after which a Hail Object is considered outdated
+- EnableEmojiSupport: See [Emojis Support configuration](#emojis-support)
+
+*Default configuration:*
+ 
+```
+Firebrand\Hail\Api\Client:
+  BaseApiUrl: 'https://hail.to/api/v1/'
+  AuthorizationUrl: 'https://hail.to/oauth/authorise'
+  RefreshRate: 86400
+  EnableEmojiSupport: false
+```
+
+**Hail Page Controller configuration:**
+- UseDefaultCss: true / false Enables the default styles on Hail Pages and articles (Using Bootstrap 4.1)
+
+*Default configuration:*
+ 
+```
+Firebrand\Hail\Pages\HailPageController:
+  UseDefaultCss: true
+```
+
+**Hail Recurring Fetch Task configuration:**
+- Emails: Fetching errors will be sent to the following email list (comma separated), put to false if you want to disable the emails
+
+*Default configuration:*
+ 
+```
+Firebrand\Hail\Tasks\FetchRecurringTask:
+  Emails: 'developers@firebrand.nz'
+```
+
+## Emojis Support
+
+**IMPORTANT:** Enabling Emojis Support will change the charset and collation of your SilverStripe database to utf8mb4 and utf8mb4_general_ci
+
+utf8mb4 is backward compatble with utf8 so it should work with any existing or new database, we still chose to disable the feature to avoid imposing this change.
+
+To enable Emojis support please add the following to your SilverStripe yml config and perform a dev/build.
+
+```
+Firebrand\Hail\Api\Client:
+  EnableEmojiSupport: true
+```

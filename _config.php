@@ -13,7 +13,7 @@ HTMLEditorConfig::get('cms')->enablePlugins(['sshail' => HAIL_DIR . '/client/dis
 //Emoji support needs the following charset / collation to work, it is disabled by default, see readme to enable
 if (Config::inst()->get(Client::class, 'EnableEmojiSupport')) {
     MySQLDatabase::config()->set('connection_charset', 'utf8mb4');
-    MySQLDatabase::config()->set('connection_collation', 'utf8mb4_unicode_ci');
+    MySQLDatabase::config()->set('connection_collation', 'utf8mb4_general_ci');
     MySQLDatabase::config()->set('charset', 'utf8mb4');
-    MySQLDatabase::config()->set('collation', 'utf8mb4_unicode_ci');
+    MySQLDatabase::config()->set('collation', 'utf8mb4_general_ci');
 }
