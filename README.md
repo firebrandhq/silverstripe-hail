@@ -17,7 +17,7 @@
 Run the following command:
 
 ```sh
-composer require firebrandhq/silverstripe-hail "1.*"
+composer require firebrandhq/silverstripe-hail "^2.0"
 ```
 
 ## Configuring access to Hail
