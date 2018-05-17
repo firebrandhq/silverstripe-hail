@@ -46,21 +46,22 @@ composer require firebrandhq/silverstripe-hail "^4"
 
 [See Emojis Support configuration](#emojis-support)
 
-**Perform a dev/build (from sake or from a browser)**
-
 **Install Silverstripe Sake:** 
 
 ```sh
 cd your-webroot/
 sudo ./vendor/bin/sake installsake
 ```
+*Please ensure sake is using php ^7.1*
+
+**Perform a dev/build (from sake or from a browser)**
 
 **Add the following lines (adapt them to your environment) to your crontab:**
 
 ```sh
-* * * * * /your-webroot/sake dev/tasks/hail-fetch-queue
-*/5 * * * * /your-webroot/sake dev/tasks/hail-check-status
-0 * * * * /your-webroot/sake dev/tasks/hail-fetch-recurring
+* * * * * cd /your-webroot/ && sake dev/tasks/hail-fetch-queue
+*/5 * * * * cd /your-webroot/ && sake dev/tasks/hail-check-status
+0 * * * * cd /your-webroot/ && sake dev/tasks/hail-fetch-recurring
 ```
 
 You can adapt the frequency of the hail-fetch-recurring job to your needs, it will always fetch up until previous fetch
