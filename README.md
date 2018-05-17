@@ -60,9 +60,9 @@ sudo ./vendor/bin/sake installsake
 **Add the following lines (adapt them to your environment) to your crontab:**
 
 ```sh
-* * * * * cd /your-webroot/ && sake dev/tasks/hail-fetch-queue
-*/5 * * * * cd /your-webroot/ && sake dev/tasks/hail-check-status
-0 * * * * cd /your-webroot/ && sake dev/tasks/hail-fetch-recurring
+* * * * * cd /your-webroot/ && /usr/local/bin/sake dev/tasks/hail-fetch-queue
+*/5 * * * * cd /your-webroot/ && /usr/local/bin/sake dev/tasks/hail-check-status
+0 * * * * cd /your-webroot/ && /usr/local/bin/sake dev/tasks/hail-fetch-recurring
 ```
 
 You can adapt the frequency of the hail-fetch-recurring job to your needs, it will always fetch up until previous fetch
