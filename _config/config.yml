@@ -11,4 +11,4 @@ Firebrand\Hail\Api\Client:
 Firebrand\Hail\Pages\HailPageController:
   UseDefaultCss: true
 Firebrand\Hail\Tasks\FetchRecurringTask:
-  Emails: 'marc@firebrand.nz'
+  Emails: 'developers@firebrand.nz'
