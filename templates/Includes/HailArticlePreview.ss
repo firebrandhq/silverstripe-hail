@@ -12,7 +12,7 @@
                     </a>
                 <% else %>
                     <a href="$Link" class="Link">
-                        <img class="hail-preview-image embed-responsive-item" src="resources/vendor/firebrand/silverstripe-hail/client/dist/images/placeholder-hero.jpg"></img>
+                        <img class="hail-preview-image embed-responsive-item" src="resources/vendor/firebrandhq/silverstripe-hail/client/dist/images/placeholder-hero.jpg"></img>
                     </a>
                 <% end_if %>
             </div>

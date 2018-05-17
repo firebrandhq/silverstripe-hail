@@ -9,7 +9,7 @@ jQuery(function ($) {
         });
         // Add a loader image which is displayed during loading
         ias.extension(new IASSpinnerExtension({
-            src: 'resources/vendor/firebrand/silverstripe-hail/client/dist/images/flappy-bird3.gif',
+            src: 'resources/vendor/firebrandhq/silverstripe-hail/client/dist/images/flappy-bird3.gif',
         }));
     });
 });

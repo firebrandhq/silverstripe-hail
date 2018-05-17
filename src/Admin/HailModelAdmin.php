@@ -32,7 +32,7 @@ class HailModelAdmin extends ModelAdmin
 
     private static $menu_title = 'Hail';
 
-    private static $menu_icon = 'vendor/firebrand/silverstripe-hail/client/dist/images/admin-icon.png';
+    private static $menu_icon = 'vendor/firebrandhq/silverstripe-hail/client/dist/images/admin-icon.png';
 
     public function getEditForm($id = null, $fields = null)
     {

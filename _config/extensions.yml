@@ -11,7 +11,7 @@ SilverStripe\Admin\LeftAndMain:
   extensions:
     - Firebrand\Hail\Extensions\UpdateFormExtension
   extra_requirements_css:
-    - vendor/firebrand/silverstripe-hail/client/dist/styles/hail.bundle.css
+    - vendor/firebrandhq/silverstripe-hail/client/dist/styles/hail.bundle.css
 SilverStripe\ORM\FieldType\DBString:
   extensions:
     - Firebrand\Hail\Extensions\DBStringExtension

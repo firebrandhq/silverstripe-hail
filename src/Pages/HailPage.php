@@ -56,7 +56,7 @@ class HailPage extends \Page
     private static $owns = [
         'HeroImage'
     ];
-    private static $icon = "vendor/firebrand/silverstripe-hail/client/dist/images/admin-icon.png";
+    private static $icon = "vendor/firebrandhq/silverstripe-hail/client/dist/images/admin-icon.png";
     /**
      * Maps the types of items we can display and their classes
      *
