@@ -108,7 +108,7 @@ protected function init()
 
 ## Configuration
 
-The following yml configuration options are available for overwrite:
+The following yml configuration options are available for override:
 
 **Hail API Client configuration:**
 - BaseApiUrl: Base URL of the Hail API
@@ -146,6 +146,24 @@ Firebrand\Hail\Tasks\FetchRecurringTask:
   Emails: 'developers@firebrand.nz'
 ```
 
+**In order to override those values you need to add a new yml file into your mysite/_config/ folder, specifying that your configuration needs to be included after Hail's.**
+
+*Example yml config file:*
+```yml
+
+---
+Name: 'myhailconfig'
+After:
+    - '#hail-config'
+---
+Firebrand\Hail\Api\Client:
+  EnableEmojiSupport: true
+Firebrand\Hail\Tasks\FetchRecurringTask:
+  Emails: 'developers@mycompany.com'
+---
+
+```
+
 ## Usage
 
 Once everything is configured and your Hail content is fetched you can create a Hail Page in the SilverStripe CMS to display the content on your website.
@@ -166,11 +184,21 @@ Once configured and published your Hail Page should look like this (using defaul
 
 utf8mb4 is backward compatible with utf8 so it should work with any existing or new database, we still chose to disable the feature to avoid imposing this change.
 
-To enable Emojis support please add the following to your SilverStripe yml config and perform a dev/build.
+To enable Emojis support please add the following to your SilverStripe yml (following the example below) config and perform a dev/build.
+
+*Example yml config file:*
 
 ```yml
+
+---
+Name: 'myhailconfig'
+After:
+    - '#hail-config'
+---
 Firebrand\Hail\Api\Client:
   EnableEmojiSupport: true
+---
+
 ```
 
 ## OpenGraph Support
