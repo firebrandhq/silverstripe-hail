@@ -23,6 +23,7 @@ If you need this module for SilverStripe 3 please refer to [this branch](https:/
 
 ## Requirements
 
+* [PHP ^7.1](https://secure.php.net/)
 * [SilverStripe ^4.1](https://www.silverstripe.org/download)
 * [guzzlehttp/guzzle ^6.3](https://github.com/guzzle/guzzle)
 * [silverstripe/environmentcheck ^2.0](https://github.com/silverstripe/silverstripe-environmentcheck)
