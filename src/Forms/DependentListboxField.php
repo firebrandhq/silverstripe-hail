@@ -164,7 +164,7 @@ class DependentListboxField extends ListboxField
     public function Field($properties = [])
     {
         Requirements::javascript(
-            'firebrand/silverstripe-hail: client/dist/js/dependentlistboxfield.js'
+            'firebrandhq/silverstripe-hail: client/dist/js/dependentlistboxfield.js'
         );
 
         $this->setAttribute('data-link', $this->Link('load'));

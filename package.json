@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@gitlab.firebrand.nz/firebrand/silverstripe-hail.git"
+    "url": "https://github.com/firebrandhq/silverstripe-hail"
   },
   "keywords": [
     "silverstripe",
