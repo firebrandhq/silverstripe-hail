@@ -71,7 +71,7 @@ class HailPageController extends \PageController
         //If Related Articles are enabled on the page (from the CMS)
         if ($this->owner->EnableRelated === "Yes") {
             //Try to find 3 related articles
-            if ($article->PublicTags()) {
+            if ($article->PublicTags()->Count() > 0) {
                 $related = Article::get()->filter(['PublicTags.ID' => $article->PublicTags()->map('ID', 'ID')->toArray()])->sort('Date DESC')->limit(3);
                 if ($related->Count() > 0) {
                     $data['Related'] = $related;
