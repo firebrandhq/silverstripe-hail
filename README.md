@@ -55,9 +55,11 @@ sudo ./vendor/bin/sake installsake
 ```
 *Please ensure sake is using php ^7.1*
 
-**Perform a dev/build (from sake or from a browser)**
+**Perform a dev/build**
 
 **Add the following lines (adapt them to your environment) to your crontab:**
+
+__**You need to add those jobs to the cronjob of the user running your webserver (example on Ubuntu with apache2: sudo crontab -e -u www-data)**__
 
 ```sh
 * * * * * cd /your-webroot/ && /usr/local/bin/sake dev/tasks/hail-fetch-queue
