@@ -101,9 +101,9 @@ protected function init()
     // You can include any CSS or JS required by your project here.
     // See: https://docs.silverstripe.org/en/developer_guides/templates/requirements/
     
-    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/bootstrap/styles/bootstrap.min.css');
-    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/jquery/js/jquery.min.js');
-    \SilverStripe\View\Requirements::block('firebrand/silverstripe-hail: thirdparty/bootstrap/js/bootstrap.bundle.min.js');
+    \SilverStripe\View\Requirements::block('firebrandhq/silverstripe-hail: thirdparty/bootstrap/styles/bootstrap.min.css');
+    \SilverStripe\View\Requirements::block('firebrandhq/silverstripe-hail: thirdparty/jquery/js/jquery.min.js');
+    \SilverStripe\View\Requirements::block('firebrandhq/silverstripe-hail: thirdparty/bootstrap/js/bootstrap.bundle.min.js');
 }
 ```
 
