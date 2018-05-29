@@ -22,6 +22,7 @@ use SilverStripe\View\Requirements;
  */
 class HailPageController extends \PageController
 {
+    private $article;
     private static $allowed_actions = [
         'article',
         'tag' => 'index',
@@ -47,6 +48,32 @@ class HailPageController extends \PageController
     }
 
     /**
+     * Return a breadcrumb trail to this page. Excludes "hidden" pages (with ShowInMenus=0) by default.
+     *
+     * @param int $maxDepth The maximum depth to traverse.
+     * @param boolean $unlinked Whether to link page titles.
+     * @param boolean|string $stopAtPageType ClassName of a page to stop the upwards traversal.
+     * @param boolean $showHidden Include pages marked with the attribute ShowInMenus = 0
+     * @return string The breadcrumb trail.
+     */
+    public function Breadcrumbs($maxDepth = 20, $unlinked = false, $stopAtPageType = false, $showHidden = false, $delimiter = '&raquo;')
+    {
+        $pages = $this->getBreadcrumbItems($maxDepth, $stopAtPageType, $showHidden);
+        $template = SSViewer::create('BreadcrumbsTemplate');
+
+        //Add the Hail Article at the end of the page list if needed
+        if(!empty($this->article)) {
+            $pages->push($this->article);
+        }
+
+        return $template->process($this->customise(new ArrayData(array(
+            "Pages" => $pages,
+            "Unlinked" => $unlinked,
+            "Delimiter" => $delimiter,
+        ))));
+    }
+    
+    /**
      * Render a Hail Article
      *
      * @param HTTPRequest $request
@@ -67,6 +94,9 @@ class HailPageController extends \PageController
             'Article' => $article,
             'Related' => null
         ];
+        
+        //Store the current article so we can use it in other functions in the controller
+        $this->article = $article;
 
         //If Related Articles are enabled on the page (from the CMS)
         if ($this->owner->EnableRelated === "Yes") {
