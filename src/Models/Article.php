@@ -280,6 +280,16 @@ class Article extends ApiObject
     }
 
     /**
+     * Helper to return the title from the breadcrumbs
+     *
+     * @return string
+     */
+    public function getMenuTitle()
+    {
+        return $this->Title;
+    }
+    
+    /**
      * Return the placeholder HeroImage link
      *
      * @return string
