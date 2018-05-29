@@ -7,7 +7,8 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse_Exception;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\View\Requirements;
-
+use SilverStripe\View\ArrayData;
+use SilverStripe\View\SSViewer;
 
 /**
  * HailPage Controller
