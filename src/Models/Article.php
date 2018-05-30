@@ -4,6 +4,7 @@ namespace Firebrand\Hail\Models;
 
 use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Pages\HailPage;
+use Firebrand\Hail\Pages\HailPageController;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
@@ -253,7 +254,20 @@ class Article extends ApiObject
      */
     public function Link()
     {
-        $link = Controller::curr()->Link();
+        $ctrl = Controller::curr();
+        if ($ctrl instanceof HailPageController) {
+            $link = $ctrl->Link();
+        } else {
+            //If outside HailPageController try to find the first Hail Page
+            $page = HailPage::get()->first();
+            if (!empty($page)) {
+                $link = $page->Link();
+            }
+        }
+
+        if (!isset($link)) {
+            return "";
+        }
 
         return $link . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
     }
@@ -288,7 +302,7 @@ class Article extends ApiObject
     {
         return $this->Title;
     }
-    
+
     /**
      * Return the placeholder HeroImage link
      *
