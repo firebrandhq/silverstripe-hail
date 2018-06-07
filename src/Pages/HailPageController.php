@@ -26,12 +26,12 @@ class HailPageController extends \PageController
     private $article;
     private static $allowed_actions = [
         'article',
-        'tag' => 'index',
+        'tag',
     ];
 
     protected function init()
     {
-        parent::init();
+         parent::init();
         //You can disable the default styles from the config, see readme
         if (Config::inst()->get(self::class, 'UseDefaultCss')) {
             Requirements::css('firebrandhq/silverstripe-hail: thirdparty/bootstrap/styles/bootstrap.min.css');
