@@ -144,10 +144,11 @@ class HailPage extends \Page
      *
      * @param int|null $per_page
      * @param int|null $limit
-     * @param string|null $tags_to_filter
+     * @param string|null $public_tags_to_filter (Optional) Public tags to filter the results on
+     * @param string|null $private_tags_to_filter (Optional) Private tags to filter the results on
      * @return PaginatedList
      */
-    public function getHailList($per_page = null, $limit = null, $tags_to_filter = null)
+    public function getHailList($per_page = null, $limit = null, $public_tags_to_filter = null, $private_tags_to_filter = null)
     {
         $request = Controller::curr()->getRequest();
         $params = $request->params();
@@ -201,15 +202,20 @@ class HailPage extends \Page
                             $filter_publications = true;
                         }
 
-                        //On demand tag filtering
-                        if ($tags_to_filter && $has_public_tags) {
-                            $filters['PublicTags.HailID'] = $tags_to_filter;
+                        //On demand public tag filtering
+                        if ($public_tags_to_filter && $has_public_tags) {
+                            $filters['PublicTags.HailID'] = $public_tags_to_filter;
                             $filter_publications = true;
                         }
 
                         if ($filter_publications) {
                             //IF we have a page filter, only show articles (publications don't have public tags)
                             $filters['ClassName'] = 'Firebrand\Hail\Models\Article';
+                        }
+
+                        //On demand private tag filtering
+                        if ($private_tags_to_filter && $has_private_tags) {
+                            $filters['PrivateTags.HailID'] = $private_tags_to_filter;
                         }
 
                         if (count($filters) > 0) {
@@ -246,12 +252,13 @@ class HailPage extends \Page
      * Pagination is disabled using 0 as page size
      *
      * @param int|null $limit
-     * @param string|null $tags_to_filter
+     * @param string|null $public_tags_to_filter (Optional) Public tags to filter the results on
+     * @param string|null $private_tags_to_filter (Optional) Private tags to filter the results on
      * @return PaginatedList
      */
-    public function getFullHailList($limit = null, $tags_to_filter = null)
+    public function getFullHailList($limit = null, $public_tags_to_filter = null, $private_tags_to_filter = null)
     {
-        return $this->getHailList(0, $limit, $tags_to_filter);
+        return $this->getHailList(0, $limit, $public_tags_to_filter, $private_tags_to_filter);
     }
 
     /**
