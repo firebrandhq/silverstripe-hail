@@ -11,10 +11,10 @@
     "require": {
         "silverstripe/framework": "^3.1",
         "silverstripe/cms": "^3.1",
-        "firebrandhq/searchable-dataobjects": "dev-master",
+        "firebrandhq/searchable-dataobjects": "^1.2",
         "silverstripe-australia/gridfieldextensions": "~1.4",
     	"undefinedoffset/sortablegridfield": "0.6 - 1",
-    	"colymba/gridfield-bulk-editing-tools": "dev-master",
+    	"colymba/gridfield-bulk-editing-tools": "^2.1.9",
 		"nategood/httpful": "dev-master",
 		"silverstripe/restfulserver": "1.*",
 		"league/oauth2-client": "0.*",
