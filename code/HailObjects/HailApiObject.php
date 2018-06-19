@@ -36,15 +36,6 @@ class HailApiObject extends DataObject {
 		'Fetched'
 	);
 
-	public function __construct($record = null, $isSingleton = false, $model = null) {
-		parent::__construct($record, $isSingleton, $model);
-
-		// Automate the refresh of hail object
-		if (!$isSingleton) {
-			$this->softRefresh();
-		}
-	}
-
 	/**
 	 * Retrieves all Hail Api Object of a specific type
 	 *

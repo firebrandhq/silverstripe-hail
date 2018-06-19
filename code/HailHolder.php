@@ -121,13 +121,8 @@ class HailHolder_Controller extends Page_Controller {
             return $this->httpError(404);
         }
 
-		$this->myArticle->refresh();
-
-		if ($this->myArticle->Content) {
-			$this->myArticle->softRefresh();
-		} else {
-			$this->myArticle->refresh();
-		}
+        //Check if the article is outdated and refresh it if necessary
+        $this->myArticle->softRefresh();
 
 		return $this->customise(array(
 			'Title' => $this->myArticle->Title
