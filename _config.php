@@ -17,3 +17,7 @@ if (Config::inst()->get(Client::class, 'EnableEmojiSupport')) {
     MySQLDatabase::config()->set('charset', 'utf8mb4');
     MySQLDatabase::config()->set('collation', 'utf8mb4_general_ci');
 }
+
+if (\SilverStripe\Core\ClassInfo::exists('Wilr\GoogleSitemaps\GoogleSitemap')) {
+    Wilr\GoogleSitemaps\GoogleSitemap::register_dataobject(\Firebrand\Hail\Models\Article::class, 'daily', '0.8');
+}

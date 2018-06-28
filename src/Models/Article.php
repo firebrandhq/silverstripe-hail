@@ -6,6 +6,7 @@ use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Pages\HailPage;
 use Firebrand\Hail\Pages\HailPageController;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ArrayList;
@@ -281,6 +282,16 @@ class Article extends ApiObject
     public function getLinkForPage($page)
     {
         return $page->Link() . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
+    }
+
+    /**
+     * Return the absolute Article link
+     *
+     * @return string
+     */
+    public function AbsoluteLink()
+    {
+        return Director::absoluteURL($this->Link());
     }
 
     /**
