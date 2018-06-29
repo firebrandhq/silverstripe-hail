@@ -57,3 +57,29 @@
     border: none !important;
   }
 }
+
+.pagination-go-to {
+  position: relative;
+  display: block;
+  padding: 0.4rem 0.75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #2c71e2;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  input {
+    padding: 0;
+    height: 23px;
+    border: none;
+    width: 28px;
+    margin-right: 5px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+
+    -moz-appearance:textfield;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+}
