@@ -365,6 +365,12 @@ class HailArticle extends HailApiObject implements SearchableLinkable
 
     public function getHailHolder()
     {
+        //Check if current controller is a HailHolder
+        $controller = Controller::curr();
+        if(!empty($controller) && isset($controller->dataRecord) && $controller->dataRecord instanceof HailHolder) {
+            return $controller->dataRecord;
+        }
+        
         $org = $this->Organisation();
         //Check if there is a secondary tag set on the org, and if this article qualifies to use the secondary holder (like a Member only news section)
         $secondary_tag = $org->SecondaryHailTag();
