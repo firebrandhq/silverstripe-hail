@@ -97,8 +97,8 @@ class FetchRecurringTask extends BuildTask
             $email = new Email();
             $email
                 ->setTo($emails)
-                ->setSubject('SilverStripe Hail module fetch error')
-                ->setBody("<p>Hi,</p><p>An error occurred while fetching from the Hail API: </p> <p>{$exception->getMessage()}</p><p>Website name: " . SiteConfig::current_site_config()->getTitle() . "</p><p>Website URL: " . Director::absoluteBaseURL() . "</p>");
+                ->setSubject('SilverStripe Hail module fetch error on ' . SiteConfig::current_site_config()->getTitle())
+                ->setBody("<p>Hi,</p><p>An error occurred while fetching from the Hail API: </p> <p>{$exception->getMessage()}</p><p>Website name: " . SiteConfig::current_site_config()->getTitle() . "</p><p>Website Folder: " . Director::baseFolder() . "</p>");
             $email->send();
         }
     }
