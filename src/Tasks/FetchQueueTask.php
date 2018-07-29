@@ -65,15 +65,22 @@ class FetchQueueTask extends BuildTask
                     //Update job fetchable count so it displays on the frontend
                     $job->GlobalTotal = count($fetchables) * count($orgs_ids);
                     $job->write();
+                    try {
+                        foreach ($orgs_ids as $org_id) {
+                            foreach ($fetchables as $fetchable) {
+                                $fetchable::fetchForOrg($hail_api_client, $org_id, $job, null, true);
 
-                    foreach ($orgs_ids as $org_id) {
-                        foreach ($fetchables as $fetchable) {
-                            $fetchable::fetchForOrg($hail_api_client, $org_id, $job);
-
-                            //Update count for frontend
-                            $job->GlobalDone++;
-                            $job->write();
+                                //Update count for frontend
+                                $job->GlobalDone++;
+                                $job->write();
+                            }
                         }
+                    } catch (\Exception $exception) {
+                        FetchRecurringTask::sendException($exception);
+                        //Kill the process to be able to retry the same fetch later
+                        $job->Status = "Error";
+                        $job->write();
+                        die();
                     }
                 }
             }

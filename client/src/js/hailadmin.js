@@ -62,13 +62,17 @@ jQuery(function ($) {
                         $('#hail-fetch-button .content').text("FETCH");
                         $('#hail-fetch-button').removeClass('disabled');
 
-                        //Reload the page to display the new objects
-                        if (confirm('Fetch successful ! Please confirm to reload the page and display the changes: ')) {
-                            //Reload the page if we fetched all objects or display the dedicated object page if not
-                            if (response.ToFetch === "*") {
-                                window.location.reload();
-                            } else {
-                                window.location.href = "/admin/hail/" + response.ToFetch;
+                        if(response.Status === "Error") {
+                            alert('An error occured while fetching ! Please check any error message in the CMS Settings, Hail tab.');
+                        } else {
+                            //Reload the page to display the new objects
+                            if (confirm('Fetch successful ! Please confirm to reload the page and display the changes: ')) {
+                                //Reload the page if we fetched all objects or display the dedicated object page if not
+                                if (response.ToFetch === "*") {
+                                    window.location.reload();
+                                } else {
+                                    window.location.href = "/admin/hail/" + response.ToFetch;
+                                }
                             }
                         }
                     }

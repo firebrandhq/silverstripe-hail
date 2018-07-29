@@ -4,6 +4,7 @@ namespace Firebrand\Hail\Tasks;
 
 use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Models\ApiObject;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
@@ -71,7 +72,7 @@ class FetchRecurringTask extends BuildTask
                         }
                     }
                 } catch (\Exception $exception) {
-                    $this->sendException($exception);
+                    self::sendException($exception);
                     //Kill the process to be able to retry the same fetch later
                     die();
                 }
@@ -88,7 +89,7 @@ class FetchRecurringTask extends BuildTask
      *
      * @param \Exception $exception
      */
-    public function sendException($exception)
+    public static function sendException($exception)
     {
         $emails = Config::inst()->get(self::class, 'Emails');
         if ($emails) {
@@ -97,7 +98,7 @@ class FetchRecurringTask extends BuildTask
             $email
                 ->setTo($emails)
                 ->setSubject('SilverStripe Hail module fetch error')
-                ->setBody("<p>An error occurred while fetching from the Hail API: </p> <p>{$exception->getMessage()}</p>");
+                ->setBody("<p>Hi,</p><p>An error occurred while fetching from the Hail API: </p> <p>{$exception->getMessage()}</p><p>Website name: " . SiteConfig::current_site_config()->getTitle() . "</p><p>Website URL: " . Director::absoluteBaseURL() . "</p>");
             $email->send();
         }
     }

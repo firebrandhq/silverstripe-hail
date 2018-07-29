@@ -72,7 +72,7 @@ class HailController extends Controller
         $params = $request->params();
 
         //Check there is no running jobs
-        $job_count = FetchJob::get()->filter(['Status:not' => 'Done'])->Count();
+        $job_count = FetchJob::get()->filter(['Status:not' => ['Done', 'Error']])->Count();
         if ($job_count > 0) {
             return $this->makeJsonReponse(400, [
                 'message' => 'Only 1 job can be started at a time.'
@@ -125,10 +125,14 @@ class HailController extends Controller
             ])->setStatusDescription('Unauthorized.');
         }
 
-        $latest_job = FetchJob::get()->sort('Created DESC')->first();
+        $latest_job = FetchJob::get()->filter('ErrorShown', 0)->sort('Created DESC')->first();
 
         if ($latest_job) {
             $map = $latest_job->toMap();
+            if ($latest_job->Status === "Error") {
+                $latest_job->ErrorShown = 1;
+                $latest_job->write();
+            }
 
             return $this->makeJsonReponse(200, $map);
         }

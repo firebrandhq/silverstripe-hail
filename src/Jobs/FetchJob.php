@@ -23,12 +23,13 @@ class FetchJob extends DataObject
 {
     private static $table_name = "HailFetchJob";
     private static $db = [
-        'Status' => 'Enum(array("Starting","Running","Done"))',
+        'Status' => 'Enum(array("Starting","Running","Done","Error"))',
         'ToFetch' => 'Varchar',
         'CurrentObject' => 'Varchar',
         'CurrentDone' => 'Int',
         'CurrentTotal' => 'Int',
         'GlobalDone' => 'Int',
         'GlobalTotal' => 'Int',
+        'ErrorShown' => 'Boolean',
     ];
 }

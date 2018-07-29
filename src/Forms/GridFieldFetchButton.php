@@ -37,7 +37,7 @@ class GridFieldFetchButton implements GridField_HTMLProvider
     public function getHTMLFragments($gridField)
     {
         //Disable button if there is already a job running, and add a class to the progress button to trigger the display
-        $jobs = FetchJob::get()->filter(['Status:not' => 'Done']);
+        $jobs = FetchJob::get()->filter(['Status:not' => ['Done', 'Error']]);
         $current = $jobs->First();
         $global = $current && $current->ToFetch === "*" ? "global-fetch" : "";
         $disabled = $jobs->Count() > 0 ? "disabled" : "";
