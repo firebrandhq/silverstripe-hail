@@ -117,6 +117,7 @@ The following yml configuration options are available for override:
 - AuthorizationUrl: Full URL of the Hail authorization
 - RefreshRate: Time after which a Hail Object is considered outdated
 - EnableEmojiSupport: See [Emojis Support configuration](#emojis-support)
+- OnlyFetchPublishedObjects: By default the Hail module only fetches published objects, you can change this behavior by setting this value to false
 
 *Default configuration:*
  
@@ -126,6 +127,7 @@ Firebrand\Hail\Api\Client:
   AuthorizationUrl: 'https://hail.to/oauth/authorise'
   RefreshRate: 86400
   EnableEmojiSupport: false
+  OnlyFetchPublishedObjects: true
 ```
 
 **Hail Page Controller configuration:**

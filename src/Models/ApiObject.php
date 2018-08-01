@@ -261,10 +261,14 @@ class ApiObject extends DataObject
         $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
         $org_name = $org ? $org->Title : "";
 
-        //Get Objects
+        //Do we want only published objects
+        if (Config::inst()->get(Client::class, 'OnlyFetchPublishedObjects') === true) {
+            $request_params['status'] = 'published';
+        }
+
+        //Fetch objects
         $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
         $results = $hail_api_client->get($url, $request_params, $throw_errors);
-        $hailIdList = [];
 
         //If this is launched from a queued job, update it to display realtime info on the frontend
         if (count($results) > 0 && $job) {
@@ -274,6 +278,7 @@ class ApiObject extends DataObject
             $job->write();
         }
 
+        $hailIdList = [];
         foreach ($results as $result) {
             // Check if we can find an existing item.
             $hailObj = DataObject::get_one(static::class, ['HailID' => $result['id']]);

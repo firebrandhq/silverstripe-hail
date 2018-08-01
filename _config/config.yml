@@ -8,6 +8,7 @@ Firebrand\Hail\Api\Client:
   AuthorizationUrl: 'https://hail.to/oauth/authorise'
   RefreshRate: 86400
   EnableEmojiSupport: false
+  OnlyFetchPublishedObjects: true
 Firebrand\Hail\Pages\HailPageController:
   UseDefaultCss: true
 Firebrand\Hail\Tasks\FetchRecurringTask:
