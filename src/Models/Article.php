@@ -56,7 +56,7 @@ class Article extends ApiObject
         'Lead' => 'lead',
         'Location' => 'location',
         'Status' => 'status',
-        'Created' => 'created_date',
+        'Created' => 'date',
         'Updated' => 'updated_date',
         'Rating' => 'average_rating',
         'Flagged' => 'flagged',

@@ -27,7 +27,7 @@
                 <% end_if %>
             </div>
             <a href="$Link" class="Link"><h5 class="card-title">$Title</h5></a>
-            <h6 class="card-subtitle mb-2 text-muted">$Date.Format('eeee MMMM d, yyyy')</h6>
+            <h6 class="card-subtitle mb-2 text-muted">$Created.Format('eeee MMMM d, yyyy')</h6>
             <div class="card-text">
                 $Lead
             </div>
