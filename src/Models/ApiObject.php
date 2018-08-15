@@ -181,7 +181,7 @@ class ApiObject extends DataObject
             if (!Config::inst()->get(Client::class, 'EnableEmojiSupport')) {
                 $value = preg_replace('/[^(\x20-\x7F)]*/', '', $value);
             }
-            $this->{$ssKey} = $value;
+            $this->{$ssKey} = html_entity_decode($value);
         }
         $this->Fetched = date("Y-m-d H:i:s");
 
