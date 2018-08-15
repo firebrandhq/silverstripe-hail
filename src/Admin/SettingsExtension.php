@@ -5,6 +5,8 @@ namespace Firebrand\Hail\Admin;
 use Firebrand\Hail\Api\Client;
 use Firebrand\Hail\Forms\DependentListboxField;
 use Firebrand\Hail\Models\Organisation;
+use Firebrand\Hail\Models\PrivateTag;
+use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
@@ -14,6 +16,7 @@ use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Permission;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
@@ -70,65 +73,101 @@ class SettingsExtension extends DataExtension
             $session->clear('noticeText');
         }
 
-        //Hail settings fields
-        if ($hail_api_client->isReadyToAuthorised()) {
-            //Add a reaonly field to display the CallBack URL
-            $callback = ReadonlyField::create('CallBackURL', 'Callback URL',
-                $hail_api_client->getRedirectURL())->setDescription("Please add the following callback URL in Hail before starting the authorization process.");
-            $fields->addFieldToTab('Root.Hail', $callback);
+        if (Permission::check('ADMIN ')) {
 
-            $link = $hail_api_client->isAuthorised() ?
-                'Reauthorise SilverStripe to Access Hail' :
-                'Authorise SilverStripe to Access Hail';
 
-            $auth = $hail_api_client->getAuthorizationURL();
-            $fields->addFieldToTab('Root.Hail', new LiteralField('Go', "<div class='form-group form__field-label'><a class='btn btn-primary' href='$auth'>$link</a></div>"));
+            //Hail settings fields
+            if ($hail_api_client->isReadyToAuthorised()) {
+                //Add a reaonly field to display the CallBack URL
+                $callback = ReadonlyField::create('CallBackURL', 'Callback URL',
+                    $hail_api_client->getRedirectURL())->setDescription("Please add the following callback URL in Hail before starting the authorization process.");
+                $fields->addFieldToTab('Root.Hail', $callback);
+
+                $link = $hail_api_client->isAuthorised() ?
+                    'Reauthorise SilverStripe to Access Hail' :
+                    'Authorise SilverStripe to Access Hail';
+
+                $auth = $hail_api_client->getAuthorizationURL();
+                $fields->addFieldToTab('Root.Hail', new LiteralField('Go', "<div class='form-group form__field-label'><a class='btn btn-primary' href='$auth'>$link</a></div>"));
+            } else {
+                //Display message if client id or client secret is not configured
+                $client_message = ReadonlyField::create('ClientErrorMessage', 'Configuration error ', "Please add your Hail Client ID and Secret to your .env file, see documentation.")
+                    ->addExtraClass("notice-bad");
+                $fields->addFieldToTab('Root.Hail', $client_message);
+            }
+            if ($hail_api_client->isAuthorised()) {
+                //Organisations list
+                $organisations = $hail_api_client->getAvailableOrganisations(true);
+                $org_selector = ListboxField::create("HailOrgsIDs", "Hail organisations", $organisations);
+                $fields->addFieldToTab('Root.Hail', $org_selector);
+
+
+                //Private Tags List
+                $private_tags = function ($val) use ($hail_api_client, $organisations) {
+                    if (is_array($val)) {
+                        $val = array_filter($organisations, function ($item) use ($val) {
+                            return in_array($item, $val);
+                        }, ARRAY_FILTER_USE_KEY);
+                    }
+
+                    return $hail_api_client->getAvailablePrivateTags($val, true);
+                };
+                $private_tag_selector = DependentListboxField::create("HailExcludePrivateTagsIDs", "Globally excluded private tags", $private_tags)
+                    ->setDescription("Articles and publications with those private tags will never be fetched")
+                    ->setDepends($org_selector);
+                $fields->addFieldToTab('Root.Hail', $private_tag_selector);
+
+
+                //Public Tags list
+                $public_tags = function ($val) use ($hail_api_client, $organisations) {
+                    if (is_array($val)) {
+                        $val = array_filter($organisations, function ($item) use ($val) {
+                            return in_array($item, $val);
+                        }, ARRAY_FILTER_USE_KEY);
+                    }
+
+                    return $hail_api_client->getAvailablePublicTags($val, true);
+                };
+
+                $public_tag_selector = DependentListboxField::create("HailExcludePublicTagsIDs", "Globally excluded public tags", $public_tags)
+                    ->setDescription("Articles and publications with those public tags will never be fetched")
+                    ->setDepends($org_selector);
+                $fields->addFieldToTab('Root.Hail', $public_tag_selector);
+            }
         } else {
-            //Display message if client id or client secret is not configured
-            $client_message = ReadonlyField::create('ClientErrorMessage', 'Configuration error ', "Please add your Hail Client ID and Secret to your .env file, see documentation.")
-                ->addExtraClass("notice-bad");
-            $fields->addFieldToTab('Root.Hail', $client_message);
+            // Display read only configuration only
+            $orgs = $this->getOwner()->HailOrgsIDs;
+            if ($orgs) {
+                $orgs = json_decode($orgs);
+                $orgs = Organisation::get()->filter('HailID', $orgs)->map('Title', 'Title')->toArray();
+            } else {
+                $orgs = [];
+            }
+            $organisation = ReadonlyField::create("Orgs", "Selected Hail organisations", implode(", ", $orgs));
+            $fields->addFieldToTab('Root.Hail', $organisation);
+
+            $private_tags = $this->getOwner()->HailExcludePrivateTagsIDs;
+            if ($private_tags) {
+                $private_tags = json_decode($private_tags);
+                $private_tags = PrivateTag::get()->filter('HailID', $private_tags)->map('Name', 'Name')->toArray();
+
+            } else {
+                $private_tags = [];
+            }
+            $private_tag = ReadonlyField::create("PrivateTags", "Globally excluded private tags", implode(", ", $private_tags));
+            $fields->addFieldToTab('Root.Hail', $private_tag);
+
+            $public_tags = $this->getOwner()->HailExcludePublicTagsIDs;
+            if ($public_tags) {
+                $public_tags = json_decode($public_tags);
+                $public_tags = PublicTag::get()->filter('HailID', $public_tags)->map('Name', 'Name')->toArray();
+
+            } else {
+                $public_tags = [];
+            }
+            $public_tag = ReadonlyField::create("PublicTags", "Globally excluded public tags", implode(", ", $public_tags));
+            $fields->addFieldToTab('Root.Hail', $public_tag);
         }
-        if ($hail_api_client->isAuthorised()) {
-            //Organisations list
-            $organisations = $hail_api_client->getAvailableOrganisations(true);
-            $org_selector = ListboxField::create("HailOrgsIDs", "Hail organisations", $organisations);
-            $fields->addFieldToTab('Root.Hail', $org_selector);
-
-
-            //Private Tags List
-            $private_tags = function ($val) use ($hail_api_client, $organisations) {
-                if (is_array($val)) {
-                    $val = array_filter($organisations, function ($item) use ($val) {
-                        return in_array($item, $val);
-                    }, ARRAY_FILTER_USE_KEY);
-                }
-
-                return $hail_api_client->getAvailablePrivateTags($val, true);
-            };
-            $private_tag_selector = DependentListboxField::create("HailExcludePrivateTagsIDs", "Globally excluded private tags", $private_tags)
-                ->setDescription("Articles and publications with those private tags will never be fetched")
-                ->setDepends($org_selector);
-            $fields->addFieldToTab('Root.Hail', $private_tag_selector);
-
-
-            //Public Tags list
-            $public_tags = function ($val) use ($hail_api_client, $organisations) {
-                if (is_array($val)) {
-                    $val = array_filter($organisations, function ($item) use ($val) {
-                        return in_array($item, $val);
-                    }, ARRAY_FILTER_USE_KEY);
-                }
-
-                return $hail_api_client->getAvailablePublicTags($val, true);
-            };
-
-            $public_tag_selector = DependentListboxField::create("HailExcludePublicTagsIDs", "Globally excluded public tags", $public_tags)
-                ->setDescription("Articles and publications with those public tags will never be fetched")
-                ->setDepends($org_selector);
-            $fields->addFieldToTab('Root.Hail', $public_tag_selector);
-        }
-
     }
 
     public function onBeforeWrite()
