@@ -147,7 +147,7 @@ Firebrand\Hail\Pages\HailPageController:
  
 ```yml
 Firebrand\Hail\Tasks\FetchRecurringTask:
-  Emails: 'developers@firebrand.nz'
+  Emails: ''
 ```
 
 **In order to override those values you need to add a new yml file into your mysite/_config/ folder, specifying that your configuration needs to be included after Hail's.**
