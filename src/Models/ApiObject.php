@@ -302,7 +302,7 @@ class ApiObject extends DataObject
                 }
             }
         }
-        if ($org) {
+        if ($org && $job) {
             //Remove all object for which we don't have reference
             if (count($hailIdList) > 0) {
                 static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
