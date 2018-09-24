@@ -12,13 +12,13 @@
         "silverstripe/framework": "^3.1",
         "silverstripe/cms": "^3.1",
         "firebrandhq/searchable-dataobjects": "^1.2",
-        "silverstripe-australia/gridfieldextensions": "~1.4",
+        "symbiote/silverstripe-gridfieldextensions": "^2.1",
     	"undefinedoffset/sortablegridfield": "0.6 - 1",
-    	"colymba/gridfield-bulk-editing-tools": "^2.1.9",
-		"nategood/httpful": "dev-master",
-		"silverstripe/restfulserver": "1.*",
-		"league/oauth2-client": "0.*",
-		"silverstripe/queuedjobs": "^2.8"
+    	"colymba/gridfield-bulk-editing-tools": "^2.1",
+	"nategood/httpful": "dev-master",
+	"silverstripe/restfulserver": "^1",
+	"league/oauth2-client": "0.*",
+	"symbiote/silverstripe-queuedjobs": "^2"
     },
     "extra": {
 	   "installer-name": "hail"
