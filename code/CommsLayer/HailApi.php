@@ -26,7 +26,7 @@ use Httpful\Exception\ConnectionErrorException;
  * @const string ORGS What an organisation is called in Hail
  * @const string IMAGES What an image is called in Hail
  */
-class HailApi extends Object {
+class HailApi extends SS_Object {
 
 	const TAGS = 'tags';
 	const ARTICLES = 'articles';
