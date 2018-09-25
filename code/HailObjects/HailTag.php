@@ -13,7 +13,7 @@ class HailTag extends HailApiObject {
 		'Videos' => 'HailVideo',
 	);
 
-	private static $belongs_many_many = array(
+	private static $belongs_to = array(
 		'TagLists' => 'TagHailList'
 	);
 
