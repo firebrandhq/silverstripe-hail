@@ -87,8 +87,13 @@ class HailPageController extends \PageController
         $params = $request->params();
         if ($params['ID']) {
             $article = Article::get()->filter(['HailID' => $params['ID']])->first();
+            //Try to find the article with the database ID field, to be backward compatible with old Hail module (after upgrade)
+            if(!isset($article) || empty($article)) {
+                $article = Article::get()->filter(['ID' => $params['ID']])->first();
+            }
         }
-        if (!$params['ID'] || !isset($article) || !$article) {
+
+        if (!$params['ID'] || !isset($article) || empty($article)) {
             return $this->httpError(404, 'That article could not be found');
         }
         $data = [
