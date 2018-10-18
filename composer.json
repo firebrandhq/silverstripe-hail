@@ -9,16 +9,16 @@
         "email": "developers@firebrand.nz"
     }],
     "require": {
-        "silverstripe/framework": "^3.1",
-        "silverstripe/cms": "^3.1",
-        "firebrandhq/searchable-dataobjects": "^1.2",
-        "symbiote/silverstripe-gridfieldextensions": "^2.1",
-    	"undefinedoffset/sortablegridfield": "0.6 - 1",
-    	"colymba/gridfield-bulk-editing-tools": "^2.1",
+    "silverstripe/framework": "^3.1",
+    "silverstripe/cms": "^3.1",
+    "firebrandhq/searchable-dataobjects": "^1.2",
+    "symbiote/silverstripe-gridfieldextensions": "^2.1",
+    "undefinedoffset/sortablegridfield": "0.6 - 1",
+    "colymba/gridfield-bulk-editing-tools": "^2.1",
 	"nategood/httpful": "dev-master",
 	"silverstripe/restfulserver": "^1",
 	"league/oauth2-client": "0.*",
-	"symbiote/silverstripe-queuedjobs": "^2"
+	"symbiote/silverstripe-queuedjobs": "^2.0 || ^3.0"
     },
     "extra": {
 	   "installer-name": "hail"
