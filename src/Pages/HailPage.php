@@ -66,6 +66,12 @@ class HailPage extends \Page
         "Articles" => "Firebrand\Hail\Models\Article",
         "Publications" => "Firebrand\Hail\Models\Publication",
     ];
+    /**
+     * The article accessed in the current request
+     *
+     * @var Article
+     */
+    private $current_article = false;
 
     public function getCMSFields()
     {
@@ -119,7 +125,25 @@ class HailPage extends \Page
     }
 
     /**
+     * Get article accessed in current request
+     *
+     * @return Article|null
+     */
+    public function getCurrentArticle()
+    {
+        if ($this->current_article instanceof Article || $this->current_article === null) {
+            return $this->current_article;
+        }
+
+        $params = Controller::curr()->getRequest()->params();
+        $this->current_article = Article::get()->filter(['HailID' => $params['ID']])->first();
+
+        return $this->current_article;
+    }
+
+    /**
      * Add a canonical link meta tag back to the Hail Article when we are displaying a full article
+     * Replace description meta tag with Article description when necessary
      *
      * @param boolean $includeTitle Show default <title>-tag, set to false for custom templating
      * @return string The XHTML metatags
@@ -128,15 +152,39 @@ class HailPage extends \Page
     {
         $tags = parent::MetaTags($includeTitle);
         $params = Controller::curr()->getRequest()->params();
-        if ($params['Action'] === "article" && !empty($params['ID'])) {
-            $article = Article::get()->filter(['HailID' => $params['ID']])->first();
-            if ($article && $article->HailURL) {
-                //
-                $tags .= "<link rel=\"canonical\" href=\"{$article->HailURL}\" />";
+        if ($article = $this->getCurrentArticle()) {
+            if ($article->HailURL) {
+                $tags .= "<link rel=\"canonical\" href=\"{$article->HailURL}\" />\n";
+            }
+            if ($article->Lead || $article->Content) {
+                $tags = explode("\n", $tags);
+                //Replace description meta tag with article lead
+                foreach ($tags as $index => $tag) {
+                    if (strpos($tag, "name=\"description\"")) {
+                        $description = $article->Lead ? $article->Lead : $article->Content;
+                        $description = mb_strimwidth($description, 0, 300, '...');
+                        $tags[$index] = "<meta name=\"description\" content=\"$article->Lead\">\n";
+                    }
+                }
+                $tags = implode("\n", $tags);
             }
         }
 
         return $tags;
+    }
+
+    /**
+     * Get page or article title
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        if ($article = $this->getCurrentArticle()) {
+            return $article->Title;
+        }
+
+        return parent::getTitle();
     }
 
     /**
