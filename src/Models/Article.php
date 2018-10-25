@@ -441,4 +441,18 @@ class Article extends ApiObject
     {
         return $this->hasHeroVideo() || $this->hasGalleryVideos();
     }
+
+    /**
+     * Returns hero image to be added to article sitemap when googlesitemap module is installed
+     *
+     * @return Image|null
+     */
+    public function ImagesForSitemap()
+    {
+        if($this->hasHeroImage()) {
+            return $this->HeroImage();
+        }
+
+        return null;
+    }
 }

@@ -226,4 +226,14 @@ class Image extends ApiObject
     {
         return $this->Urloriginal;
     }
+
+    /**
+     * Return absolute link of image
+     *
+     * @return string
+     */
+    public function AbsoluteLink()
+    {
+        return $this->Urloriginal;
+    }
 }
