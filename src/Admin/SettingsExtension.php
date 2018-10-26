@@ -7,6 +7,8 @@ use Firebrand\Hail\Forms\DependentListboxField;
 use Firebrand\Hail\Models\Organisation;
 use Firebrand\Hail\Models\PrivateTag;
 use Firebrand\Hail\Models\PublicTag;
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Assets\Image;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
@@ -42,9 +44,19 @@ class SettingsExtension extends DataExtension
         "HailLastFetched" => "Datetime",
     ];
 
+    private static $has_one = [
+        "AMPCompanyLogo" => Image::class,
+    ];
+    private static $owns = [
+        "AMPCompanyLogo"
+    ];
+
     public function updateCMSFields(FieldList $fields)
     {
         parent::updateCMSFields($fields);
+
+        //AMP Logo for Hail article structured data
+        $fields->addFieldToTab('Root.Main', UploadField::create('AMPCompanyLogo', 'Company Logo')->setDescription('AMP format (600px x 60px) for Google structured data'));
 
         $hail_api_client = new Client();
         $request = Injector::inst()->get(HTTPRequest::class);

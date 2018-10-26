@@ -1,3 +1,4 @@
+<% include HailArticleJsonLD %>
 <% include HailArticleHeader %>
 
 <section id="hail-article-container" class="container">
