@@ -142,7 +142,7 @@ class HailPage extends \Page
     }
 
     /**
-     * Add a canonical link meta tag back to the Hail Article when we are displaying a full article
+     * Add a canonical link meta tag
      * Replace description meta tag with Article description when necessary
      *
      * @param boolean $includeTitle Show default <title>-tag, set to false for custom templating
@@ -153,9 +153,7 @@ class HailPage extends \Page
         $tags = parent::MetaTags($includeTitle);
         $params = Controller::curr()->getRequest()->params();
         if ($article = $this->getCurrentArticle()) {
-            if ($article->HailURL) {
-                $tags .= "<link rel=\"canonical\" href=\"{$article->HailURL}\" />\n";
-            }
+            $tags .= "<link rel=\"canonical\" href=\"{$article->AbsoluteLink()}\" />\n";
             if ($article->Lead || $article->Content) {
                 $tags = explode("\n", $tags);
                 //Replace description meta tag with article lead
