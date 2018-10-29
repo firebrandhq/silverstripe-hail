@@ -23,7 +23,7 @@ use SilverStripe\View\SSViewer;
  */
 class HailPageController extends \PageController
 {
-    private $article;
+    public $article;
     private static $allowed_actions = [
         'article',
         'tag',
