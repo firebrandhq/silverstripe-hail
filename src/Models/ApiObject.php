@@ -300,6 +300,9 @@ class ApiObject extends DataObject
                     $job->CurrentDone++;
                     $job->write();
                 }
+            } else {
+                //$imported is false when object is excluded, remove it
+                $hailObj->delete();
             }
         }
         if ($org && $job) {
