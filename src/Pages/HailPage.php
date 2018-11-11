@@ -136,7 +136,11 @@ class HailPage extends \Page
         }
 
         $params = Controller::curr()->getRequest()->params();
-        $this->current_article = Article::get()->filter(['HailID' => $params['ID']])->first();
+        if(empty($params['ID'])){
+            $this->current_article = null;
+        } else {
+            $this->current_article = Article::get()->filter(['HailID' => $params['ID']])->first();
+        }
 
         return $this->current_article;
     }
@@ -178,7 +182,8 @@ class HailPage extends \Page
      */
     public function getTitle()
     {
-        if ($article = $this->getCurrentArticle()) {
+        $article = $this->getCurrentArticle();
+        if ($article instanceof Article) {
             return $article->Title;
         }
 
