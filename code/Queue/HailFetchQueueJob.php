@@ -11,8 +11,20 @@ class HailFetchQueueJob extends AbstractQueuedJob implements QueuedJob
      * Construct a new instance of HailFetchQueueJob
      * @param string $hailObjectType Name of the class to fetch
      */
-    public function __construct($hailObjectType)
+    public function __construct($hailObjectType = null)
     {
+        // Dirty hack for queued jobs - attempt to find the Hail object type from the QueuedJobDescriptor
+        // since the constructor doesn't have params when run via CLI
+        // @see https://github.com/symbiote/silverstripe-queuedjobs/issues/35
+        if(is_null($hailObjectType)) {
+            $job = QueuedJobDescriptor::get()->filter([
+                'Implementation' => 'HailFetchQueueJob',
+                'JobStatus' => 'Initialising'
+            ])->first();
+
+            $hailObjectType = str_replace('Fetching ', '', $job->JobTitle);
+        }
+
         $this->hailObjectType = $hailObjectType;
     }
 
