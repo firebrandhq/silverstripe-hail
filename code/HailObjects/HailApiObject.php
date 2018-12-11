@@ -78,12 +78,15 @@ class HailApiObject extends DataObject
             $classes = ClassInfo::subclassesFor(static::class);
             if(is_array($classes) && isset($classes[static::class])){
                 $table_name = $classes[static::class];
-                //Remove items from child table
-                DB::query("DELETE FROM $table_name WHERE ID NOT IN(" . implode(',', $idList) . ")");
-                //Remove items from base table
-                DB::query("DELETE FROM HailApiObject WHERE ID NOT IN(" . implode(',', $idList) . ") AND ClassName = '" . static::class . "'");
+                //Select ids that are not in the list but beong to the current organisation
+                $invalid_ids = DB::query("SELECT ID FROM HailApiObject WHERE ID NOT IN(" . implode(',', $idList) . ") AND ClassName = '" . static::class . "' AND OrganisationID = ".$org->ID." ")->column('ID');
+                if(count($invalid_ids) > 0){
+                    //Remove items from child table
+                    DB::query("DELETE FROM $table_name WHERE ID IN(" . implode(',', $invalid_ids) . ")");
+                    //Remove items from base table
+                    DB::query("DELETE FROM HailApiObject WHERE ID IN(" . implode(',', $invalid_ids) . ") AND ClassName = '" . static::class . "'");
+                }
             }
-
         }
     }
 
