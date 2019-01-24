@@ -7,6 +7,7 @@ use Firebrand\Hail\Jobs\FetchJob;
 use Firebrand\Hail\Models\ApiObject;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\SiteConfig\SiteConfig;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Task to fetch the jobs currently in queue
@@ -39,6 +40,11 @@ class FetchQueueTask extends BuildTask
      */
     public function run($request)
     {
+        $is_cli = php_sapi_name() == "cli";
+        if($is_cli){
+            $output = new ConsoleOutput();
+        }
+
         $jobs = FetchJob::get()->filter(['Status' => 'Starting'])->sort('Created ASC');
         //There should only be one job at a time, but we loop just in case
         foreach ($jobs as $job) {
@@ -67,12 +73,22 @@ class FetchQueueTask extends BuildTask
                     $job->write();
                     try {
                         foreach ($orgs_ids as $org_id) {
+                            if($is_cli){
+                                $output->writeln("<info>----Fetching Organisation $org_id----</info>");
+                            }
                             foreach ($fetchables as $fetchable) {
+                                if($is_cli){
+                                    $class = explode('\\', $fetchable);
+                                    $output->writeln("<comment>Fetching " . array_pop($class) . "...</comment>");
+                                }
                                 $fetchable::fetchForOrg($hail_api_client, $org_id, $job, null, true);
 
                                 //Update count for frontend
                                 $job->GlobalDone++;
                                 $job->write();
+                            }
+                            if($is_cli){
+                                $output->writeln("<info>-------------------------------------</info>");
                             }
                         }
                     } catch (\Exception $exception) {

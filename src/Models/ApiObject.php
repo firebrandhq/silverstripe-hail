@@ -12,6 +12,8 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\SiteConfig\SiteConfig;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Abstract representation of an Hail Api object.
@@ -257,6 +259,8 @@ class ApiObject extends DataObject
      */
     public static function fetchForOrg($hail_api_client, $org_id, $job = null, $request_params = null, $throw_errors = false)
     {
+        $is_cli = php_sapi_name() == "cli";
+
         //Get Org Name
         $org = DataObject::get_one(Organisation::class, ['HailID' => $org_id]);
         $org_name = $org ? $org->Title : "";
@@ -276,6 +280,17 @@ class ApiObject extends DataObject
             $job->CurrentDone = 0;
             $job->CurrentTotal = count($results);
             $job->write();
+        }
+
+        if($is_cli){
+            $output = new ConsoleOutput();
+            if(count($results) > 0) {
+                $progressBar = new ProgressBar($output, count($results));
+                $progressBar->start();
+            } else {
+                $output->write("Nothing to fetch.", true);
+            }
+
         }
 
         $hailIdList = [];
@@ -304,6 +319,10 @@ class ApiObject extends DataObject
                 //$imported is false when object is excluded, remove it
                 $hailObj->delete();
             }
+
+            if(isset($progressBar)){
+                $progressBar->advance();
+            }
         }
         if ($org && $job) {
             //Remove all object for which we don't have reference
@@ -312,6 +331,11 @@ class ApiObject extends DataObject
             } else {
                 static::get()->filter('OrganisationID', $org->ID)->removeAll();
             }
+        }
+
+        if(isset($progressBar)){
+            $progressBar->finish();
+            echo PHP_EOL;
         }
     }
 

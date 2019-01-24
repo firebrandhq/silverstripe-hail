@@ -10,6 +10,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\SiteConfig\SiteConfig;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 
 /**
@@ -43,6 +44,10 @@ class FetchRecurringTask extends BuildTask
      */
     public function run($request)
     {
+        $is_cli = php_sapi_name() == "cli";
+        if($is_cli){
+            $output = new ConsoleOutput();
+        }
         $config = SiteConfig::current_site_config();
         $last_fetched = $config->HailLastFetched;
         $now = new \DateTime("now", new \DateTimeZone("UTC"));
@@ -67,8 +72,18 @@ class FetchRecurringTask extends BuildTask
             if ($orgs_ids) {
                 try {
                     foreach ($orgs_ids as $org_id) {
+                        if($is_cli){
+                            $output->writeln("<info>----Fetching Organisation $org_id----</info>");
+                        }
                         foreach ($fetchables as $fetchable) {
+                            if($is_cli){
+                                $class = explode('\\', $fetchable);
+                                $output->writeln("<comment>Fetching " . array_pop($class) . "...</comment>");
+                            }
                             $fetchable::fetchForOrg($hail_api_client, $org_id, null, $last_fetched, true);
+                        }
+                        if($is_cli){
+                            $output->writeln("<info>-------------------------------------</info>");
                         }
                     }
                 } catch (\Exception $exception) {
@@ -110,7 +125,7 @@ class FetchRecurringTask extends BuildTask
     {
         $description = $this->description;
         if ($last_fetched = SiteConfig::current_site_config()->HailLastFetched) {
-            $description .= " (last recorded fetch: " . $last_fetched . ")";
+            $description .= " (last recorded fetch: " . $last_fetched . " UTC)";
         }
 
         return $description;
