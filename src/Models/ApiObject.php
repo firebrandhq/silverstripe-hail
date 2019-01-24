@@ -286,6 +286,7 @@ class ApiObject extends DataObject
             $output = new ConsoleOutput();
             if(count($results) > 0) {
                 $progressBar = new ProgressBar($output, count($results));
+                $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
                 $progressBar->start();
             } else {
                 $output->write("Nothing to fetch.", true);
