@@ -1,29 +1,37 @@
-	{
-    "name": "firebrandhq/silverstripe-hail",
-    "description": "Silverstripe plugin to integrate with Hail (https://get.hail.to)",
-    "type": "silverstripe-module",
-    "keywords": ["silverstripe", "News", "Hail", "Content"],
-    "license": "MIT",
-    "authors": [{
-        "name": "Firebrand Limited",
-        "email": "developers@firebrand.nz"
-    }],
-    "require": {
+{
+  "name": "firebrandhq/silverstripe-hail",
+  "description": "Silverstripe plugin to integrate with Hail (https://get.hail.to)",
+  "type": "silverstripe-module",
+  "keywords": [
+    "silverstripe",
+    "News",
+    "Hail",
+    "Content"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Firebrand Limited",
+      "email": "developers@firebrand.nz"
+    }
+  ],
+  "require": {
     "silverstripe/framework": "^3.1",
     "silverstripe/cms": "^3.1",
     "firebrandhq/searchable-dataobjects": "^1.2",
     "symbiote/silverstripe-gridfieldextensions": "^2.1",
     "undefinedoffset/sortablegridfield": "0.6 - 1",
     "colymba/gridfield-bulk-editing-tools": "^2.1",
-	"nategood/httpful": "dev-master",
-	"silverstripe/restfulserver": "^1",
-	"league/oauth2-client": "0.*",
-	"symbiote/silverstripe-queuedjobs": "^2.0 || ^3.0"
-    },
-    "extra": {
-	   "installer-name": "hail"
-    },
-    "suggest": {
-        "maknz/slack": "Get error notifications from Hail sent to Slack"
-    }
+    "nategood/httpful": "dev-master",
+    "silverstripe/restfulserver": "^1",
+    "league/oauth2-client": "0.*",
+    "symbiote/silverstripe-queuedjobs": "^2.0 || ^3.0",
+    "symfony/console": "^4.2"
+  },
+  "extra": {
+    "installer-name": "hail"
+  },
+  "suggest": {
+    "maknz/slack": "Get error notifications from Hail sent to Slack"
+  }
 }

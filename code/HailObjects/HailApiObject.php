@@ -50,7 +50,19 @@ class HailApiObject extends DataObject
         } catch (HailApiException $ex) {
             Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
             die($ex->getMessage());
-            return;
+        }
+
+        //Console display
+        $is_cli = php_sapi_name() == "cli";
+        if($is_cli){
+            $output = new \Symfony\Component\Console\Output\ConsoleOutput();
+            if(count($list) > 0) {
+                $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($output, count($list));
+                $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
+                $progressBar->start();
+            } else {
+                $output->write("Nothing to fetch.", true);
+            }
         }
 
         $idList = array();
@@ -72,7 +84,12 @@ class HailApiObject extends DataObject
                 //Remove object when it's excluded
                 $hailObj->delete();
             }
+
+            if(isset($progressBar)){
+                $progressBar->advance();
+            }
         }
+
         if(count($idList) > 0) {
             //Clean up for deleted items, in raw query to avoid looping using removeAll()
             $classes = ClassInfo::subclassesFor(static::class);
@@ -87,6 +104,11 @@ class HailApiObject extends DataObject
                     DB::query("DELETE FROM HailApiObject WHERE ID IN(" . implode(',', $invalid_ids) . ") AND ClassName = '" . static::class . "'");
                 }
             }
+        }
+
+        if(isset($progressBar)){
+            $progressBar->finish();
+            echo PHP_EOL;
         }
     }
 
