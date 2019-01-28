@@ -12,7 +12,14 @@ class HailOrganisation extends DataObject {
 		'HailRedirectCode' => 'Varchar(255)',
 		'HailUserID' => 'Varchar(255)',
 		'HailOrgID' => 'Varchar(255)',
-		'HailTimeout' => 'Int'
+		'HailTimeout' => 'Int',
+        'LastFetched_articles' => 'Datetime',
+        'LastFetched_publications' => 'Datetime',
+        'LastFetched_tags' => 'Datetime',
+        'LastFetched_privatetags' => 'Datetime',
+        'LastFetched_images' => 'Datetime',
+        'LastFetched_videos' => 'Datetime',
+        'LastFetched_attachments' => 'Datetime',
 	);
 
 	private static $has_one = array(

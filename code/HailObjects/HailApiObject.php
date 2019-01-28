@@ -43,10 +43,10 @@ class HailApiObject extends DataObject
      * @param HailOrganisation The Hail organisation
      * @return void
      */
-    public static function fetch(HailOrganisation $org)
+    public static function fetch(HailOrganisation $org, $only_recent = false)
     {
         try {
-            $list = HailApi::getList(static::getObjectType(), $org);
+            $list = HailApi::getList(static::getObjectType(), $org, $only_recent);
         } catch (HailApiException $ex) {
             Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
             die($ex->getMessage());
@@ -90,7 +90,8 @@ class HailApiObject extends DataObject
             }
         }
 
-        if(count($idList) > 0) {
+        //No cleanup when only fetching recent articles
+        if(!$only_recent && count($idList) > 0) {
             //Clean up for deleted items, in raw query to avoid looping using removeAll()
             $classes = ClassInfo::subclassesFor(static::class);
             if(is_array($classes) && isset($classes[static::class])){

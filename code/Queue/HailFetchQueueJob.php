@@ -61,16 +61,11 @@ class HailFetchQueueJob extends AbstractQueuedJob implements QueuedJob
 
 		foreach(HailOrganisation::get() as $org) {
 			$hailApiObject = singleton($this->hailObjectType);
-			$hailApiObject->fetch($org);
+			$hailApiObject->fetch($org, true);
 		}
 
         $this->addMessage('Done');
 
         $this->isComplete = true;
-    }
-
-    protected function HailObjectTypeIsValid()
-    {
-        return class_exists($hailObjectType) && is_subclass_of($hailObjectType, 'HailApiObject');
     }
 }

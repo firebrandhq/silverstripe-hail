@@ -47,7 +47,7 @@ class HailApi extends SS_Object
      * @return StdClass Reply from Hail
      * @throws HailApiException
      */
-    protected static function get($uri, HailOrganisation $org, $request = false)
+    protected static function get($uri, HailOrganisation $org, $request = false, $update_last_fetched = false, $last_fetched_column = null)
     {
         // Initialise request
         $response = Request::get(static::config()->Url . $uri)
@@ -73,6 +73,12 @@ class HailApi extends SS_Object
             throw new HailApiException($reply->body->error->message, $reply->code);
         }
 
+        if($update_last_fetched && !empty($last_fetched_column)) {
+            $now = new DateTime("now", new DateTimeZone('UTC'));
+            $org->{$last_fetched_column} = $now->format('Y-m-d H:i:s');
+            $org->write();
+        }
+
         return $reply->body;
     }
 
@@ -81,10 +87,11 @@ class HailApi extends SS_Object
      *
      * @param string $objectType Object type to retrieve
      * @param HailOrganisation $org The Hail organisation
-     * @return array
-     * @throws HailApiExceptioncd
+     * @param bool $since_last_fetched only fetch new data
+     * @return StdClass
+     * @throws HailApiException
      */
-    public static function getList($objectType, HailOrganisation $org)
+    public static function getList($objectType, HailOrganisation $org, $only_recent = false)
     {
         $uri = '';
         $request = false;
@@ -173,7 +180,20 @@ class HailApi extends SS_Object
                 break;
         }
 
-        return self::get($uri, $org, $request);
+        if($only_recent) {
+            $col = "LastFetched_" . preg_replace("[0-9a-zA-Z_]","", $objectType);
+            $last_fetched = $org->{$col};
+            if(!empty($last_fetched)){
+                //Build request param
+                $fetch_date = new \DateTime($last_fetched, new \DateTimeZone('UTC'));
+                $now = new \DateTime("now", new \DateTimeZone("UTC"));
+                //Make sure we respect the Hail API date format
+                $request['updated_start'] = $fetch_date->format('Y-m-d H:i:s');
+                $request['updated_end'] = $now->format('Y-m-d H:i:s');
+            }
+        }
+
+        return self::get($uri, $org, $request, $only_recent, isset($col) ? $col : null);
     }
 
 

@@ -61,9 +61,4 @@ class HailFetchAllQueueJob extends AbstractQueuedJob implements QueuedJob
             $this->isComplete = true;
         }
     }
-
-    protected function HailObjectTypeIsValid()
-    {
-        return class_exists($hailObjectType) && is_subclass_of($hailObjectType, 'HailApiObject');
-    }
 }
