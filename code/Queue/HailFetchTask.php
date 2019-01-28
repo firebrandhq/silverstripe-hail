@@ -24,6 +24,10 @@ class HailFetchTask extends BuildTask
     public function run($request)
     {
         $is_cli = php_sapi_name() == "cli";
+        $vars = $request->getVars();
+
+        $is_recent = is_array($vars) && isset($vars['args']) && is_array($vars['args']) && count($vars['args']) >  0 && $vars['args'][0] === "--only-recent";
+
         if ($is_cli) {
             $output = new \Symfony\Component\Console\Output\ConsoleOutput();
         }
@@ -38,7 +42,7 @@ class HailFetchTask extends BuildTask
                 }
 
                 $hailApiObject = singleton($hailObjType);
-                $hailApiObject->fetch($org);
+                $hailApiObject->fetch($org, $is_recent);
             }
             if($is_cli){
                 $output->writeln("<info>-------------------------------------</info>");
