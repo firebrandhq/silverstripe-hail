@@ -327,7 +327,7 @@ class HailPage extends \Page
             $allowed_tags = json_decode($hail_list->IncludedPublicTagsIDs);
             foreach ($tags as $hail_id => $tag_name) {
                 if (in_array($hail_id, $allowed_tags)) {
-                    $return_list[] = [$hail_id => $tag_name];
+                    $return_list[$hail_id] = $tag_name;
                 }
             }
         } else {
