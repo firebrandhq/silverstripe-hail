@@ -146,8 +146,8 @@ class Publication extends ApiObject
             $article = Article::get()->filter(['HailID' => $articleData['id']])->first();
             if (!$article) {
                 $article = new Article();
+                $article->importHailData($articleData);
             }
-            $article->importHailData($articleData);
 
             $heroImage = $article->HeroImageID;
             $heroVideo = $article->HeroVideoID;

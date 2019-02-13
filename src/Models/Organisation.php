@@ -22,5 +22,15 @@ class Organisation extends DataObject
     private static $db = [
         "HailID" => "Varchar",
         "Title" => "Varchar",
+        "LastFetched" => "Datetime",
     ];
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->removeByName('LastFetched');
+
+        return $fields;
+    }
 }

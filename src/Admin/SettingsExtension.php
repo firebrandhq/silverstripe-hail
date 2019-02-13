@@ -40,8 +40,8 @@ class SettingsExtension extends DataExtension
         "HailExcludePrivateTagsIDs" => "Text",
         "HailExcludePublicTagsIDs" => "Text",
         "HailAPIStatusCurrent" => "Varchar",
-        "HailAPIStatusLastChecked" => "Datetime",
-        "HailLastFetched" => "Datetime",
+        "HailAPIStatusLastChecked" => "Datetime"
+       
     ];
 
     private static $has_one = [
