@@ -6,6 +6,8 @@ Silverstripe 4 module to integrate with Hail (https://get.hail.to)
 
 If you need this module for SilverStripe 3 please refer to [this branch](https://github.com/firebrandhq/silverstripe-hail/tree/2.x).
 
+:exclamation: **If you are getting errors while fetching, please update to 4.2 version**
+
 ## Features
 
 * Display Hail content inside your SilverStripe website
