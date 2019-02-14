@@ -50,6 +50,12 @@ class Article extends ApiObject
     /**
      * @inheritdoc
      */
+    public static $object_parameters = [
+        'short_gallery_limit' => 3
+    ];
+    /**
+     * @inheritdoc
+     */
     protected static $api_map = [
         'Title' => 'title',
         'Author' => 'author',

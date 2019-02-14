@@ -50,6 +50,11 @@ class ApiObject extends DataObject
      */
     public static $object_endpoint;
     /**
+     * Hail API extra endpoint parameters to be passed with every request
+     * @var string
+     */
+    public static $object_parameters = [];
+    /**
      * Map the fields returned by the Hail API with the SilverStripe DB Fields
      * @var array
      */
@@ -269,13 +274,15 @@ class ApiObject extends DataObject
         if (Config::inst()->get(Client::class, 'OnlyFetchPublishedObjects') === true) {
             $request_params['status'] = 'published';
         }
+        //Merge extra parameters for object
+        $request_params = array_merge($request_params, static::$object_parameters);
 
         //Fetch objects
         $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
         $results = $hail_api_client->get($url, $request_params, $throw_errors);
 
         //If this is launched from a queued job, update it to display realtime info on the frontend
-        if (count($results) > 0 && $job) {
+        if ($results && count($results) > 0 && $job) {
             $job->CurrentObject = $org_name . " - " . (new static)->plural_name();
             $job->CurrentDone = 0;
             $job->CurrentTotal = count($results);
@@ -284,7 +291,7 @@ class ApiObject extends DataObject
 
         if($is_cli){
             $output = new ConsoleOutput();
-            if(count($results) > 0) {
+            if($results && count($results) > 0) {
                 $progressBar = new ProgressBar($output, count($results));
                 $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
                 $progressBar->start();
