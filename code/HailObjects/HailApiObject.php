@@ -18,24 +18,24 @@ class HailApiObject extends DataObject
     private static $api_access = true;
 
     // Make sure we index our HailID to make search quicker
-    private static $indexes = array(
+    private static $indexes = [
         'HailID' => true
-    );
+    ];
 
 
-    private static $db = array(
+    private static $db = [
         'HailID' => 'Varchar',
         'Fetched' => 'Datetime'
-    );
+    ];
 
-    private static $has_one = array(
+    private static $has_one = [
         'Organisation' => 'HailOrganisation'
-    );
+    ];
 
-    private static $summary_fields = array(
+    private static $summary_fields = [
         'HailID',
         'Fetched'
-    );
+    ];
 
     /**
      * Retrieves all Hail Api Object of a specific type
@@ -54,9 +54,9 @@ class HailApiObject extends DataObject
 
         //Console display
         $is_cli = php_sapi_name() == "cli";
-        if($is_cli){
+        if ($is_cli) {
             $output = new \Symfony\Component\Console\Output\ConsoleOutput();
-            if(count($list) > 0) {
+            if (count($list) > 0) {
                 $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($output, count($list));
                 $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
                 $progressBar->start();
@@ -65,11 +65,11 @@ class HailApiObject extends DataObject
             }
         }
 
-        $idList = array();
+        $idList = [];
 
         foreach ($list as $hailData) {
             // Check if we can find an existing item.
-            $hailObj = static::get()->filter(array('HailID' => $hailData->id))->First();
+            $hailObj = static::get()->filter(['HailID' => $hailData->id])->First();
             if (!$hailObj) {
                 $hailObj = new static();
             }
@@ -85,20 +85,21 @@ class HailApiObject extends DataObject
                 $hailObj->delete();
             }
 
-            if(isset($progressBar)){
+            if (isset($progressBar)) {
                 $progressBar->advance();
             }
         }
 
         //No cleanup when only fetching recent articles
-        if(!$only_recent && count($idList) > 0) {
+        if (!$only_recent && count($idList) > 0) {
             //Clean up for deleted items, in raw query to avoid looping using removeAll()
             $classes = ClassInfo::subclassesFor(static::class);
-            if(is_array($classes) && isset($classes[static::class])){
+            if (is_array($classes) && isset($classes[static::class])) {
                 $table_name = $classes[static::class];
                 //Select ids that are not in the list but beong to the current organisation
-                $invalid_ids = DB::query("SELECT ID FROM HailApiObject WHERE ID NOT IN(" . implode(',', $idList) . ") AND ClassName = '" . static::class . "' AND OrganisationID = ".$org->ID." ")->column('ID');
-                if(count($invalid_ids) > 0){
+                $invalid_ids = DB::query("SELECT ID FROM HailApiObject WHERE ID NOT IN(" . implode(',',
+                        $idList) . ") AND ClassName = '" . static::class . "' AND OrganisationID = " . $org->ID . " ")->column('ID');
+                if (count($invalid_ids) > 0) {
                     //Remove items from child table
                     DB::query("DELETE FROM $table_name WHERE ID IN(" . implode(',', $invalid_ids) . ")");
                     //Remove items from base table
@@ -107,7 +108,7 @@ class HailApiObject extends DataObject
             }
         }
 
-        if(isset($progressBar)){
+        if (isset($progressBar)) {
             $progressBar->finish();
             echo PHP_EOL;
         }
@@ -153,12 +154,18 @@ class HailApiObject extends DataObject
         }
 
         $dataMap = array_merge(
-            array('HailID' => 'id'),
+            ['HailID' => 'id'],
             static::apiMap()
         );
 
         foreach ($dataMap as $ssKey => $hailKey) {
-            $this->$ssKey = empty($data->$hailKey) ? '' : $data->$hailKey;
+            $value = empty($data->$hailKey) ? '' : $data->$hailKey;
+            //Remove Non UTF8
+            $value = preg_replace('/[^(\x20-\x7F)]*/', '', $value);
+            //Decode HTML encoded
+            $value = html_entity_decode($value);
+
+            $this->$ssKey = $value;
         }
         $this->Fetched = date("Y-m-d H:i:s");
 
@@ -199,7 +206,7 @@ class HailApiObject extends DataObject
      */
     protected static function apiMap()
     {
-        return array();
+        return [];
     }
 
     /**
