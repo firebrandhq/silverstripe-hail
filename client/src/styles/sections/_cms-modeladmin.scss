@@ -26,20 +26,15 @@
   float: left;
 }
 
-//Tiny MCE Hail Icon
-.mce-ico.mce-i-hail {
+//Hail icon to be used everywhere
+.hail-icon,
+.mce-ico.mce-i-hail{
   background: url('../images/admin-icon.png');
-  background-size: 100% 100%;
+  background-size: 27px 30px;
+  background-repeat: no-repeat;
+  background-position: 10px;
 }
 
-//Hail icon to be used eve  rywhere
-.hail-icon {
-  background: url('../images/admin-icon.png');
-  background-size: 100% 100%;
-  width: 28px;
-  height: 28px;
-  display: block;
-}
 //Progress Button Styles
 .progress-button {
   position: relative;
