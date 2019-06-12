@@ -26,13 +26,32 @@
   float: left;
 }
 
-//Hail icon to be used everywhere
-.hail-icon,
-.mce-ico.mce-i-hail{
-  background: url('../images/admin-icon.png');
-  background-size: 27px 30px;
+.btn--icon-xl.hail-icon{
+  background: url(../images/admin-logo-28px.png);
+  background-size: 28px 23px;
   background-repeat: no-repeat;
-  background-position: 10px;
+  background-position-x: 10px;
+  background-position-y: 5px;
+  padding-left: 48px;
+}
+
+//Hail icon to be used everywhere
+.element-editor-header__icon-container .hail-icon:not(.mce-ico){
+  background: url(../images/admin-logo-28px.png);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  width: 28px;
+  height: 23px;
+  display: block;
+}
+
+.mce-ico.mce-i-hail {
+  background: url(../images/admin-logo-28px.png);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 17px;
+  display: block;
 }
 
 //Progress Button Styles
