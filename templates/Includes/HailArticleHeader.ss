@@ -7,6 +7,6 @@
              style="background-image:url('{$Article.HeroImage.Urloriginal}'); background-position: {$Article.HeroImage.RelativeCenterX}% {$Article.HeroImage.RelativeCenterY}%;"></div>
     <% else %>
         <div class="hail-article-header-image"
-             style="background-image:url('resources/vendor/firebrandhq/silverstripe-hail/client/dist/images/placeholder-hero.jpg'); background-position: 50% 50%;"></div>
+             style="background-image:url('$PlaceHolderHero'); background-position: 50% 50%;"></div>
     <% end_if %>
 </header>

@@ -327,7 +327,7 @@ class Article extends ApiObject
      */
     public function getPlaceHolderHero()
     {
-        return '/resources/' . HAIL_DIR . '/client/dist/images/placeholder-hero.png';
+        return '/' . RESOURCES_DIR . '/' . HAIL_DIR . '/client/dist/images/placeholder-hero.jpg';
     }
 
     /**
@@ -455,7 +455,7 @@ class Article extends ApiObject
      */
     public function ImagesForSitemap()
     {
-        if($this->hasHeroImage()) {
+        if ($this->hasHeroImage()) {
             return $this->HeroImage();
         }
 
