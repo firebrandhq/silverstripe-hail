@@ -169,11 +169,11 @@ class Article extends ApiObject
         $this->processAttachments($data['attachments']);
 
         //IF we have an image gallery, fetch every images
-        if (count($data['short_gallery']) > 0) {
+        if (is_array($data['short_gallery']) && count($data['short_gallery']) > 0) {
             $this->fetchImages();
         }
         //IF we have an video gallery, fetch every videos
-        if (count($data['short_video_gallery']) > 0) {
+        if (is_array($data['short_video_gallery']) && count($data['short_video_gallery']) > 0) {
             $this->fetchVideos();
         }
     }

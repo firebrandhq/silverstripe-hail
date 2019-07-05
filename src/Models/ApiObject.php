@@ -190,6 +190,7 @@ class ApiObject extends DataObject
             }
             $this->{$ssKey} = html_entity_decode($value);
         }
+
         $this->Fetched = date("Y-m-d H:i:s");
 
         $this->write();
@@ -226,7 +227,7 @@ class ApiObject extends DataObject
         $config = SiteConfig::current_site_config();
 
         //IF private tags exclusion if configured and object has private tags
-        if (!empty($config->HailExcludePrivateTagsIDs) && isset($data['private_tags']) && count($data['private_tags']) > 0) {
+        if (!empty($config->HailExcludePrivateTagsIDs) && isset($data['private_tags']) && is_array($data['private_tags']) && count($data['private_tags']) > 0) {
             $private_tags = json_decode($config->HailExcludePrivateTagsIDs);
             foreach ($data['private_tags'] as $tag) {
                 if (in_array($tag['id'], $private_tags)) {
@@ -236,7 +237,7 @@ class ApiObject extends DataObject
             }
         }
         //IF public tags exclusion if configured and object has public tags
-        if (!empty($config->HailExcludePublicTagsIDs) && isset($data['tags']) && count($data['tags']) > 0) {
+        if (!empty($config->HailExcludePublicTagsIDs) && isset($data['tags']) && is_array($data['tags']) && count($data['tags']) > 0) {
             $public_tags = json_decode($config->HailExcludePublicTagsIDs);
             foreach ($data['tags'] as $tag) {
                 if (in_array($tag['id'], $public_tags)) {
