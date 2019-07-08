@@ -212,9 +212,9 @@ Firebrand\Hail\Api\Client:
 
 ## OpenGraph Support
 
-You can add OpenGraph Support for the Hail content inside your SilverStripe website by adding an optional module:
+Open Graph support is now directly included in this module, provided you use [Tractorcow's module for OG](https://github.com/tractorcow/silverstripe-opengraph)
 
-[See Hail OpenGraph module for installation instructions](https://github.com/firebrandhq/silverstripe-hail-opengraph/)
+If you wish to modify our OG implementation for Hail pages / articles, you can use [SilverStripe injection](https://docs.silverstripe.org/en/4/developer_guides/extending/injector/) to do so.
 
 ## SilverStripe Elemental Support
 
