@@ -147,7 +147,6 @@ class HailPage extends \Page
 
     /**
      * Add a canonical link meta tag
-     * Replace description meta tag with Article description when necessary
      *
      * @param boolean $includeTitle Show default <title>-tag, set to false for custom templating
      * @return string The XHTML metatags
@@ -155,24 +154,31 @@ class HailPage extends \Page
     public function MetaTags($includeTitle = true)
     {
         $tags = parent::MetaTags($includeTitle);
-        $params = Controller::curr()->getRequest()->params();
+        
         if ($article = $this->getCurrentArticle()) {
             $tags .= "<link rel=\"canonical\" href=\"{$article->AbsoluteLink()}\" />\n";
-            if ($article->Lead || $article->Content) {
-                $tags = explode("\n", $tags);
-                //Replace description meta tag with article lead
-                foreach ($tags as $index => $tag) {
-                    if (strpos($tag, "name=\"description\"")) {
-                        $description = $article->Lead ? $article->Lead : $article->Content;
-                        $description = mb_strimwidth($description, 0, 300, '...');
-                        $tags[$index] = "<meta name=\"description\" content=\"$article->Lead\">\n";
-                    }
-                }
-                $tags = implode("\n", $tags);
-            }
+        }
+        
+        return $tags;
+    }
+    
+    /**
+     * Get Page or Article MetaDescription
+     * Return the article description when viewing an article
+     *
+     * @return string The MetaDescription
+     */
+    public function getMetaDescription()
+    {
+        $article = $this->getCurrentArticle();
+        if ($article) {
+            $description = $article->Lead ? $article->Lead : $article->Content;
+            $description = mb_strimwidth($description, 0, 300, '...');
+
+            return $description;
         }
 
-        return $tags;
+        return parent::getField("MetaDescription");
     }
 
     /**
