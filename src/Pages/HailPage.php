@@ -8,6 +8,8 @@ use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Image;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Convert;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\NumericField;
@@ -15,7 +17,6 @@ use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\ORM\PaginatedList;
-
 
 /**
  * Hail Page
@@ -54,7 +55,7 @@ class HailPage extends \Page
         'FilterTags' => 'Firebrand\Hail\Models\PublicTag',
     ];
     private static $owns = [
-        'HeroImage'
+        'HeroImage',
     ];
     private static $icon = "vendor/firebrandhq/silverstripe-hail/client/dist/images/admin-icon.png";
     /**
@@ -119,7 +120,9 @@ class HailPage extends \Page
     {
         $link = parent::AbsoluteLink($action);
 
-        $this->extend('AbsoluteLink', $link);
+        if (Controller::curr()->article) {
+            $link = Director::absoluteURL(Controller::curr()->article->Link(), true);
+        }
 
         return $link;
     }
@@ -136,7 +139,7 @@ class HailPage extends \Page
         }
 
         $params = Controller::curr()->getRequest()->params();
-        if(empty($params['ID'])){
+        if (empty($params['ID'])) {
             $this->current_article = null;
         } else {
             $this->current_article = Article::get()->filter(['HailID' => $params['ID']])->first();
@@ -154,14 +157,14 @@ class HailPage extends \Page
     public function MetaTags($includeTitle = true)
     {
         $tags = parent::MetaTags($includeTitle);
-        
+
         if ($article = $this->getCurrentArticle()) {
             $tags .= "<link rel=\"canonical\" href=\"{$article->AbsoluteLink()}\" />\n";
         }
-        
+
         return $tags;
     }
-    
+
     /**
      * Get Page or Article MetaDescription
      * Return the article description when viewing an article
@@ -351,5 +354,86 @@ class HailPage extends \Page
         }
 
         return $return_list;
+    }
+
+    /**
+     * Open Graph Image URL
+     *
+     * OG implementation using https://github.com/tractorcow/silverstripe-opengraph
+     *
+     * @return string|null
+     */
+    public function getOGImage()
+    {
+        if (Controller::curr()->article) {
+            if (Controller::curr()->article->hasHeroImage()) {
+                return Controller::curr()->article->HeroImage()->Urloriginal;
+            }
+            if (Controller::curr()->article->hasHeroVideo()) {
+                return Controller::curr()->article->HeroVideo()->Urloriginal;
+            }
+        }
+
+        return parent::getOGImage();
+    }
+
+    /**
+     * Open Graph Title
+     *
+     * OG implementation using https://github.com/tractorcow/silverstripe-opengraph
+     *
+     * @return string
+     */
+    public function getOGTitle()
+    {
+        if (Controller::curr()->article) {
+            return Controller::curr()->article->Title;
+        }
+
+        return parent::getTitle();
+    }
+
+    /**
+     * Open Graph Type
+     *
+     * OG implementation using https://github.com/tractorcow/silverstripe-opengraph
+     *
+     * @return string
+     */
+    public function getOGType()
+    {
+        return 'website';
+    }
+
+    /**
+     * Open Graph Description
+     *
+     * OG implementation using https://github.com/tractorcow/silverstripe-opengraph
+     *
+     * @return string
+     */
+    public function getOGDescription()
+    {
+        if (Controller::curr()->article) {
+            return Convert::html2raw(Controller::curr()->article->Lead);
+        }
+
+        return Convert::html2raw($this->Content);
+    }
+
+    /**
+     * Open Graph Video Link
+     *
+     * OG implementation using https://github.com/tractorcow/silverstripe-opengraph
+     *
+     * @return string|null
+     */
+    public function getOGVideo()
+    {
+        if (Controller::curr()->article && Controller::curr()->article->hasHeroVideo()) {
+            return Controller::curr()->article->HeroVideo()->getLink();
+        }
+
+        return null;
     }
 }
