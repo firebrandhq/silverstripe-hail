@@ -19,22 +19,21 @@ class HailApiObject extends DataObject
 
     // Make sure we index our HailID to make search quicker
     private static $indexes = [
-        'HailID' => true
+        'HailID' => true,
     ];
-
 
     private static $db = [
         'HailID' => 'Varchar',
-        'Fetched' => 'Datetime'
+        'Fetched' => 'Datetime',
     ];
 
     private static $has_one = [
-        'Organisation' => 'HailOrganisation'
+        'Organisation' => 'HailOrganisation',
     ];
 
     private static $summary_fields = [
         'HailID',
-        'Fetched'
+        'Fetched',
     ];
 
     /**
@@ -138,7 +137,6 @@ class HailApiObject extends DataObject
         throw new HailApiException('getObjectType() must be redefined in overwritten in children class of HailApiObject.');
     }
 
-
     /**
      * Imports JSON data retrieve from the hail API. Return true if the value
      * should be saved to the database. False if it has been excluded.
@@ -148,7 +146,6 @@ class HailApiObject extends DataObject
      */
     protected function importHailData($data)
     {
-
         if ($this->excluded($data)) {
             return false;
         }
@@ -160,8 +157,8 @@ class HailApiObject extends DataObject
 
         foreach ($dataMap as $ssKey => $hailKey) {
             $value = empty($data->$hailKey) ? '' : $data->$hailKey;
-            //Remove Non UTF8
-            $value = preg_replace('/[^(\x20-\x7F)]*/', '', $value);
+            //Remove Non UTF8 characters
+            $value = iconv("UTF-8", "UTF-8//IGNORE", $value);
             //Decode HTML encoded
             $value = html_entity_decode($value);
 
@@ -174,6 +171,7 @@ class HailApiObject extends DataObject
         $this->importing($data);
 
         $this->write();
+
         return true;
     }
 
@@ -189,8 +187,11 @@ class HailApiObject extends DataObject
     {
         $results = $this->extend('excluded', $data);
         if ($results && is_array($results)) {
-            if (max($results)) return true;
-            else return false;
+            if (max($results)) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         return false;
@@ -219,6 +220,7 @@ class HailApiObject extends DataObject
         if ($this->outdated() && $this->HailID) {
             $this->refresh();
         }
+
         return $this;
     }
 
@@ -241,6 +243,7 @@ class HailApiObject extends DataObject
             if ($fetched->TimeDiff() > HailApi::getRefreshRate()) {
                 return true;
             }
+
             return false;
         }
 
@@ -269,6 +272,7 @@ class HailApiObject extends DataObject
                 $data = HailApi::getOne(static::getObjectType(), $this->HailID, HailOrganisation::get()->byID($this->OrganisationID));
             } catch (HailApiException $ex) {
                 Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+
                 return $this;
             }
 
@@ -327,6 +331,7 @@ class HailApiObject extends DataObject
     {
         $fields = parent::getCMSFields();
         $this->makeFieldReadonly($fields);
+
         return $fields;
     }
 
@@ -358,7 +363,6 @@ class HailApiObject extends DataObject
         $fields->sequentialSet = null;
     }
 
-
     /**
      * Helper function to help children class add GridFieldView to display
      * their relations to other HailApiObject
@@ -370,7 +374,6 @@ class HailApiObject extends DataObject
      */
     protected function makeRecordViewer($fields, $name, $relation, $viewComponent = 'GridFieldHailViewButton')
     {
-
         $config = GridFieldConfig_RecordViewer::create();
 
         // Remove the standard GridFieldView button and replace it with our
