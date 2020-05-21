@@ -184,9 +184,9 @@ class ApiObject extends DataObject
 
         foreach ($dataMap as $ssKey => $hailKey) {
             $value = (isset($data[$hailKey]) && !empty($data[$hailKey])) ? $data[$hailKey] : '';
-            //Remove all NON UTF8 if Emoji support is disabled
+            //Remove all NON UTF8 characters if Emoji support is disabled
             if (!Config::inst()->get(Client::class, 'EnableEmojiSupport')) {
-                $value = preg_replace('/[^(\x20-\x7F)]*/', '', $value);
+                $value = iconv("UTF-8", "UTF-8//IGNORE", $value);
             }
             $this->{$ssKey} = html_entity_decode($value);
         }
