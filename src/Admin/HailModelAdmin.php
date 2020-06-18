@@ -5,8 +5,10 @@ namespace Firebrand\Hail\Admin;
 use Firebrand\Hail\Forms\GridFieldAttachmentDownloadButton;
 use Firebrand\Hail\Forms\GridFieldFetchButton;
 use Firebrand\Hail\Models\ApiObject;
+use Firebrand\Hail\Models\Article;
 use Firebrand\Hail\Models\Attachment;
 use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\Forms\GridField\GridFieldDeleteAction;
 use SilverStripe\View\Requirements;
 
 /**
@@ -29,9 +31,7 @@ class HailModelAdmin extends ModelAdmin
         'Firebrand\Hail\Models\PrivateTag',
     ];
     private static $url_segment = 'hail';
-
     private static $menu_title = 'Hail';
-
     private static $menu_icon = 'vendor/firebrandhq/silverstripe-hail/client/dist/images/admin-icon.png';
 
     public function getEditForm($id = null, $fields = null)
@@ -46,15 +46,18 @@ class HailModelAdmin extends ModelAdmin
         $gridFieldName = $this->sanitiseClassName($this->modelClass);
         $gridField = $form->Fields()->fieldByName($gridFieldName)->getConfig();
 
-        $gridField
-            ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldAddNewButton')
-            ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldDeleteAction')
-            ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldExportButton')
-            ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldPrintButton')
-            ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldImportButton');
+        $gridField->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldAddNewButton')
+                  ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldDeleteAction')
+                  ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldExportButton')
+                  ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldPrintButton')
+                  ->removeComponentsByType('SilverStripe\Forms\GridField\GridFieldImportButton');
         //Only show Fetch button for fetchable objects
         if (ApiObject::isFetchable($this->modelClass) && !$hail_down) {
             $gridField->addComponent(new GridFieldFetchButton('buttons-before-left'));
+        }
+
+        if ($this->modelClass === Article::class) {
+            $gridField->addComponent(new GridFieldDeleteAction());
         }
 
         if ($this->modelClass === Attachment::class) {

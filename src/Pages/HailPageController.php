@@ -94,7 +94,7 @@ class HailPageController extends \PageController
         }
 
         if (!$params['ID'] || !isset($article) || empty($article)) {
-            return $this->httpError(404, 'That article could not be found');
+            return $this->httpError(404, 'This article could not be found');
         }
         $data = [
             'Article' => $article,

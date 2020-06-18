@@ -4,6 +4,7 @@ namespace Firebrand\Hail\Models;
 
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ManyManyList;
+use SilverStripe\Security\Permission;
 
 /**
  * Hail Publication DataObject
@@ -75,6 +76,21 @@ class Publication extends ApiObject
         'Fetched' => 'Fetched'
     ];
 
+    /**
+     * @inheritdoc
+     */
+    public function canDelete($member = false)
+    {
+        if(Permission::checkMember($member, 'ADMIN')){
+            return true;
+        }
+
+        return parent::canDelete($member);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();

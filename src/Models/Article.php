@@ -12,6 +12,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\Connect\MySQLSchemaManager;
 use SilverStripe\ORM\ManyManyList;
+use SilverStripe\Security\Permission;
 
 /**
  * Hail Article DataObject
@@ -117,6 +118,21 @@ class Article extends ApiObject
         MySQLSchemaManager::ID => 'ENGINE=MyISAM'
     ];
 
+    /**
+     * @inheritdoc
+     */
+    public function canDelete($member = false)
+    {
+        if(Permission::checkMember($member, 'ADMIN')){
+            return true;
+        }
+
+        return parent::canDelete($member);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
