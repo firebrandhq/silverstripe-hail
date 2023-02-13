@@ -32,16 +32,16 @@ use SilverStripe\SiteConfig\SiteConfig;
 class SettingsExtension extends DataExtension
 {
     private static $db = [
-        "HailAccessToken" => "Varchar(255)",
+        "HailAccessToken" => "Text",
         "HailAccessTokenExpire" => "Varchar(255)",
-        "HailRefreshToken" => "Varchar(255)",
+        "HailRefreshToken" => "Text",
         "HailUserID" => "Varchar(255)",
         "HailOrgsIDs" => "Varchar(255)",
         "HailExcludePrivateTagsIDs" => "Text",
         "HailExcludePublicTagsIDs" => "Text",
         "HailAPIStatusCurrent" => "Varchar",
         "HailAPIStatusLastChecked" => "Datetime"
-       
+
     ];
 
     private static $has_one = [
