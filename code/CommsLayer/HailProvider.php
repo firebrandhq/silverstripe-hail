@@ -64,14 +64,14 @@ class HailProvider extends League\OAuth2\Client\Provider\AbstractProvider {
 
 		// Calculate the time difference between the current time and the token expiry
 		$time = time();
-		$difference = $siteconfig->HailAccessTokenExpire - $time;
+		$difference = $org->HailAccessTokenExpire - $time;
 
 		// Get a new access/refresh token if the access token expires in less than 30 minutes
 		if($difference < strtotime('30 minutes', 0)) {
 			try {
 				$provider = new static($org);
 				$grant = new \League\OAuth2\Client\Grant\RefreshToken();
-				$token = $org->getAccessToken(
+				$token = $provider->getAccessToken(
 					$grant,
 					['refresh_token' => $org->HailRefreshToken]
 				);
