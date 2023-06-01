@@ -217,7 +217,7 @@ class HailPage extends \Page
         $list = new ArrayList();
         if ($this->List()->exists()) {
             $hail_list = $this->List();
-            $list_types = json_decode($hail_list->Type);
+            $list_types = json_decode($hail_list->Type ?? '');
             //If we have configured Type on our Hail Page
             if (is_array($list_types)) {
                 foreach ($list_types as $type) {

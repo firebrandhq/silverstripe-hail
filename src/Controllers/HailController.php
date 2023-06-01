@@ -211,7 +211,7 @@ class HailController extends Controller
         }
 
         $pages = HailPage::get();
-        $articles = [['text' => 'Select an article']];
+        $articles = [['text' => 'Select an article', 'value' => '']];
         foreach ($pages as $page) {
             $list = $page->getFullHailList();
             foreach ($list as $item) {

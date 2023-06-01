@@ -1,6 +1,6 @@
 {
   "name": "silverstripe-hail",
-  "version": "4.3.0",
+  "version": "5.0.0",
   "description": "Silverstripe 4 plugin to integrate with Hail (https://get.hail.to)",
   "main": "index.js",
   "scripts": {

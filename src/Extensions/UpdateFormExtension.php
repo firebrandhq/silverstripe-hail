@@ -62,7 +62,7 @@ class UpdateFormExtension extends Extension
                 );
 
                 if ($exists) {
-                    $_value = json_decode($rel->__get($key));
+                    $_value = json_decode($rel->__get($key) ?? '');
                     $value = $_value ? $_value : $rel->__get($key);
                     $record->$name = $value;
                     $field->setValue($value);

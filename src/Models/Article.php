@@ -303,7 +303,7 @@ class Article extends ApiObject
      */
     public function getLinkForPage($page)
     {
-        return $page->Link() . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
+        return $page->Link() . "/article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
     }
 
     /**
