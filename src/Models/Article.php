@@ -292,7 +292,7 @@ class Article extends ApiObject
             return "";
         }
 
-        return $link . "article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
+        return $link . "/article/" . $this->HailID . '/' . Convert::raw2url($this->Title);
     }
 
     /**
