@@ -54,7 +54,7 @@ class DependentListboxField extends ListboxField
      * @param string $value
      * @param $size
      */
-    public function __construct($name, $title = null, \Closure $source, $value = '', $size = null)
+    public function __construct($name, $title = null, \Closure $source = null, $value = '', $size = null)
     {
         parent::__construct($name, $title, [], $value, $size);
 

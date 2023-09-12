@@ -6,6 +6,7 @@ use Firebrand\Hail\Models\Organisation;
 use Firebrand\Hail\Models\PrivateTag;
 use Firebrand\Hail\Models\PublicTag;
 use SilverStripe\Forms\ListboxField;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\HasManyList;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -108,9 +109,14 @@ class HailList extends DataObject
     {
         $config = SiteConfig::current_site_config();
         //Filter out Organisation that are not setup in the config
-        $organisations = Organisation::get()->filter(['HailID' => json_decode($config->HailOrgsIDs)]);
+        $organisations = DataList::create();
+        if ($config->HailOrgsIDs) {
+            $organisations = Organisation::get()->filter(['HailID' => json_decode($config->HailOrgsIDs)]);
 
-        return $organisations->sort('Title')->map('HailID', 'Title')->toArray();
+            return $organisations->sort('Title')->map('HailID', 'Title')->toArray();
+        }
+
+        return $organisations->toArray();
     }
 
     /**
