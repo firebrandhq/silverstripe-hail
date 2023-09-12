@@ -109,7 +109,7 @@ class HailList extends DataObject
     {
         $config = SiteConfig::current_site_config();
         //Filter out Organisation that are not setup in the config
-        $organisations = DataList::create();
+        $organisations = DataList::create(Organisation::class);
         if ($config->HailOrgsIDs) {
             $organisations = Organisation::get()->filter(['HailID' => json_decode($config->HailOrgsIDs)]);
 
