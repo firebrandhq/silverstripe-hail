@@ -146,7 +146,7 @@ class HailList extends DataObject
         $config = SiteConfig::current_site_config();
         //Filter out global excluded tags and non configured Organisations
         $pub_tags = PublicTag::get();
-        if ($config->HailExcludePrivateTagsIDs && $config->HailOrgsIDs) {
+        if ($config->HailExcludePublicTagsIDs && $config->HailOrgsIDs) {
             $pub_tags = $pub_tags->filter(['HailID:not' => json_decode($config->HailExcludePublicTagsIDs), 'HailOrgID' => json_decode($config->HailOrgsIDs)]);
         }
 
