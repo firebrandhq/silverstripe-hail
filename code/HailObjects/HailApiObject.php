@@ -44,48 +44,59 @@ class HailApiObject extends DataObject
      */
     public static function fetch(HailOrganisation $org, $only_recent = false)
     {
-        try {
-            $list = HailApi::getList(static::getObjectType(), $org, $only_recent);
-        } catch (HailApiException $ex) {
-            Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
-            die($ex->getMessage());
-        }
-
-        //Console display
-        $is_cli = php_sapi_name() == "cli";
-        if ($is_cli) {
-            $output = new \Symfony\Component\Console\Output\ConsoleOutput();
-            if (count($list) > 0) {
-                $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($output, count($list));
-                $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
-                $progressBar->start();
-            } else {
-                $output->write("Nothing to fetch.", true);
-            }
-        }
-
         $idList = [];
-
-        foreach ($list as $hailData) {
-            // Check if we can find an existing item.
-            $hailObj = static::get()->filter(['HailID' => $hailData->id])->First();
-            if (!$hailObj) {
-                $hailObj = new static();
+        if(in_array(static::getObjectType(),[HailApi::ARTICLES,HailApi::IMAGES, HailApi::PUBLICATIONS])){
+            static::fetchDataPaginated($org, $only_recent,$idList);
+        } else {
+            try {
+                $list = HailApi::getList(static::getObjectType(), $org, $only_recent);
+            } catch (HailApiException $ex) {
+                Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+                die($ex->getMessage());
             }
-            $hailObj->OrganisationID = $org->ID;
-            $hailObj->write();
 
-            $result = $hailObj->importHailData($hailData);
-            if ($result) {
-                //Build up Hail ID list
-                $idList[] = $hailObj->ID;
-            } else {
-                //Remove object when it's excluded
-                $hailObj->delete();
+            //Console display
+            $is_cli = php_sapi_name() == "cli";
+            if ($is_cli) {
+                $output = new \Symfony\Component\Console\Output\ConsoleOutput();
+                if (count($list) > 0) {
+                    $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($output, count($list));
+                    $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
+                    $progressBar->start();
+                } else {
+                    $output->write("Nothing to fetch.", true);
+                }
             }
+
+
+            foreach ($list as $hailData) {
+                // Check if we can find an existing item.
+                $hailObj = static::get()->filter(['HailID' => $hailData->id])->First();
+                if (!$hailObj) {
+                    $hailObj = new static();
+                }
+                $hailObj->OrganisationID = $org->ID;
+                $hailObj->write();
+
+                $result = $hailObj->importHailData($hailData);
+                if ($result) {
+                    //Build up Hail ID list
+                    $idList[] = $hailObj->ID;
+                } else {
+                    //Remove object when it's excluded
+                    $hailObj->delete();
+                }
+
+                if (isset($progressBar)) {
+                    $progressBar->advance();
+                }
+            }
+
+
 
             if (isset($progressBar)) {
-                $progressBar->advance();
+                $progressBar->finish();
+                echo PHP_EOL;
             }
         }
 
@@ -97,7 +108,7 @@ class HailApiObject extends DataObject
                 $table_name = $classes[static::class];
                 //Select ids that are not in the list but beong to the current organisation
                 $invalid_ids = DB::query("SELECT ID FROM HailApiObject WHERE ID NOT IN(" . implode(',',
-                        $idList) . ") AND ClassName = '" . static::class . "' AND OrganisationID = " . $org->ID . " ")->column('ID');
+                                                                                                   $idList) . ") AND ClassName = '" . static::class . "' AND OrganisationID = " . $org->ID . " ")->column('ID');
                 if (count($invalid_ids) > 0) {
                     //Remove items from child table
                     DB::query("DELETE FROM $table_name WHERE ID IN(" . implode(',', $invalid_ids) . ")");
@@ -106,11 +117,60 @@ class HailApiObject extends DataObject
                 }
             }
         }
+    }
 
-        if (isset($progressBar)) {
-            $progressBar->finish();
-            echo PHP_EOL;
+    public static function fetchDataPaginated(HailOrganisation $org, $only_recent = false, $idList, $offset = 0){
+        try {
+            $list = HailApi::getList(static::getObjectType(), $org, $only_recent,$offset);
+        } catch (HailApiException $ex) {
+            Debug::warningHandler(E_WARNING, $ex->getMessage(), $ex->getFile(), $ex->getLine(), $ex->getTrace());
+            die($ex->getMessage());
         }
+
+        if(count($list) > 0){
+            //Console display
+            $is_cli = php_sapi_name() == "cli";
+            if ($is_cli) {
+                $output = new \Symfony\Component\Console\Output\ConsoleOutput();
+                if (count($list) > 0) {
+                    $progressBar = new \Symfony\Component\Console\Helper\ProgressBar($output, count($list));
+                    $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
+                    $progressBar->start();
+                } else {
+                    $output->write("Nothing to fetch.", true);
+                }
+            }
+
+            foreach ($list as $hailData) {
+                // Check if we can find an existing item.
+                $hailObj = static::get()->filter(['HailID' => $hailData->id])->First();
+                if (!$hailObj) {
+                    $hailObj = new static();
+                }
+                $hailObj->OrganisationID = $org->ID;
+                $hailObj->write();
+
+                $result = $hailObj->importHailData($hailData);
+                if ($result) {
+                    //Build up Hail ID list
+                    $idList[] = $hailObj->ID;
+                } else {
+                    //Remove object when it's excluded
+                    $hailObj->delete();
+                }
+
+                if (isset($progressBar)) {
+                    $progressBar->advance();
+                }
+            }
+            if (isset($progressBar)) {
+                $progressBar->finish();
+                echo PHP_EOL;
+            }
+            static::fetchDataPaginated($org, $only_recent,$idList,$offset + HailApi::HAIL_LIMIT);
+        }
+
+
     }
 
     /**

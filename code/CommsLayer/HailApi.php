@@ -38,6 +38,8 @@ class HailApi extends SS_Object
     const ATTACHMENTS = 'attachments';
     const PRIVATE_TAGS = 'private-tags';
 
+    const HAIL_LIMIT = 500;
+
     /**
      * Send a GET request to the Hail API for a specific URI and returns
      * the results. Extra paremeters can be specified via $request.
@@ -91,7 +93,7 @@ class HailApi extends SS_Object
      * @return StdClass
      * @throws HailApiException
      */
-    public static function getList($objectType, HailOrganisation $org, $only_recent = false)
+    public static function getList($objectType, HailOrganisation $org, $only_recent = false, $offset = 0)
     {
         $uri = '';
         $request = false;
@@ -130,7 +132,7 @@ class HailApi extends SS_Object
                 if (self::getDisplayUnpublished()) {
                     $request = [];
                 } else {
-                    $request = ['status' => 'published'];
+                    $request = ['status' => 'published', 'limit' => static::HAIL_LIMIT, 'offset' => $offset];
                 }
                 //Sort by date desc
                 $request['order'] = 'date|desc';
@@ -143,7 +145,7 @@ class HailApi extends SS_Object
                 if (self::getDisplayUnpublished()) {
                     $request = [];
                 } else {
-                    $request = ['status' => 'approved'];
+                    $request = ['status' => 'approved', 'limit' => static::HAIL_LIMIT, 'offset' => $offset];
                 }
                 break;
             case self::VIDEOS:
@@ -166,7 +168,7 @@ class HailApi extends SS_Object
                 if (self::getDisplayUnpublished()) {
                     $request = [];
                 } else {
-                    $request = ['status' => 'published'];
+                    $request = ['status' => 'published', 'limit' => static::HAIL_LIMIT, 'offset' => $offset];
                 }
                 //Sort by date desc
                 $request['order'] = 'due_date|desc';
