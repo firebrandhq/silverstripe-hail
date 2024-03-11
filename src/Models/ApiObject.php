@@ -92,8 +92,8 @@ class ApiObject extends DataObject
             $fetch_one = LiteralField::create('FetchOneButton',
                 '<div class="form-group">
                     <div class="form__field-holder">
-                        <button class="btn btn-primary hail-fetch-one" 
-                                data-tofetch="' . str_replace('\\', '-', $this->getClassName()) . '" 
+                        <button class="btn btn-primary hail-fetch-one"
+                                data-tofetch="' . str_replace('\\', '-', $this->getClassName()) . '"
                                 data-hailid="' . $this->HailID . '"
                         >
                             Update this ' . strtolower($this->singular_name()) . '
@@ -278,74 +278,189 @@ class ApiObject extends DataObject
         //Merge extra parameters for object
         $request_params = array_merge($request_params, static::$object_parameters);
 
-        //Fetch objects
-        $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
-        $results = $hail_api_client->get($url, $request_params, $throw_errors);
+        if(in_array(static::$object_endpoint,['articles','publications'])){
+            $output = null;
+            $progressBar = null;
 
-        //If this is launched from a queued job, update it to display realtime info on the frontend
-        if ($results && count($results) > 0 && $job) {
-            $job->CurrentObject = $org_name . " - " . (new static)->plural_name();
-            $job->CurrentDone = 0;
-            $job->CurrentTotal = count($results);
-            $job->write();
-        }
+            $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint."/count";
+            $results = $hail_api_client->get($url, $request_params, $throw_errors);
+            $total = $results['count'];
+            if($job){
+                //Need to create a Job
+                $job->CurrentObject = $org_name . " - " . (new static)->plural_name();
+                $job->CurrentDone = 0;
+                $job->CurrentTotal = $total;
+                $job->write();
+            }
 
-        if($is_cli){
-            $output = new ConsoleOutput();
-            if($results && count($results) > 0) {
-                $progressBar = new ProgressBar($output, count($results));
-                $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
-                $progressBar->start();
+            //If this is launched from a queued job, update it to display realtime info on the frontend
+            if ($is_cli) {
+                $output = new ConsoleOutput();
+            }
+
+            if($total > 0){
+                if ($is_cli) {
+                    $progressBar = new ProgressBar($output, $total);
+                    $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
+                    $progressBar->start();
+                }
+
+                $hailIdList = [];
+
+                $list = static::fetchDataPaginated($org, $org_id, $hail_api_client, $job, $request_params,$throw_errors,$total, $output, $progressBar,$hailIdList);
+
+                if ($job) {
+                    //Remove all object for which we don't have reference
+                    if (count($list) > 0) {
+                        static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $list)->removeAll();
+                    } else {
+                        static::get()->filter('OrganisationID', $org->ID)->removeAll();
+                    }
+                }
+
+                if (isset($progressBar)) {
+                    $progressBar->finish();
+                    echo PHP_EOL;
+                }
             } else {
                 $output->write("Nothing to fetch.", true);
             }
 
-        }
+        } else {
+            //Fetch objects
+            $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
+            $results = $hail_api_client->get($url, $request_params, $throw_errors);
 
-        $hailIdList = [];
-        foreach ($results as $result) {
-            // Check if we can find an existing item.
-            $hailObj = DataObject::get_one(static::class, ['HailID' => $result['id']]);
-            if (!$hailObj) {
-                $hailObj = new static();
+            //If this is launched from a queued job, update it to display realtime info on the frontend
+            if ($results && count($results) > 0 && $job) {
+                $job->CurrentObject = $org_name . " - " . (new static)->plural_name();
+                $job->CurrentDone = 0;
+                $job->CurrentTotal = count($results);
+                $job->write();
             }
-            $hailObj->OrganisationID = $org ? $org->ID : 0;
-            $hailObj->HailOrgID = $org_id;
-            $hailObj->HailOrgName = $org_name;
-            $hailObj->write();
 
-            $imported = $hailObj->importHailData($result);
-
-            if ($imported) {
-                //Build up Hail ID list
-                $hailIdList[] = $result['id'];
-                //Update job count if necessary
-                if ($job) {
-                    $job->CurrentDone++;
-                    $job->write();
+            if ($is_cli) {
+                $output = new ConsoleOutput();
+                if ($results && count($results) > 0) {
+                    $progressBar = new ProgressBar($output, count($results));
+                    $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% | elapsed: %elapsed:6s% | remaining: %estimated:-6s%');
+                    $progressBar->start();
+                } else {
+                    $output->write("Nothing to fetch.", true);
                 }
-            } else {
-                //$imported is false when object is excluded, remove it
-                $hailObj->delete();
             }
 
-            if(isset($progressBar)){
-                $progressBar->advance();
+            $hailIdList = [];
+            foreach ($results as $result) {
+                // Check if we can find an existing item.
+                $hailObj = DataObject::get_one(static::class, ['HailID' => $result['id']]);
+                if (!$hailObj) {
+                    $hailObj = new static();
+                }
+                $hailObj->OrganisationID = $org ? $org->ID : 0;
+                $hailObj->HailOrgID = $org_id;
+                $hailObj->HailOrgName = $org_name;
+                $hailObj->write();
+
+                $imported = $hailObj->importHailData($result);
+
+                if ($imported) {
+                    //Build up Hail ID list
+                    $hailIdList[] = $result['id'];
+                    //Update job count if necessary
+                    if ($job) {
+                        $job->CurrentDone++;
+                        $job->write();
+                    }
+                } else {
+                    //$imported is false when object is excluded, remove it
+                    $hailObj->delete();
+                }
+
+                if (isset($progressBar)) {
+                    $progressBar->advance();
+                }
+            }
+            if ($org && $job) {
+                //Remove all object for which we don't have reference
+                if (count($hailIdList) > 0) {
+                    static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
+                } else {
+                    static::get()->filter('OrganisationID', $org->ID)->removeAll();
+                }
+            }
+
+            if (isset($progressBar)) {
+                $progressBar->finish();
+                echo PHP_EOL;
             }
         }
-        if ($org && $job) {
-            //Remove all object for which we don't have reference
-            if (count($hailIdList) > 0) {
-                static::get()->filter('OrganisationID', $org->ID)->exclude('HailID', $hailIdList)->removeAll();
-            } else {
-                static::get()->filter('OrganisationID', $org->ID)->removeAll();
+    }
+
+    /**
+     * Fetch from Hail API for a specified Organisation
+     *
+     * @param Organisation $org Hail Api Client to use for the fetch
+     * @param string $org_id Hail ID of the organisation to fetch from
+     * @param Client $hail_api_client Hail Api Client to use for the fetch
+     * @param FetchJob|null $job If job is passed, the progress of the fetch will be updated in it
+     * @param array $request_params Additional request params to send to the Hail API
+     * @param boolean $throw_errors Enables error throwing
+     * @param integer $total Total items fetching
+     * @param ConsoleOutput|null $output Output for cli
+     * @param ProgressBar|null $progressBar Progressbar for cli
+     * @param array $list List of hail ids being imported
+     * @param integer $offset Starting point for page
+     * @throws
+     * @return array imported Hail ids
+     */
+    public static function fetchDataPaginated($org, $org_id, $hail_api_client, $job, $request_params, $throw_errors, $total, $output, $progressBar, $list, $offset = 0): array
+    {
+        $limit = 100;
+        $request_params['limit'] = $limit;
+        $request_params['offset'] = $offset;
+        $org_name = $org ? $org->Title : "";
+
+        //Fetch objects
+        $url = self::$organisations_endpoint . "/" . $org_id . "/" . static::$object_endpoint;
+        $results = $hail_api_client->get($url, $request_params, $throw_errors);
+
+        if(count($results) > 0){
+            foreach ($results as $result) {
+                // Check if we can find an existing item.
+                $hailObj = DataObject::get_one(static::class, ['HailID' => $result['id']]);
+                if (!$hailObj) {
+                    $hailObj = new static();
+                }
+                $hailObj->OrganisationID = $org ? $org->ID : 0;
+                $hailObj->HailOrgID = $org_id;
+                $hailObj->HailOrgName = $org_name;
+                $hailObj->write();
+
+                $imported = $hailObj->importHailData($result);
+
+                if ($imported) {
+                    //Build up Hail ID list
+                    $list[] = $result['id'];
+                    //Update job count if necessary
+                    if ($job) {
+                        $job->CurrentDone++;
+                        $job->write();
+                    }
+                } else {
+                    //$imported is false when object is excluded, remove it
+                    $hailObj->delete();
+                }
+
+                if (isset($progressBar)) {
+                    $progressBar->advance();
+                }
             }
+
+            $list = static::fetchDataPaginated($org, $org_id, $hail_api_client, $job, $request_params, $throw_errors, $total, $output, $progressBar, $list,$offset + ($limit));
         }
 
-        if(isset($progressBar)){
-            $progressBar->finish();
-            echo PHP_EOL;
-        }
+        return $list;
     }
 
     /**
