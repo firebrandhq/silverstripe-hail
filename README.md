@@ -1,12 +1,14 @@
 ![Hail.to](docs/images/hail-logo.png "hail.to")
 
-# Hail.to Integration for SilverStripe 4 
+# Hail.to Integration for SilverStripe 5
 
-Silverstripe 4 module to integrate with Hail (https://get.hail.to)
+Silverstripe 5 module to integrate with Hail (https://get.hail.to)
+
+If you need this module for SilverStripe 4 please refer to [this branch](https://github.com/firebrandhq/silverstripe-hail/tree/4.x).
 
 If you need this module for SilverStripe 3 please refer to [this branch](https://github.com/firebrandhq/silverstripe-hail/tree/2.x).
 
-:exclamation: **If you are getting errors while fetching, please update to 4.2 version**
+! **If you are getting errors while fetching, please update to latest version 5**
 
 ## Features
 
@@ -25,19 +27,18 @@ If you need this module for SilverStripe 3 please refer to [this branch](https:/
 
 ## Requirements
 
-* [PHP ^7.1](https://secure.php.net/)
-* [SilverStripe ^4.4](https://www.silverstripe.org/download)
-* [guzzlehttp/guzzle ^6.3](https://github.com/guzzle/guzzle)
-* [silverstripe/environmentcheck ^2.0](https://github.com/silverstripe/silverstripe-environmentcheck)
-* [symfony/console ^4.2](https://github.com/symfony/console)
+* [PHP ^8.1](https://secure.php.net/)
+* [SilverStripe ^5.0](https://www.silverstripe.org/download)
+* [guzzlehttp/guzzle ^7](https://github.com/guzzle/guzzle)
+* [silverstripe/environmentcheck ^3.0](https://github.com/silverstripe/silverstripe-environmentcheck)
+* [symfony/console ^6.1](https://github.com/symfony/console)
 * Access to create cronjob (optional)
 * jQuery and Bootstrap 4+ (included), [see jQuery and Boostrap requirements](#jquery-and-bootstrap-requirements)
 
-For SilverStripe 4.1 to 4.3 use version 4.2.1
 
 ## Upgrade from older versions
 
-This module has been re written for SilverStripe 4 and includes breaking changes compared to previous version.
+This module has been re written for SilverStripe 5 and includes breaking changes compared to previous version.
 Please perform a fresh install if you are upgrading from previous versions by removing and re installing the module.
 
 ## Installation
@@ -45,20 +46,20 @@ Please perform a fresh install if you are upgrading from previous versions by re
 **Run the following command:**
 
 ```sh
-composer require firebrandhq/silverstripe-hail "^4"
+composer require firebrandhq/silverstripe-hail "^5"
 ```
 
 **(Optional) Enable Emojis Support (has to be done before doing the dev/build):**
 
 [See Emojis Support configuration](#emojis-support)
 
-**Install Silverstripe Sake:** 
+**Install Silverstripe Sake:**
 
 ```sh
 cd your-webroot/
 sudo ./vendor/bin/sake installsake
 ```
-*Please ensure sake is using php ^7.1*
+*Please ensure sake is using php ^8.1*
 
 **Perform a dev/build**
 
@@ -125,34 +126,34 @@ The following yml configuration options are available for override:
 - OnlyFetchPublishedObjects: By default the Hail module only fetches published objects, you can change this behavior by setting this value to false
 
 *Default configuration:*
- 
+
 ```yml
 Firebrand\Hail\Api\Client:
-  BaseApiUrl: 'https://hail.to/api/v1/'
-  AuthorizationUrl: 'https://hail.to/oauth/authorise'
-  RefreshRate: 86400
-  EnableEmojiSupport: false
-  OnlyFetchPublishedObjects: true
+    BaseApiUrl: 'https://hail.to/api/v1/'
+    AuthorizationUrl: 'https://hail.to/oauth/authorise'
+    RefreshRate: 86400
+    EnableEmojiSupport: false
+    OnlyFetchPublishedObjects: true
 ```
 
 **Hail Page Controller configuration:**
 - UseDefaultCss: true / false Enables the default styles on Hail Pages and articles (Using Bootstrap 4.1)
 
 *Default configuration:*
- 
+
 ```yml
 Firebrand\Hail\Pages\HailPageController:
-  UseDefaultCss: true
+    UseDefaultCss: true
 ```
 
 **Hail Recurring Fetch Task configuration:**
 - Emails: Fetching errors will be sent to the following email list (comma separated), put to false if you want to disable the emails
 
 *Default configuration:*
- 
+
 ```yml
 Firebrand\Hail\Tasks\FetchRecurringTask:
-  Emails: ''
+    Emails: ''
 ```
 
 **In order to override those values you need to add a new yml file into your mysite/_config/ folder, specifying that your configuration needs to be included after Hail's.**
@@ -166,9 +167,9 @@ After:
     - '#hail-config'
 ---
 Firebrand\Hail\Api\Client:
-  EnableEmojiSupport: true
+    EnableEmojiSupport: true
 Firebrand\Hail\Tasks\FetchRecurringTask:
-  Emails: 'developers@mycompany.com'
+    Emails: 'developers@mycompany.com'
 ---
 
 ```
@@ -176,7 +177,7 @@ Firebrand\Hail\Tasks\FetchRecurringTask:
 ## Usage
 
 Once everything is configured and your Hail content is fetched you can create a Hail Page in the SilverStripe CMS to display the content on your website.
-The configuration of the Hail Page should be self explanatory, see screenshots below: 
+The configuration of the Hail Page should be self explanatory, see screenshots below:
 
 Hail Page configuration:
 
@@ -205,7 +206,7 @@ After:
     - '#hail-config'
 ---
 Firebrand\Hail\Api\Client:
-  EnableEmojiSupport: true
+    EnableEmojiSupport: true
 ---
 
 ```
