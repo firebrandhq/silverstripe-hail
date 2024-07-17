@@ -69,6 +69,7 @@ class Article extends ApiObject
         'Flagged' => 'flagged',
         'Date' => 'date',
         'HailURL' => 'hail_url',
+        'ShowAuthor'=> 'show_author'
     ];
     private static $table_name = "HailArticle";
     private static $db = [
@@ -84,7 +85,8 @@ class Article extends ApiObject
         'Updated' => 'Datetime',
         'Rating' => 'Double',
         'Flagged' => 'Boolean',
-        'HailURL' => 'Varchar'
+        'HailURL' => 'Varchar',
+        'ShowAuthor'=> 'Boolean'
     ];
     private static $default_sort = "Date DESC";
     private static $has_one = [
