@@ -192,6 +192,8 @@ class Article extends ApiObject
         if (is_array($data['short_video_gallery']) && count($data['short_video_gallery']) > 0) {
             $this->fetchVideos();
         }
+
+        $this->extend('afterImport', $data);
     }
 
     /**
