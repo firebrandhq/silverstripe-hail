@@ -247,13 +247,17 @@ class HailPage extends \Page
                         if (json_decode($hail_list->ExcludedPrivateTagsIDs) && $has_private_tags) {
                             //We use a inverted filter because of the LEFT JOIN not properly filtering if filter is a :not on relation
                             $inverse_filter = $class_name::get()->filter(['PrivateTags.HailID' => json_decode($hail_list->ExcludedPrivateTagsIDs)])->map('ID', 'ID')->toArray();
-                            $filters['ID:not'] = $inverse_filter;
+                            if(!empty($inverse_filter)) {
+                                $filters['ID:not'] = $inverse_filter;
+                            }
                         }
                         //Excluded Public Tags
                         if (json_decode($hail_list->ExcludedPublicTagsIDs) && $has_public_tags) {
                             //We use a inverted filter because of the LEFT JOIN not properly filtering if filter is a :not on relation
                             $inverse_filter = $class_name::get()->filter(['PublicTags.HailID' => json_decode($hail_list->ExcludedPublicTagsIDs)])->map('ID', 'ID')->toArray();
-                            $filters['ID:not'] = $inverse_filter;
+                            if(!empty($inverse_filter)) {
+                                $filters['ID:not'] = $inverse_filter;
+                            }
                         }
 
                         //In page public tag filter
@@ -437,3 +441,4 @@ class HailPage extends \Page
         return null;
     }
 }
+
